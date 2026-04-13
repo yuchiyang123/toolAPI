@@ -1,4 +1,4 @@
-﻿namespace blog.Entities.Page
+﻿namespace blog.Dtos.Page
 {
     public class PageDto
     {
@@ -9,7 +9,7 @@
         /// <summary>
         /// 當前頁碼
         /// </summary>
-        public int PageIndex { get; set; }
+        public required int PageIndex { get; set; }
         /// <summary>
         /// 總頁數
         /// </summary>

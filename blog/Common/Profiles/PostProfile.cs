@@ -11,7 +11,7 @@ namespace blog.Common.Profiles
             CreateMap<Posts, PostDto>()
                 .ForMember(dest => dest.CreateUserName, opt => opt.MapFrom(src => src.User.UserName));
 
-            CreateMap<CreatePostDto, PostDto>();
+            CreateMap<CreatePostDto, Posts>();
         }            
     }
 }

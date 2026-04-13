@@ -1,4 +1,4 @@
-﻿using blog.Entities.Page;
+﻿using blog.Dtos.Page;
 
 namespace blog.Dtos
 {

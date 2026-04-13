@@ -12,6 +12,6 @@ namespace blog.Entities.User
         public string Password { get; set; } = string.Empty;
         public DateTime LogInDate { get; set; }
         public DateTime CreateDate { get; set; }
-        public ICollection<Posts> Posts { get; set; } = [];
+        public ICollection<Posts> Posts { get; set; }
     }
 }

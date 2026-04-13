@@ -1,5 +1,5 @@
 ﻿using blog.Dtos;
-using blog.Entities.Page;
+using blog.Dtos.Page;
 using blog.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,7 +26,14 @@ namespace blog.Controllers
             catch
             {
                 return BadRequest();
-            }            
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeletePostAsync(int id)
+        {
+            await service.DeletePostAsync(id);
+            return Ok();
         }
     }
 }

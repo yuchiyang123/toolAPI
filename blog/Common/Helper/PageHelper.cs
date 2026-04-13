@@ -1,4 +1,4 @@
-﻿using blog.Entities.Page;
+﻿using blog.Dtos.Page;
 using Microsoft.EntityFrameworkCore;
 
 namespace blog.Common.Helper
@@ -7,7 +7,7 @@ namespace blog.Common.Helper
     {
         public static IQueryable<T> Page<T>(this IQueryable<T> query, int pageIndex)
         {
-            return query.Skip((pageIndex - 1) * 10).Take((pageIndex) * 10);
+            return query.Skip((pageIndex - 1) * 10).Take(10);
         }
 
         public static async Task<PageResponseDto<T>> ToPageResponseDto<T>(this IQueryable<T> query, int pageIndex)
