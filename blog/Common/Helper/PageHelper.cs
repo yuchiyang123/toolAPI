@@ -14,7 +14,7 @@ namespace blog.Common.Helper
         {
             return new PageResponseDto<T>
             {
-                PageIndex = pageIndex + 1,
+                PageIndex = pageIndex,
                 PageTotal = (int)Math.Ceiling(query.Count() / 10.0),
                 HasNextPage = query.Count() > pageIndex * 10,
                 Items = await query.ToListAsync()
