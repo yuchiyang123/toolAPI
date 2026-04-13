@@ -18,8 +18,8 @@ namespace blog.Entities
 
                 entity.Property(x => x.UserName).HasMaxLength(100).IsRequired();
                 entity.Property(x => x.Password).HasMaxLength(60).IsRequired();
-                entity.Property(x => x.LogInDate).HasDefaultValue("GETDATE()");
-                entity.Property(x => x.CreateDate).HasDefaultValue("GETDATE()");
+                entity.Property(x => x.LogInDate).HasDefaultValueSql("GETDATE()");
+                entity.Property(x => x.CreateDate).HasDefaultValueSql("GETDATE()");
             });
 
             builder.Entity<Posts>(entity =>
@@ -28,9 +28,9 @@ namespace blog.Entities
 
                 entity.Property(x => x.Title).HasMaxLength(100).IsRequired();
                 entity.Property(x => x.Content).IsRequired();
-                entity.Property(x => x.CreateDate).HasDefaultValue("GETDATE()");
+                entity.Property(x => x.CreateDate).HasDefaultValueSql("GETDATE()");
 
-                entity.HasOne(e => e.User).WithMany(e => e.Posts).HasForeignKey(e => e.CreateUser).HasPrincipalKey(e => e.Id);
+                entity.HasOne(e => e.User).WithMany(e => e.Posts).HasForeignKey(e => e.CreateUserId).HasPrincipalKey(e => e.Id);
             });
         }
     }

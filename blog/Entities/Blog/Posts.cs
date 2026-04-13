@@ -10,7 +10,7 @@ namespace blog.Entities.Blog
         public string Title { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
         public DateTime CreateDate { get; set; }
-        public required string CreateUser { get; set; }
+        public required int CreateUserId { get; set; }
         public Users User { get; set; } = new Users();
     }
 }
