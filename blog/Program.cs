@@ -1,8 +1,6 @@
+using AutoMapper;
 using blog.Entities;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,21 +14,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<BlogContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-//var isDevelopment = builder.Environment.IsDevelopment();
-//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-//    .AddJwtBearer(option =>
-//    {
-//        option.TokenValidationParameters = new TokenValidationParameters
-//        {
-//            ValidateIssuer = !isDevelopment,
-//            ValidateAudience = !isDevelopment,
-//            ValidateLifetime = true,
-//            ValidateIssuerSigningKey = true,
-//            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-//            ValidAudience = builder.Configuration["Jwt:Audience"],
-//            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
-//        };
-//    });
+builder.Services.AddAutoMapper(
+    (IMapperConfigurationExpression cfg) => { },
+    AppDomain.CurrentDomain.GetAssemblies()
+);
 
 var app = builder.Build();
 

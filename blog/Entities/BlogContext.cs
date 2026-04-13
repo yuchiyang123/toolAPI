@@ -9,7 +9,6 @@ namespace blog.Entities
     {
         public DbSet<Users> Users { get; set; }
 
-
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<Users>(entity =>
