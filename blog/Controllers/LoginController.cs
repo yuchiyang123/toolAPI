@@ -20,6 +20,7 @@ namespace blog.Controllers
             var valid = await service.ValidUserName(userDto.UserName);
             if (!valid)
                 return BadRequest();
+            await service.CreateUserAsync(userDto);
             return Ok();
         }
     }
