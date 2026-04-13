@@ -3,12 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace blog.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class LoginController : Controller
     {
-        [HttpPost()]
-        public async Task Login(LoginDto dto)
+        [HttpGet()]
+        public async Task<ActionResult> Login()
         {
-            
+            return Ok();
         }
     }
 }
