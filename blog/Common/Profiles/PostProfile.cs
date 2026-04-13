@@ -1,0 +1,17 @@
+﻿using AutoMapper;
+using blog.Dtos;
+using blog.Entities.Blog;
+
+namespace blog.Common.Profiles
+{
+    public class PostProfile : Profile
+    {
+        public PostProfile()
+        {
+            CreateMap<Posts, PostDto>()
+                .ForMember(dest => dest.CreateUserName, opt => opt.MapFrom(src => src.User.UserName));
+
+            CreateMap<CreatePostDto, PostDto>();
+        }            
+    }
+}

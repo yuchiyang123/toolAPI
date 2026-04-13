@@ -8,6 +8,7 @@ namespace blog.Entities
     public class BlogContext(DbContextOptions<BlogContext> options) : DbContext(options)
     {
         public DbSet<Users> Users { get; set; }
+        public DbSet<Posts> Posts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
