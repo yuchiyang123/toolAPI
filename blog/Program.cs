@@ -23,8 +23,19 @@ builder.Services.AddAutoMapper(
     (IMapperConfigurationExpression cfg) => { },
     AppDomain.CurrentDomain.GetAssemblies()
 );
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
 
 var app = builder.Build();
+
+app.UseCors("AllowAll");
 
 app.UseHttpsRedirection();
 
