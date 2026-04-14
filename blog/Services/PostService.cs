@@ -17,6 +17,11 @@ namespace blog.Services
                 .ProjectTo<PostDto>(mapper.ConfigurationProvider).ToPageResponseDto(requestDto.PageIndex, requestDto.PageSize);
         }
 
+        public async Task<PostDto> GetPostDetailAsync(int id)
+        {
+            return await context.Posts.Include(x => x.User).ProjectTo<PostDto>(mapper.ConfigurationProvider).FirstOrDefaultAsync(x => x.Id == id) ?? throw new Exception("找不到對應的文章");
+        }
+
         public async Task CreatePostAsync(CreatePostDto postDto)
         {
             var entity = mapper.Map<Posts>(postDto);

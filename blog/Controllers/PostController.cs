@@ -15,6 +15,12 @@ namespace blog.Controllers
             return await service.GetPostAsync(dto);
         }
 
+        [HttpGet("{id}")]
+        public async Task<PostDto> GetPostDetailAsync(int id)
+        {
+            return await service.GetPostDetailAsync(id);
+        }
+
         [HttpPost()]
         public async Task<ActionResult> CreatePostAsync([FromBody] CreatePostDto dto)
         {
