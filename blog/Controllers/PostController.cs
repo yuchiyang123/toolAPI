@@ -29,6 +29,20 @@ namespace blog.Controllers
             }
         }
 
+        [HttpPut()]
+        public async Task<ActionResult> UpdatePostAsync([FromBody] UpdatePostDto dto)
+        {
+            try
+            {
+                await service.UpdatePostAsync(dto);
+                return Ok();
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
+
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeletePostAsync(int id)
         {

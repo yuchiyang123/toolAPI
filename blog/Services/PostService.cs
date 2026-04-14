@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using AutoMapper;
+﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using blog.Common.Helper;
 using blog.Dtos;
@@ -22,6 +21,13 @@ namespace blog.Services
         {
             var entity = mapper.Map<Posts>(postDto);
             context.Posts.Add(entity);
+            await context.SaveChangesAsync();
+        }
+
+        public async Task UpdatePostAsync(UpdatePostDto updatePostDto)
+        {
+            var entity = await context.Posts.Where(x => x.Id == updatePostDto.Id).FirstOrDefaultAsync() ?? throw new Exception("找不到對應的文章");
+            mapper.Map(updatePostDto, entity);
             await context.SaveChangesAsync();
         }
 

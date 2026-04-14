@@ -20,6 +20,18 @@
         public bool HasNextPage { get; set; }
     }
 
+    public class PageQueryDto
+    {
+        /// <summary>
+        /// 每頁顯示數量
+        /// </summary>
+        public int PageSize { get; set; } = 10;
+        /// <summary>
+        /// 當前頁碼
+        /// </summary>
+        public required int PageIndex { get; set; }
+    }
+
     public class PageResponseDto<T> : PageDto
     {
         public List<T> Items { get; set; } = [];
