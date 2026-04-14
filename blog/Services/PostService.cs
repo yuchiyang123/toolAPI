@@ -14,7 +14,8 @@ namespace blog.Services
     {
         public async Task<PageResponseDto<PostDto>> GetPostAsync(PostRequestDto requestDto)
         {
-            return await context.Posts.Include(x => x.User).OrderByDescending(x => x.CreateDate).Page(requestDto.PageIndex).ProjectTo<PostDto>(mapper.ConfigurationProvider).ToPageResponseDto(requestDto.PageIndex);           
+            return await context.Posts.Include(x => x.User).OrderByDescending(x => x.CreateDate).Page(requestDto.PageIndex, requestDto.PageSize)
+                .ProjectTo<PostDto>(mapper.ConfigurationProvider).ToPageResponseDto(requestDto.PageIndex, requestDto.PageSize);
         }
 
         public async Task CreatePostAsync(CreatePostDto postDto)
