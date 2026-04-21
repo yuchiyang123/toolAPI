@@ -9,7 +9,7 @@ namespace blog.Services
 {
     public class AiService(BlogContext context, HttpClient httpClient)
     {
-        public async Task GetPostAISummary(int id)
+        public async Task<string> GetPostAISummary(int id)
         {
             var content = await context.Posts.Where(x => x.Id == id).Select(x => x.Content).FirstOrDefaultAsync() ?? throw new Exception("找不到對應文章");
 
@@ -22,6 +22,8 @@ namespace blog.Services
 
             var response = await httpClient.PostAsJsonAsync("http://localhost:11434/api/generate", payload);
             var result = await response.Content.ReadFromJsonAsync<OllamaResponse>();
+
+            return result?.Response ?? throw new Exception("Ai回傳為空");
         }
     }
 }

@@ -65,10 +65,10 @@ namespace blog.Controllers
         }
 
         [HttpGet("{id}/summary")]
-        public async Task<ActionResult> GetAiSummary(int id)
+        public async Task<ActionResult<string>> GetAiSummary(int id)
         {
-            await aiService.GetPostAISummary(id);
-            return Ok();
+            var content = await aiService.GetPostAISummary(id);
+            return Ok(content);
         }
     }
 }
