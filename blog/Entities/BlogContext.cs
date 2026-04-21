@@ -41,7 +41,7 @@ namespace blog.Entities
 
                 entity.Property(x => x.CreateDate).HasDefaultValueSql("GETDATE()");
 
-                entity.HasOne(e => e.Users).WithMany(e => e.PostsChangeRecords).HasForeignKey(e => e.CreateUserId).HasPrincipalKey(e => e.Id);
+                entity.HasOne(e => e.Users).WithMany(e => e.PostsChangeRecords).HasForeignKey(e => e.CreateUserId).HasPrincipalKey(e => e.Id).OnDelete(DeleteBehavior.NoAction);
                 entity.HasOne(e => e.Posts).WithMany(e => e.PostsChangeRecords).HasForeignKey(e => e.FK_PostsId).HasPrincipalKey(e => e.Id).OnDelete(DeleteBehavior.Cascade);
             });
         }
