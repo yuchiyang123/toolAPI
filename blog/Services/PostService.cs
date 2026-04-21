@@ -19,10 +19,10 @@ namespace blog.Services
                 .ProjectTo<PostDto>(mapper.ConfigurationProvider).ToPageResponseDto(requestDto.PageIndex, requestDto.PageSize);
         }
 
-        public async Task<PostDto> GetPostDetailAsync(int id)
+        public async Task<PostDetailDto> GetPostDetailAsync(int id)
         {
             return await context.Posts.Include(x => x.User).Include(x => x.PostsChangeRecords)
-                .ProjectTo<PostDto>(mapper.ConfigurationProvider).FirstOrDefaultAsync(x => x.Id == id) ?? throw new Exception("找不到對應的文章");
+                .ProjectTo<PostDetailDto>(mapper.ConfigurationProvider).FirstOrDefaultAsync(x => x.Id == id) ?? throw new Exception("找不到對應的文章");
         }
 
         public async Task CreatePostAsync(CreatePostDto postDto)

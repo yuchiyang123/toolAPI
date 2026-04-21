@@ -10,6 +10,10 @@ namespace blog.Dtos
         public required string View { get; set; }
         public required string CreateUserName { get; set; }
         public required DateTime CreateDate { get; set; }
+    }
+
+    public class PostDetailDto : PostDto
+    {
         public List<ChangeRecords>? ChangeRecords { get; set; }
     }
 
