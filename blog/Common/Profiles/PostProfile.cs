@@ -9,7 +9,10 @@ namespace blog.Common.Profiles
         public PostProfile()
         {
             CreateMap<Posts, PostDto>()                
-                .ForMember(dest => dest.CreateUserName, opt => opt.MapFrom(src => src.User.UserName));
+                .ForMember(dest => dest.CreateUserName, opt => opt.MapFrom(src => src.User.UserName))
+                .ForMember(dest => dest.ChangeRecords, opt => opt.MapFrom(src => src.PostsChangeRecords));
+
+            CreateMap<PostsChangeRecord, ChangeRecords>();
 
             CreateMap<CreatePostDto, Posts>();
         }

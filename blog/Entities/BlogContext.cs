@@ -9,6 +9,7 @@ namespace blog.Entities
     {
         public DbSet<Users> Users { get; set; }
         public DbSet<Posts> Posts { get; set; }
+        public DbSet<PostsChangeRecord> PostsChangeRecords { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -32,6 +33,16 @@ namespace blog.Entities
                 entity.Property(x => x.View).HasDefaultValue(0).IsRequired();
 
                 entity.HasOne(e => e.User).WithMany(e => e.Posts).HasForeignKey(e => e.CreateUserId).HasPrincipalKey(e => e.Id);
+            });
+
+            builder.Entity<PostsChangeRecord>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.CreateDate).HasDefaultValueSql("GETDATE()");
+
+                entity.HasOne(e => e.Users).WithMany(e => e.PostsChangeRecords).HasForeignKey(e => e.CreateUserId).HasPrincipalKey(e => e.Id);
+                entity.HasOne(e => e.Posts).WithMany(e => e.PostsChangeRecords).HasForeignKey(e => e.FK_PostsId).HasPrincipalKey(e => e.Id).OnDelete(DeleteBehavior.Cascade);
             });
         }
     }

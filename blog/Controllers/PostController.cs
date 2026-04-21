@@ -70,11 +70,5 @@ namespace blog.Controllers
             var content = await service.GetPostAISummary(id);
             return Ok(content);
         }
-
-        [HttpGet("changRecord")]
-        public async Task<ActionResult<string>> GetChangeRecordAsync([FromQuery]string oldContent, string newContent)
-        {
-            return Ok(await service.GetChangeRecords(oldContent, newContent));
-        }
     }
 }

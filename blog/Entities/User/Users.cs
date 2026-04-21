@@ -13,5 +13,6 @@ namespace blog.Entities.User
         public DateTime LogInDate { get; set; }
         public DateTime CreateDate { get; set; }
         public ICollection<Posts> Posts { get; set; }
+        public ICollection<PostsChangeRecord> PostsChangeRecords { get; set; }
     }
 }

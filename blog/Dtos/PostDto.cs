@@ -10,6 +10,13 @@ namespace blog.Dtos
         public required string View { get; set; }
         public required string CreateUserName { get; set; }
         public required DateTime CreateDate { get; set; }
+        public List<ChangeRecords>? ChangeRecords { get; set; }
+    }
+
+    public class ChangeRecords
+    { 
+        public DateOnly CreateDate { get; set; }
+        public required string ChangeRecord { get; set; }
     }
 
     public class PostRequestDto : PageQueryDto

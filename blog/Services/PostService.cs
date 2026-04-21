@@ -21,7 +21,8 @@ namespace blog.Services
 
         public async Task<PostDto> GetPostDetailAsync(int id)
         {
-            return await context.Posts.Include(x => x.User).ProjectTo<PostDto>(mapper.ConfigurationProvider).FirstOrDefaultAsync(x => x.Id == id) ?? throw new Exception("找不到對應的文章");
+            return await context.Posts.Include(x => x.User).Include(x => x.PostsChangeRecords)
+                .ProjectTo<PostDto>(mapper.ConfigurationProvider).FirstOrDefaultAsync(x => x.Id == id) ?? throw new Exception("找不到對應的文章");
         }
 
         public async Task CreatePostAsync(CreatePostDto postDto)
@@ -33,9 +34,25 @@ namespace blog.Services
 
         public async Task UpdatePostAsync(UpdatePostDto updatePostDto)
         {
-            var entity = await context.Posts.Where(x => x.Id == updatePostDto.Id).FirstOrDefaultAsync() ?? throw new Exception("找不到對應的文章");
-            mapper.Map(updatePostDto, entity);
-            await context.SaveChangesAsync();
+            try 
+            {
+                var entity = await context.Posts.Where(x => x.Id == updatePostDto.Id).FirstOrDefaultAsync() ?? throw new Exception("找不到對應的文章");
+                var changeRecord = await GetChangeRecords(entity.Content, updatePostDto.Content);
+                var changeRecordEntity = new PostsChangeRecord
+                {
+                    ChangeRecord = changeRecord,
+                    FK_PostsId = entity.Id,
+                    CreateDate = DateOnly.FromDateTime(DateTime.Now),
+                    CreateUserId = updatePostDto.CreateUserId,
+                };
+                context.PostsChangeRecords.Add(changeRecordEntity);
+                mapper.Map(updatePostDto, entity);
+                await context.SaveChangesAsync();
+            } 
+            catch
+            {
+                throw;
+            }
         }
 
         public async Task DeletePostAsync(int id)
@@ -64,7 +81,7 @@ namespace blog.Services
             return await ollamaHelper.GetOllamaResponse(dto);
         }
 
-        public async Task<string> GetChangeRecords(string oldContent, string newContent)
+        private async Task<string> GetChangeRecords(string oldContent, string newContent)
         {
             var dto = new AiDtoRequest
             {
