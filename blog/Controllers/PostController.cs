@@ -8,7 +8,7 @@ namespace blog.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PostController(PostService service, AiService aiService) : ControllerBase
+    public class PostController(PostService service) : ControllerBase
     {
         [HttpGet()]
         public async Task<PageResponseDto<PostDto>> GetPostAsync([FromQuery] PostRequestDto dto)
@@ -58,17 +58,23 @@ namespace blog.Controllers
         }
 
         [HttpPatch("view/{id}")]
-        public async Task<ActionResult> UpdatePostsView(int id)
+        public async Task<ActionResult> UpdatePostsViewAsync(int id)
         {
             await service.UpdatePostsViewAsync(id);
             return Ok();
         }
 
         [HttpGet("{id}/summary")]
-        public async Task<ActionResult<string>> GetAiSummary(int id)
+        public async Task<ActionResult<string>> GetAiSummaryAsync(int id)
         {
-            var content = await aiService.GetPostAISummary(id);
+            var content = await service.GetPostAISummary(id);
             return Ok(content);
+        }
+
+        [HttpGet("changRecord")]
+        public async Task<ActionResult<string>> GetChangeRecordAsync([FromQuery]string oldContent, string newContent)
+        {
+            return Ok(await service.GetChangeRecords(oldContent, newContent));
         }
     }
 }

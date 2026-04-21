@@ -14,4 +14,10 @@ namespace blog.Dtos.AI
         [JsonPropertyName("response")]
         public string Response { get; set; }
     }
+
+    public class AiDtoRequest
+    {
+        public string? Modeal { get; set; }
+        public required string Prompt { get; set; }
+    }
 }

@@ -1,7 +1,9 @@
-﻿using AutoMapper;
+﻿using System.Net.Http;
+using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using blog.Common.Helper;
 using blog.Dtos;
+using blog.Dtos.AI;
 using blog.Dtos.Page;
 using blog.Entities;
 using blog.Entities.Blog;
@@ -9,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace blog.Services
 {
-    public class PostService(IMapper mapper, BlogContext context)
+    public class PostService(IMapper mapper, BlogContext context, OllamaHelper ollamaHelper)
     {
         public async Task<PageResponseDto<PostDto>> GetPostAsync(PostRequestDto requestDto)
         {
@@ -48,6 +50,28 @@ namespace blog.Services
             var entity = await context.Posts.Where(x => x.Id == id).FirstOrDefaultAsync() ?? throw new Exception("找不到對應的文章");
             entity.View += 1;
             await context.SaveChangesAsync();
+        }
+
+        public async Task<string> GetPostAISummary(int id)
+        {
+            var content = await context.Posts.Where(x => x.Id == id).Select(x => x.Content).FirstOrDefaultAsync() ?? throw new Exception("找不到對應文章");
+
+            var dto = new AiDtoRequest
+            {
+                Prompt = $"用繁體中文輸出詳細的摘要，只輸出摘要：\n{content}"
+            };
+
+            return await ollamaHelper.GetOllamaResponse(dto);
+        }
+
+        public async Task<string> GetChangeRecords(string oldContent, string newContent)
+        {
+            var dto = new AiDtoRequest
+            {
+                Prompt = $"這是舊文章內容：{oldContent}，這是修改過後的文章內容：{newContent}，請比較後回傳文章的異動說明，請勿添加任何的表情符號，明確表示修改了什麼以及新增異動了什麼"
+            };
+
+            return await ollamaHelper.GetOllamaResponse(dto);
         }
     }
 }
