@@ -7,6 +7,7 @@ namespace blog.Dtos
         public int Id { get; set; }
         public required string Title { get; set; }
         public required string Content { get; set; }
+        public required string View { get; set; }
         public required string CreateUserName { get; set; }
         public required DateTime CreateDate { get; set; }
     }

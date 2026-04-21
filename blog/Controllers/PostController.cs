@@ -1,6 +1,7 @@
 ﻿using blog.Dtos;
 using blog.Dtos.Page;
 using blog.Services;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace blog.Controllers
@@ -53,6 +54,13 @@ namespace blog.Controllers
         public async Task<ActionResult> DeletePostAsync(int id)
         {
             await service.DeletePostAsync(id);
+            return Ok();
+        }
+
+        [HttpPatch("view/{id}")]
+        public async Task<ActionResult> UpdatePostsView(int id)
+        {
+            await service.UpdatePostsViewAsync(id);
             return Ok();
         }
     }

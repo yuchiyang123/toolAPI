@@ -29,6 +29,7 @@ namespace blog.Entities
                 entity.Property(x => x.Title).HasMaxLength(100).IsRequired();
                 entity.Property(x => x.Content).IsRequired();
                 entity.Property(x => x.CreateDate).HasDefaultValueSql("GETDATE()");
+                entity.Property(x => x.View).HasDefaultValue(0).IsRequired();
 
                 entity.HasOne(e => e.User).WithMany(e => e.Posts).HasForeignKey(e => e.CreateUserId).HasPrincipalKey(e => e.Id);
             });

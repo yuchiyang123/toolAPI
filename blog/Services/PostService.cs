@@ -42,5 +42,12 @@ namespace blog.Services
             context.Posts.Remove(entity);
             await context.SaveChangesAsync();
         }
+
+        public async Task UpdatePostsViewAsync(int id)
+        {
+            var entity = await context.Posts.Where(x => x.Id == id).FirstOrDefaultAsync() ?? throw new Exception("找不到對應的文章");
+            entity.View += 1;
+            await context.SaveChangesAsync();
+        }
     }
 }
