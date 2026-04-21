@@ -8,7 +8,7 @@ namespace blog.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PostController(PostService service) : ControllerBase
+    public class PostController(PostService service, AiService aiService) : ControllerBase
     {
         [HttpGet()]
         public async Task<PageResponseDto<PostDto>> GetPostAsync([FromQuery] PostRequestDto dto)
@@ -61,6 +61,13 @@ namespace blog.Controllers
         public async Task<ActionResult> UpdatePostsView(int id)
         {
             await service.UpdatePostsViewAsync(id);
+            return Ok();
+        }
+
+        [HttpGet("{id}/summary")]
+        public async Task<ActionResult> GetAiSummary(int id)
+        {
+            await aiService.GetPostAISummary(id);
             return Ok();
         }
     }
