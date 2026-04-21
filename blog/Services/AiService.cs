@@ -16,7 +16,7 @@ namespace blog.Services
             var payload = new AIDto
             {
                 Model = "gemma4:e4b",
-                Prompt = $"用繁體中文輸出100字以內摘要，只輸出摘要：\n{content}",
+                Prompt = $"用繁體中文輸出詳細的摘要，只輸出摘要：\n{content}",
                 Stream = false,
             };
 
