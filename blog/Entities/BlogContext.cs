@@ -1,7 +1,6 @@
 ﻿using blog.Entities.Blog;
 using blog.Entities.User;
 using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace blog.Entities
 {
@@ -10,6 +9,7 @@ namespace blog.Entities
         public DbSet<Users> Users { get; set; }
         public DbSet<Posts> Posts { get; set; }
         public DbSet<PostsChangeRecord> PostsChangeRecords { get; set; }
+        public DbSet<PostsTag> PostsTags { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -43,6 +43,15 @@ namespace blog.Entities
 
                 entity.HasOne(e => e.Users).WithMany(e => e.PostsChangeRecords).HasForeignKey(e => e.CreateUserId).HasPrincipalKey(e => e.Id).OnDelete(DeleteBehavior.NoAction);
                 entity.HasOne(e => e.Posts).WithMany(e => e.PostsChangeRecords).HasForeignKey(e => e.FK_PostsId).HasPrincipalKey(e => e.Id).OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<PostsTag>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.Tag).HasMaxLength(50).IsRequired();
+
+                entity.HasOne(e => e.Posts).WithMany(e => e.PostsTags).HasForeignKey(e => e.FK_PostsId).HasPrincipalKey(e => e.Id).OnDelete(DeleteBehavior.Cascade);
             });
         }
     }

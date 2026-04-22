@@ -15,28 +15,52 @@ namespace blog.Services
     {
         public async Task<PageResponseDto<PostDto>> GetPostAsync(PostRequestDto requestDto)
         {
-            return await context.Posts.Include(x => x.User).OrderByDescending(x => x.CreateDate).Page(requestDto.PageIndex, requestDto.PageSize)
+            return await context.Posts.Include(x => x.PostsTags).Include(x => x.User).OrderByDescending(x => x.CreateDate).Page(requestDto.PageIndex, requestDto.PageSize)
                 .ProjectTo<PostDto>(mapper.ConfigurationProvider).ToPageResponseDto(requestDto.PageIndex, requestDto.PageSize);
         }
 
         public async Task<PostDetailDto> GetPostDetailAsync(int id)
         {
-            return await context.Posts.Include(x => x.User).Include(x => x.PostsChangeRecords)
+            return await context.Posts.Include(x => x.PostsTags).Include(x => x.User).Include(x => x.PostsChangeRecords)
                 .ProjectTo<PostDetailDto>(mapper.ConfigurationProvider).FirstOrDefaultAsync(x => x.Id == id) ?? throw new Exception("找不到對應的文章");
         }
 
         public async Task CreatePostAsync(CreatePostDto postDto)
         {
-            var entity = mapper.Map<Posts>(postDto);
-            context.Posts.Add(entity);
-            await context.SaveChangesAsync();
+            using var transaction = await context.Database.BeginTransactionAsync();
+            try 
+            {
+                var entity = mapper.Map<Posts>(postDto);
+                context.Posts.Add(entity);
+                await context.SaveChangesAsync();
+                var entityTag = new List<PostsTag>();
+                if (postDto.Tags != null && postDto.Tags.Count != 0)
+                {
+                    foreach (var tag in postDto.Tags)
+                    {
+                        entityTag.Add(new PostsTag
+                        {
+                            FK_PostsId = entity.Id,
+                            Tag = tag,
+                        });
+                    }
+                }
+                context.PostsTags.AddRange(entityTag);
+                await context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch 
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task UpdatePostAsync(UpdatePostDto updatePostDto)
         {
             try 
             {
-                var entity = await context.Posts.Where(x => x.Id == updatePostDto.Id).FirstOrDefaultAsync() ?? throw new Exception("找不到對應的文章");
+                var entity = await context.Posts.Include(x => x.PostsTags).Where(x => x.Id == updatePostDto.Id).FirstOrDefaultAsync() ?? throw new Exception("找不到對應的文章");
                 var changeRecord = await GetChangeRecords(entity.Content, updatePostDto.Content);
                 var changeRecordEntity = new PostsChangeRecord
                 {
@@ -46,6 +70,27 @@ namespace blog.Services
                     CreateUserId = updatePostDto.CreateUserId,
                 };
                 context.PostsChangeRecords.Add(changeRecordEntity);
+
+                if (entity.PostsTags != null)
+                {
+                    context.PostsTags.RemoveRange(entity.PostsTags);
+                    if (updatePostDto.Tags != null && updatePostDto.Tags.Count != 0)
+                    {
+                        var tags = new List<PostsTag>();
+                        foreach (var tag in updatePostDto.Tags)
+                        {
+                            tags.Add(new PostsTag
+                            {
+                                FK_PostsId = updatePostDto.Id,
+                                Tag = tag,
+                            });
+                        }
+
+                        context.PostsTags.AddRange(tags);
+                        await context.SaveChangesAsync();
+                    }                    
+                }
+
                 mapper.Map(updatePostDto, entity);
                 await context.SaveChangesAsync();
             } 

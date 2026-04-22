@@ -9,6 +9,7 @@ namespace blog.Dtos
         public required string Content { get; set; }
         public required string View { get; set; }
         public required string CreateUserName { get; set; }
+        public List<string>? Tags { get; set; }
         public required DateTime CreateDate { get; set; }
     }
 
@@ -33,6 +34,7 @@ namespace blog.Dtos
         public required string Title { get; set; }
         public required string Content { get; set; }
         public required int CreateUserId { get; set; }
+        public List<string>? Tags { get; set; }
     }
 
     public class UpdatePostDto : CreatePostDto
