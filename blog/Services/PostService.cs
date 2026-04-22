@@ -144,5 +144,11 @@ namespace blog.Services
 
             return await ollamaHelper.GetOllamaResponse(dto);
         }
+
+        public async Task<string> GetSql()
+        {
+            var entity = context.Posts.Where(x => x.CreateUserId == 2).ToQueryString();
+            return entity;
+        }
     }
 }

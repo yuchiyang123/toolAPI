@@ -75,5 +75,11 @@ namespace blog.Controllers
         {
             return Ok(await service.GetTags());
         }
+
+        [HttpGet("sql")]
+        public ActionResult<string> GetSql()
+        {
+            return Ok(service.GetSql());
+        }
     }
 }
