@@ -62,7 +62,8 @@ namespace blog.Services
             try
             {
                 var entity = await context.Posts.Include(x => x.PostsTags).Where(x => x.Id == updatePostDto.Id).FirstOrDefaultAsync() ?? throw new Exception("找不到對應的文章");
-                var changeRecord = await GetChangeRecords(entity.Title, updatePostDto.Title, entity.Content, updatePostDto.Content, [.. entity.PostsTags.Select(x => x.Tag)], updatePostDto?.Tags);
+                var changeRecord = await GetChangeRecords(entity.Title, updatePostDto.Title, entity.Content, updatePostDto.Content, 
+                    string.Join(",", entity.PostsTags.Select(x => x.Tag) ?? []), string.Join(",", updatePostDto.Tags ?? []));
                 var changeRecordEntity = new PostsChangeRecord
                 {
                     ChangeRecord = changeRecord,
@@ -134,11 +135,11 @@ namespace blog.Services
             return await context.PostsTags.Select(x => x.Tag).Distinct().ToListAsync();
         }
 
-        private async Task<string> GetChangeRecords(string oldTitle, string newTitle, string oldContent, string newContent, List<string>? oldTags, List<string>? newTags)
+        private async Task<string> GetChangeRecords(string oldTitle, string newTitle, string oldContent, string newContent, string? oldTags, string? newTags)
         {
             var dto = new AiDtoRequest
             {
-                Prompt = $"這是舊文章標題：{oldTitle}，這是修改過後的文章標題：{newTitle}，這是舊文章內容：{oldContent}，這是修改過後的文章標籤：{newContent}，這是舊文章標籤：{oldTags}，這是修改過後的文章內容：{newTags}，請比較後回傳文章的異動說明，請勿添加任何的表情符號，明確表示修改了什麼以及新增異動了什麼"
+                Prompt = $"這是舊文章標題：{oldTitle}，這是修改過後的文章標題：{newTitle}，這是舊文章內容：{oldContent}，這是修改過後的文章內容：{newContent}，這是舊文章標籤：{oldTags}，這是修改過後的文章標籤：{newTags}，請比較後回傳文章的異動說明，請勿添加任何的表情符號，明確表示修改了什麼以及新增異動了什麼"
             };
 
             return await ollamaHelper.GetOllamaResponse(dto);
