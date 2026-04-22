@@ -1,7 +1,6 @@
 ﻿using blog.Dtos;
 using blog.Dtos.Page;
 using blog.Services;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace blog.Controllers
@@ -69,6 +68,12 @@ namespace blog.Controllers
         {
             var content = await service.GetPostAISummary(id);
             return Ok(content);
+        }
+
+        [HttpGet("tags")]
+        public async Task<ActionResult<List<string>>> GetTags()
+        {
+            return Ok(await service.GetTags());
         }
     }
 }

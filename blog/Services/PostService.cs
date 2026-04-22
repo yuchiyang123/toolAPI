@@ -58,6 +58,7 @@ namespace blog.Services
 
         public async Task UpdatePostAsync(UpdatePostDto updatePostDto)
         {
+            using var transaction = await context.Database.BeginTransactionAsync();
             try 
             {
                 var entity = await context.Posts.Include(x => x.PostsTags).Where(x => x.Id == updatePostDto.Id).FirstOrDefaultAsync() ?? throw new Exception("找不到對應的文章");
@@ -93,9 +94,11 @@ namespace blog.Services
 
                 mapper.Map(updatePostDto, entity);
                 await context.SaveChangesAsync();
+                await transaction.CommitAsync();
             } 
             catch
             {
+                await transaction.RollbackAsync();
                 throw;
             }
         }
@@ -126,6 +129,11 @@ namespace blog.Services
             return await ollamaHelper.GetOllamaResponse(dto);
         }
 
+        public async Task<List<string>> GetTags() 
+        {
+            return await context.PostsTags.Select(x => x.Tag).Distinct().ToListAsync();
+        }
+
         private async Task<string> GetChangeRecords(string oldContent, string newContent)
         {
             var dto = new AiDtoRequest
@@ -134,6 +142,6 @@ namespace blog.Services
             };
 
             return await ollamaHelper.GetOllamaResponse(dto);
-        }
+        }        
     }
 }
