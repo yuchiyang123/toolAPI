@@ -1,20 +1,27 @@
 ﻿using blog.Dtos;
 using blog.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace blog.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LoginController(UserService service) : Controller
+    public class LoginController(UserService service, JwtService jwtService) : Controller
     {
-        [HttpGet()]
-        public async Task<ActionResult> Login()
+        [HttpPost()]
+        public async Task<ActionResult<string>> Login([FromBody] LoginDto dto)
         {
-            return Ok();
+            if (await service.LoginAsync(dto.UserName, dto.Password))
+            {
+                string token = jwtService.GenerateeToken(dto.UserName);
+                return Ok(token);
+            }
+            return BadRequest();
         }
 
-        [HttpPost()]
+        [HttpPost("Create")]
+        [Authorize]
         public async Task<ActionResult> Create(CreateUserDto userDto)
         {
             var valid = await service.ValidUserName(userDto.UserName);

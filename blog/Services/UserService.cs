@@ -20,5 +20,10 @@ namespace blog.Services
             var isRepeat = await context.Users.AnyAsync(x => x.UserName == userName);
             return isRepeat ? false : true;
         }
+
+        public async Task<bool> LoginAsync(string userName, string password)
+        {
+            return await context.Users.AnyAsync(x => x.UserName == userName && x.Password == password);
+        }
     }
 }
