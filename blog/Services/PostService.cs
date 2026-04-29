@@ -15,9 +15,9 @@ namespace blog.Services
     {
         public async Task<PageResponseDto<PostDto>> GetPostAsync(PostRequestDto requestDto)
         {
-            var query = context.Posts.Include(x => x.PostsTags).Include(x => x.User).AsQueryable();
+            var query = context.Posts.Include(x => x.PostsTagsMapping).ThenInclude(x => x.PostsTag).Include(x => x.User).AsQueryable();
             if (requestDto.TagIds.Count != 0)
-                query = query.Where(x => x.PostsTags.Any(y => requestDto.TagIds.Contains(y.Id)));
+                query = query.Where(x => x.PostsTagsMapping.Any(y => requestDto.TagIds.Contains(y.Id)));
             if (!string.IsNullOrEmpty(requestDto.Title))
                 query = query.Where(x => x.Title.Contains(requestDto.Title));
             return await query.Page(requestDto.PageIndex, requestDto.PageSize)
@@ -26,7 +26,7 @@ namespace blog.Services
 
         public async Task<PostDetailDto> GetPostDetailAsync(int id)
         {
-            return await context.Posts.Include(x => x.PostsTags).Include(x => x.User).Include(x => x.PostsChangeRecords)
+            return await context.Posts.Include(x => x.PostsTagsMapping).ThenInclude(x => x.PostsTag).Include(x => x.User).Include(x => x.PostsChangeRecords)
                 .ProjectTo<PostDetailDto>(mapper.ConfigurationProvider).FirstOrDefaultAsync(x => x.Id == id) ?? throw new Exception("找不到對應的文章");
         }
 
@@ -38,20 +38,17 @@ namespace blog.Services
                 var entity = mapper.Map<Posts>(postDto);
                 context.Posts.Add(entity);
                 await context.SaveChangesAsync();
-                var entityTag = new List<PostsTag>();
-                if (postDto.Tags != null && postDto.Tags.Count != 0)
+                if (postDto.Tags != null && postDto.Tags.Count > 0)
                 {
-                    foreach (var tag in postDto.Tags)
-                    {
-                        entityTag.Add(new PostsTag
-                        {
-                            FK_PostsId = entity.Id,
-                            Tag = tag,
-                        });
-                    }
+                    var tag = ConvertPostsTags(postDto.Tags);
+                    context.PostsTags.AddRange(tag);
+                    await context.SaveChangesAsync();
+
+                    var tagsIds = tag.Select(x => x.Id).ToList();
+                    var tagsMapping = ConvertPostTagMapping(entity.Id, tagsIds);
+                    context.PostsTagsMapping.AddRange(tagsMapping);
+                    await context.SaveChangesAsync();
                 }
-                context.PostsTags.AddRange(entityTag);
-                await context.SaveChangesAsync();
                 await transaction.CommitAsync();
             }
             catch
@@ -66,9 +63,9 @@ namespace blog.Services
             using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
-                var entity = await context.Posts.Include(x => x.PostsTags).Where(x => x.Id == updatePostDto.Id).FirstOrDefaultAsync() ?? throw new Exception("找不到對應的文章");
+                var entity = await context.Posts.Include(x => x.PostsTagsMapping).ThenInclude(x => x.PostsTag).Where(x => x.Id == updatePostDto.Id).FirstOrDefaultAsync() ?? throw new Exception("找不到對應的文章");
                 var changeRecord = await GetChangeRecords(entity.Title, updatePostDto.Title, entity.Content, updatePostDto.Content,
-                    string.Join(",", entity.PostsTags.Select(x => x.Tag) ?? []), string.Join(",", updatePostDto.Tags ?? []));
+                    string.Join(",", entity.PostsTagsMapping.Select(x => x.PostsTag.Tag) ?? []), string.Join(",", updatePostDto.Tags ?? []));
                 var changeRecordEntity = new PostsChangeRecord
                 {
                     ChangeRecord = changeRecord,
@@ -78,22 +75,21 @@ namespace blog.Services
                 };
                 context.PostsChangeRecords.Add(changeRecordEntity);
 
-                if (entity.PostsTags != null)
+                if (entity.PostsTagsMapping != null)
                 {
-                    context.PostsTags.RemoveRange(entity.PostsTags);
-                    if (updatePostDto.Tags != null && updatePostDto.Tags.Count != 0)
-                    {
-                        var tags = new List<PostsTag>();
-                        foreach (var tag in updatePostDto.Tags)
-                        {
-                            tags.Add(new PostsTag
-                            {
-                                FK_PostsId = updatePostDto.Id,
-                                Tag = tag,
-                            });
-                        }
+                    context.PostsTags.RemoveRange(entity.PostsTagsMapping.Select(x => x.PostsTag));
+                    context.PostsTagsMapping.RemoveRange(entity.PostsTagsMapping);
 
+                    if (updatePostDto.Tags != null && updatePostDto.Tags.Count > 0)
+                    {
+                        var tags = ConvertPostsTags(updatePostDto.Tags);
                         context.PostsTags.AddRange(tags);
+                        await context.SaveChangesAsync();
+
+                        var tagsIds = tags.Select(x => x.Id).ToList();
+                        var tagsMapping = ConvertPostTagMapping(updatePostDto.Id, tagsIds);
+
+                        context.PostsTagsMapping.AddRange(tagsMapping);
                         await context.SaveChangesAsync();
                     }
                 }
@@ -137,7 +133,34 @@ namespace blog.Services
 
         public async Task<List<string>> GetTags()
         {
-            return await context.PostsTags.Select(x => x.Tag).Distinct().ToListAsync();
+            return await context.PostsTagsMapping.Select(x => x.PostsTag.Tag).Distinct().ToListAsync();
+        }
+
+        private List<PostsTag> ConvertPostsTags(List<string> tags)
+        {
+            var tagsEntity = new List<PostsTag>();
+            foreach (var tag in tags)
+            {
+                tagsEntity.Add(new PostsTag
+                {
+                    Tag = tag
+                });
+            }
+            return tagsEntity;
+        }
+
+        private List<PostsTagMapping> ConvertPostTagMapping(int postId, List<int> tagsIds)
+        {
+            var postsTagMapping = new List<PostsTagMapping>();
+            foreach (var tag in tagsIds)
+            {
+                postsTagMapping.Add(new PostsTagMapping
+                {
+                    FK_PostsId = postId,
+                    FK_TagId = tag
+                });
+            }
+            return postsTagMapping;
         }
 
         private async Task<string> GetChangeRecords(string oldTitle, string newTitle, string oldContent, string newContent, string? oldTags, string? newTags)

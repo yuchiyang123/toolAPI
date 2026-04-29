@@ -9,6 +9,7 @@ namespace blog.Entities
         public DbSet<Users> Users { get; set; }
         public DbSet<Posts> Posts { get; set; }
         public DbSet<PostsChangeRecord> PostsChangeRecords { get; set; }
+        public DbSet<PostsTagMapping> PostsTagsMapping { get; set; }
         public DbSet<PostsTag> PostsTags { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -45,13 +46,20 @@ namespace blog.Entities
                 entity.HasOne(e => e.Posts).WithMany(e => e.PostsChangeRecords).HasForeignKey(e => e.FK_PostsId).HasPrincipalKey(e => e.Id).OnDelete(DeleteBehavior.Cascade);
             });
 
+            builder.Entity<PostsTagMapping>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.HasOne(e => e.Posts).WithMany(e => e.PostsTagsMapping).HasForeignKey(e => e.FK_PostsId).HasPrincipalKey(e => e.Id).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.PostsTag).WithMany(e => e.PostsTagMapping).HasForeignKey(e => e.FK_TagId).HasPrincipalKey(e => e.Id).OnDelete(DeleteBehavior.Cascade);
+            });
+
             builder.Entity<PostsTag>(entity =>
             {
                 entity.HasKey(x => x.Id);
 
                 entity.Property(x => x.Tag).HasMaxLength(50).IsRequired();
-
-                entity.HasOne(e => e.Posts).WithMany(e => e.PostsTags).HasForeignKey(e => e.FK_PostsId).HasPrincipalKey(e => e.Id).OnDelete(DeleteBehavior.Cascade);
+                entity.Property(x => x.CreateDate).HasDefaultValueSql("GETDATE()");
             });
         }
     }

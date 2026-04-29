@@ -14,6 +14,6 @@ namespace blog.Entities.Blog
         public required int CreateUserId { get; set; }
         public Users User { get; set; }
         public ICollection<PostsChangeRecord> PostsChangeRecords { get; set; }
-        public ICollection<PostsTag> PostsTags { get; set; }
+        public ICollection<PostsTagMapping> PostsTagsMapping { get; set; }
     }
 }
