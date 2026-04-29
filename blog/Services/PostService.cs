@@ -15,8 +15,13 @@ namespace blog.Services
     {
         public async Task<PageResponseDto<PostDto>> GetPostAsync(PostRequestDto requestDto)
         {
-            return await context.Posts.Include(x => x.PostsTags).Include(x => x.User).OrderByDescending(x => x.CreateDate).Page(requestDto.PageIndex, requestDto.PageSize)
-                .ProjectTo<PostDto>(mapper.ConfigurationProvider).ToPageResponseDto(requestDto.PageIndex, requestDto.PageSize);
+            var query = context.Posts.Include(x => x.PostsTags).Include(x => x.User).AsQueryable();
+            if (requestDto.TagIds.Count != 0)
+                query = query.Where(x => x.PostsTags.Any(y => requestDto.TagIds.Contains(y.Id)));
+            if (!string.IsNullOrEmpty(requestDto.Title))
+                query = query.Where(x => x.Title.Contains(requestDto.Title));
+            return await query.Page(requestDto.PageIndex, requestDto.PageSize)
+                    .ProjectTo<PostDto>(mapper.ConfigurationProvider).ToPageResponseDto(requestDto.PageIndex, requestDto.PageSize);
         }
 
         public async Task<PostDetailDto> GetPostDetailAsync(int id)
@@ -62,7 +67,7 @@ namespace blog.Services
             try
             {
                 var entity = await context.Posts.Include(x => x.PostsTags).Where(x => x.Id == updatePostDto.Id).FirstOrDefaultAsync() ?? throw new Exception("找不到對應的文章");
-                var changeRecord = await GetChangeRecords(entity.Title, updatePostDto.Title, entity.Content, updatePostDto.Content, 
+                var changeRecord = await GetChangeRecords(entity.Title, updatePostDto.Title, entity.Content, updatePostDto.Content,
                     string.Join(",", entity.PostsTags.Select(x => x.Tag) ?? []), string.Join(",", updatePostDto.Tags ?? []));
                 var changeRecordEntity = new PostsChangeRecord
                 {

@@ -26,6 +26,7 @@ namespace blog.Dtos
 
     public class PostRequestDto : PageQueryDto
     {
+        public List<int> TagIds { get; set; } = [];
         public string? Title { get; set; }
     }
 
