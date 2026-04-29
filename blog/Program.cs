@@ -45,7 +45,7 @@ builder.Services.AddDbContext<BlogContext>(options =>
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<PostService>();
 builder.Services.AddHttpClient<OllamaHelper>();
-builder.Services.AddHttpClient<JwtService>();
+builder.Services.AddScoped<JwtService>();
 
 builder.Services.AddAutoMapper(
     (IMapperConfigurationExpression cfg) => { },
