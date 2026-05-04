@@ -15,12 +15,12 @@ namespace blog.Services
     {
         public async Task<PageResponseDto<PostDto>> GetPostAsync(PostRequestDto requestDto)
         {
-            var query = context.Posts.Include(x => x.PostsTagsMapping).ThenInclude(x => x.PostsTag).Include(x => x.User).AsQueryable();
+            var query = context.Posts.Include(x => x.PostsTagsMapping).ThenInclude(x => x.PostsTag).Include(x => x.User).OrderByDescending(x => x.CreateDate).AsQueryable();
             if (requestDto.TagIds.Count != 0)
                 query = query.Where(x => x.PostsTagsMapping.Any(y => requestDto.TagIds.Contains(y.Id)));
             if (!string.IsNullOrEmpty(requestDto.Title))
                 query = query.Where(x => x.Title.Contains(requestDto.Title));
-            return await query.Page(requestDto.PageIndex, requestDto.PageSize)
+            return await query
                     .ProjectTo<PostDto>(mapper.ConfigurationProvider).ToPageResponseDto(requestDto.PageIndex, requestDto.PageSize);
         }
 
