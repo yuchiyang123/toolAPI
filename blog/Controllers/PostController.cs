@@ -1,6 +1,7 @@
 ﻿using blog.Dtos;
 using blog.Dtos.Page;
 using blog.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace blog.Controllers
@@ -22,6 +23,7 @@ namespace blog.Controllers
         }
 
         [HttpPost()]
+        [Authorize]
         public async Task<ActionResult> CreatePostAsync([FromBody] CreatePostDto dto)
         {
             try
@@ -36,6 +38,7 @@ namespace blog.Controllers
         }
 
         [HttpPut()]
+        [Authorize]
         public async Task<ActionResult> UpdatePostAsync([FromBody] UpdatePostDto dto)
         {
             try
@@ -50,6 +53,7 @@ namespace blog.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<ActionResult> DeletePostAsync(int id)
         {
             await service.DeletePostAsync(id);
