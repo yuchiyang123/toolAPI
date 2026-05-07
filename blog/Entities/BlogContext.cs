@@ -1,4 +1,5 @@
 ﻿using blog.Entities.Blog;
+using blog.Entities.Recipes;
 using blog.Entities.User;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +12,20 @@ namespace blog.Entities
         public DbSet<PostsChangeRecord> PostsChangeRecords { get; set; }
         public DbSet<PostsTagMapping> PostsTagsMapping { get; set; }
         public DbSet<PostsTag> PostsTags { get; set; }
+
+        #region 食譜
+        public DbSet<Recipe> Recipe { get; set; }
+        public DbSet<RecipeDetail> RecipeDetails { get; set; }
+        public DbSet<RecipeDetailMapping> RecipeDetailsMapping { get; set; }
+        public DbSet<RecipeIngredients> RecipeIngredients { get; set; }
+        public DbSet<RecipeIngredientsMapping> RecipeIngredientsMappings { get; set; }
+        public DbSet<RecipeIngredientsDetail> RecipeIngredientsDetails { get; set; }
+        public DbSet<RecipeIngredientsDetailMapping> RecipeIngredientsDetailMappings { get; set; }
+        public DbSet<RecipeStep> RecipeSteps { get; set; }
+        public DbSet<RecipeStepMapping> RecipeStepMappings { get; set; }
+        public DbSet<RecipeTag> RecipeTags { get; set; }
+        public DbSet<RecipeTagMapping> RecipeTagMappings { get; set; }
+        #endregion
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -60,6 +75,110 @@ namespace blog.Entities
 
                 entity.Property(x => x.Tag).HasMaxLength(50).IsRequired();
                 entity.Property(x => x.CreateDate).HasDefaultValueSql("GETDATE()");
+            });
+
+            builder.Entity<Recipe>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.RecipeName).HasMaxLength(100).IsRequired();
+                entity.Property(x => x.Amount).IsRequired();
+                entity.Property(x => x.CookingTime).IsRequired();
+                entity.Property(x => x.Complexity).IsRequired();
+                entity.Property(x => x.Description).HasMaxLength(500);
+                entity.Property(x => x.UpdateDate).HasDefaultValueSql("GETDATE()");
+                entity.Property(x => x.CreateDate).HasDefaultValueSql("GETDATE()");
+            });
+
+            builder.Entity<RecipeDetail>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.Content).IsRequired();
+            });
+
+            builder.Entity<RecipeDetailMapping>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.RecipeId).IsRequired();
+                entity.Property(x => x.RecipeDetailId).IsRequired();
+
+                entity.HasOne(e => e.Recipe).WithMany(e => e.RecipeDetailMappings).HasForeignKey(e => e.RecipeId).HasPrincipalKey(e => e.Id).OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<RecipeIngredients>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.IngredientsGroupName).HasMaxLength(200).IsRequired();
+            });
+
+            builder.Entity<RecipeIngredientsMapping>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.RecipeId).IsRequired();
+                entity.Property(x => x.RecipeIngredientsId).IsRequired();
+
+                entity.HasOne(e => e.Recipe).WithMany(e => e.RecipeIngredientsMappings).HasForeignKey(e => e.RecipeId).HasPrincipalKey(e => e.Id).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.RecipeIngredients).WithMany(e => e.RecipeIngredientsMappings).HasForeignKey(e => e.RecipeIngredientsId).HasPrincipalKey(e => e.Id).OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<RecipeIngredientsDetail>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.IngredientsName).HasMaxLength(50).IsRequired();
+                entity.Property(x => x.Amount).HasMaxLength(20).IsRequired();                
+            });
+
+            builder.Entity<RecipeIngredientsDetailMapping>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.RecipeIngredientId).IsRequired();
+                entity.Property(x => x.RecipeIngredientDetailId).IsRequired();
+
+                entity.HasOne(e => e.RecipeIngredient).WithMany(e => e.RecipeIngredientsDetailMappings).HasForeignKey(e => e.RecipeIngredientId).HasPrincipalKey(e => e.Id).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.RecipeIngredientsDetail).WithMany(e => e.RecipeIngredientsDetailMappings).HasForeignKey(e => e.RecipeIngredientDetailId).HasPrincipalKey(e => e.Id).OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<RecipeStep>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.Step).IsRequired();
+                entity.Property(x => x.Description).HasMaxLength(1500).IsRequired();
+            });
+
+            builder.Entity<RecipeStepMapping>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.RecipeId).IsRequired();
+                entity.Property(x => x.RecipeStepId).IsRequired();
+
+                entity.HasOne(e => e.RecipeStep).WithMany(e => e.RecipeStepMappings).HasForeignKey(e => e.RecipeStepId).HasPrincipalKey(e => e.Id).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.Recipe).WithMany(e => e.RecipeStepMappings).HasForeignKey(e => e.RecipeId).HasPrincipalKey(e => e.Id).OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<RecipeTag>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.Tag).HasMaxLength(50).IsRequired();
+            });
+
+            builder.Entity<RecipeTagMapping>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.RecipeId).IsRequired();
+                entity.Property(x => x.RecipeTagId).IsRequired();
+
+                entity.HasOne(e => e.RecipeTag).WithMany(e => e.RecipeTagMappings).HasForeignKey(e => e.RecipeTagId).HasPrincipalKey(e => e.Id).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.Recipe).WithMany(e => e.RecipeTagMappings).HasForeignKey(e => e.RecipeId).HasPrincipalKey(e => e.Id).OnDelete(DeleteBehavior.Cascade);
             });
         }
     }
