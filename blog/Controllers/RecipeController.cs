@@ -14,7 +14,7 @@ namespace blog.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet()]
-        public async Task<PageResponseDto<RecipeResponse>> GetRecipe(RecipeQueryDto queryDto)
+        public async Task<PageResponseDto<RecipeResponse>> GetRecipe([FromQuery]RecipeQueryDto queryDto)
         {
             return await service.GetRecipe(queryDto);
         }
