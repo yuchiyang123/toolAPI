@@ -4,6 +4,7 @@ using blog.Common.Helper;
 using blog.Dtos;
 using blog.Dtos.Page;
 using blog.Entities;
+using blog.Entities.Recipes;
 using Microsoft.EntityFrameworkCore;
 
 namespace blog.Services
@@ -18,6 +19,58 @@ namespace blog.Services
         public async Task<RecipeDetailResponse> GetRecipeDetail(int id)
         {
             return await context.Recipe.ProjectTo<RecipeDetailResponse>(mapper.ConfigurationProvider).FirstOrDefaultAsync(x => x.Id == id) ?? throw new Exception("找不到對應的文章");
+        }
+
+        public async Task CreateRecipe(RecipeRequest requestDto)
+        {
+            var recipe = new Recipe
+            {
+                RecipeName = requestDto.RecipeName,
+                Amount = requestDto.TotalAmount,
+                CookingTime = requestDto.CookingTime,
+                Complexity = requestDto.Complexity,
+                Description = requestDto.Description,
+                RecipeTagMappings = requestDto.Tags?.Select(x => new RecipeTagMapping
+                {
+                    RecipeTag = new RecipeTag
+                    {
+                        Tag = x.Tag,
+                    }
+                }).ToList() ?? [],
+                RecipeDetailMappings = new RecipeDetailMapping
+                {
+                    RecipeDetail = new RecipeDetail
+                    {
+                        Content = requestDto.Content,
+                    }
+                },
+                RecipeIngredientsMappings = requestDto.Ingredients?.Select(x => new RecipeIngredientsMapping
+                {
+                    RecipeIngredients = new RecipeIngredients
+                    {
+                        IngredientsGroupName = x.IngredientsGroupName,
+                        RecipeIngredientsDetailMappings = [.. x.IngredientsDetails.Select(y => new RecipeIngredientsDetailMapping
+                        {
+                            RecipeIngredientsDetail = new RecipeIngredientsDetail
+                            {
+                                IngredientsName = y.IngredientsName,
+                                Amount = y.Amount,
+                            }
+                        })]
+                    }
+                }).ToList() ?? [],
+                RecipeStepMappings = requestDto.Steps.Select(x => new RecipeStepMapping
+                {
+                    RecipeStep = new RecipeStep
+                    {
+                        Step = x.Step,
+                        Description = x.Description,
+                    }
+                }).ToList() ?? []
+            };
+
+            context.Recipe.Add(recipe);
+            await context.SaveChangesAsync();
         }
     }
 }

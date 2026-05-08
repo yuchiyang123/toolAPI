@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace blog.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]    
+    [ApiController]
     public class RecipeController(RecipeService service) : ControllerBase
     {
         /// <summary>
@@ -14,7 +14,7 @@ namespace blog.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet()]
-        public async Task<PageResponseDto<RecipeResponse>> GetRecipe([FromQuery]RecipeQueryDto queryDto)
+        public async Task<PageResponseDto<RecipeResponse>> GetRecipe([FromQuery] RecipeQueryDto queryDto)
         {
             return await service.GetRecipe(queryDto);
         }
@@ -28,6 +28,18 @@ namespace blog.Controllers
         public async Task<RecipeDetailResponse> GetRecipeDetail(int id)
         {
             return await service.GetRecipeDetail(id);
+        }
+
+        /// <summary>
+        /// 新增食譜
+        /// </summary>
+        /// <param name="requestDto"></param>
+        /// <returns></returns>
+        [HttpPost()]
+        public async Task<IActionResult> CreateRecipe([FromBody] RecipeRequest requestDto)
+        {
+            await service.CreateRecipe(requestDto);
+            return Ok();
         }
     }
 }

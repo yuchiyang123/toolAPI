@@ -104,7 +104,7 @@ namespace blog.Entities
                 entity.Property(x => x.RecipeId).IsRequired();
                 entity.Property(x => x.RecipeDetailId).IsRequired();
 
-                entity.HasOne(e => e.Recipe).WithMany(e => e.RecipeDetailMappings).HasForeignKey(e => e.RecipeId).HasPrincipalKey(e => e.Id).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.Recipe).WithOne(e => e.RecipeDetailMappings).HasForeignKey<RecipeDetailMapping>(e => e.RecipeId).HasPrincipalKey<Recipe>(e => e.Id).OnDelete(DeleteBehavior.Cascade);
             });
 
             builder.Entity<RecipeIngredients>(entity =>

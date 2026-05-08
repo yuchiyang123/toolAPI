@@ -30,7 +30,7 @@ namespace blog.Entities.Recipes
         public DateTime CreateDate { get; set; }
         public ICollection<RecipeTagMapping> RecipeTagMappings { get; set; }
         public ICollection<RecipeStepMapping> RecipeStepMappings { get; set; }
-        public ICollection<RecipeDetailMapping> RecipeDetailMappings { get; set; }
+        public RecipeDetailMapping RecipeDetailMappings { get; set; }
         public ICollection<RecipeIngredientsMapping> RecipeIngredientsMappings { get; set; }
     }
 }

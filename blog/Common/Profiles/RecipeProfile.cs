@@ -16,7 +16,7 @@ namespace blog.Common.Profiles
                 .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.RecipeTagMappings.Select(x => x.RecipeTag)))
                 .ForMember(dest => dest.Steps, opt => opt.MapFrom(src => src.RecipeStepMappings.Select(x => x.RecipeStep)))
                 .ForMember(dest => dest.Ingredients, opt => opt.MapFrom(src => src.RecipeIngredientsMappings.Select(x => x.RecipeIngredients)))
-                .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.RecipeDetailMappings.Select(x => x.RecipeDetail.Content)));
+                .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.RecipeDetailMappings.RecipeDetail.Content));
 
             CreateMap<RecipeIngredients, Ingredients>()
                 .ForMember(dest => dest.IngredientsDetails, opt => opt.MapFrom(src => src.RecipeIngredientsDetailMappings.Select(x => x.RecipeIngredientsDetail)));
