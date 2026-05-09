@@ -1,6 +1,7 @@
 ﻿using blog.Dtos;
 using blog.Dtos.Page;
 using blog.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace blog.Controllers
@@ -36,9 +37,22 @@ namespace blog.Controllers
         /// <param name="requestDto"></param>
         /// <returns></returns>
         [HttpPost()]
+        [Authorize]
         public async Task<IActionResult> CreateRecipe([FromBody] RecipeRequest requestDto)
         {
             await service.CreateRecipe(requestDto);
+            return Ok();
+        }
+
+        /// <summary>
+        /// 刪除食譜
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteRecipe(int id)
+        {
+            await service.DeleteRecipe(id);
             return Ok();
         }
     }

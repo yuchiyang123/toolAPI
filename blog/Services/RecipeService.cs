@@ -72,5 +72,12 @@ namespace blog.Services
             context.Recipe.Add(recipe);
             await context.SaveChangesAsync();
         }
+
+        public async Task DeleteRecipe(int id)
+        {
+            var entity = await context.Recipe.FirstOrDefaultAsync(x => x.Id == id) ?? throw new Exception("找不到對應的文章");
+            context.Recipe.Remove(entity);
+            await context.SaveChangesAsync();
+        }
     }
 }
