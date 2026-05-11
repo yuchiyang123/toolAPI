@@ -20,6 +20,10 @@ namespace blog.Dtos
         /// </summary>
         public int Complexity { get; init; }
         /// <summary>
+        /// 主要的圖片
+        /// </summary>
+        public string? MainImageUrl { get; set; }
+        /// <summary>
         /// 最後更新時間
         /// </summary>
         public DateTime UpdateDate { get; init; }
@@ -102,6 +106,10 @@ namespace blog.Dtos
     #region 食譜新增 Request Dto
     public class RecipeRequest
     {
+        /// <summary>
+        /// 圖片
+        /// </summary>
+        public IFormFile? MailImage { get; set; }
         /// <summary>
         /// 食譜名稱
         /// </summary>

@@ -32,5 +32,6 @@ namespace blog.Entities.Recipes
         public ICollection<RecipeStepMapping> RecipeStepMappings { get; set; }
         public RecipeDetailMapping RecipeDetailMappings { get; set; }
         public ICollection<RecipeIngredientsMapping> RecipeIngredientsMappings { get; set; }
+        public ICollection<RecipeFileMapping> RecipeFileMappings { get; set; } 
     }
 }

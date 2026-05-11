@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace blog.Services
 {
-    public class RecipeService(BlogContext context, IMapper mapper)
+    public class RecipeService(BlogContext context, IMapper mapper, FileHelper fileHelper)
     {
         public async Task<PageResponseDto<RecipeResponse>> GetRecipe(RecipeQueryDto queryDto)
         {
@@ -23,33 +23,36 @@ namespace blog.Services
 
         public async Task CreateRecipe(RecipeRequest requestDto)
         {
-            var recipe = new Recipe
+            using var transaction = await context.Database.BeginTransactionAsync();
+            try
             {
-                RecipeName = requestDto.RecipeName,
-                Amount = requestDto.TotalAmount,
-                CookingTime = requestDto.CookingTime,
-                Complexity = requestDto.Complexity,
-                Description = requestDto.Description,
-                RecipeTagMappings = requestDto.Tags?.Select(x => new RecipeTagMapping
+                var recipe = new Recipe
                 {
-                    RecipeTag = new RecipeTag
+                    RecipeName = requestDto.RecipeName,
+                    Amount = requestDto.TotalAmount,
+                    CookingTime = requestDto.CookingTime,
+                    Complexity = requestDto.Complexity,
+                    Description = requestDto.Description,
+                    RecipeTagMappings = requestDto.Tags?.Select(x => new RecipeTagMapping
                     {
-                        Tag = x.Tag,
-                    }
-                }).ToList() ?? [],
-                RecipeDetailMappings = new RecipeDetailMapping
-                {
-                    RecipeDetail = new RecipeDetail
+                        RecipeTag = new RecipeTag
+                        {
+                            Tag = x.Tag,
+                        }
+                    }).ToList() ?? [],
+                    RecipeDetailMappings = new RecipeDetailMapping
                     {
-                        Content = requestDto.Content,
-                    }
-                },
-                RecipeIngredientsMappings = requestDto.Ingredients?.Select(x => new RecipeIngredientsMapping
-                {
-                    RecipeIngredients = new RecipeIngredients
+                        RecipeDetail = new RecipeDetail
+                        {
+                            Content = requestDto.Content,
+                        }
+                    },
+                    RecipeIngredientsMappings = requestDto.Ingredients?.Select(x => new RecipeIngredientsMapping
                     {
-                        IngredientsGroupName = x.IngredientsGroupName,
-                        RecipeIngredientsDetailMappings = [.. x.IngredientsDetails.Select(y => new RecipeIngredientsDetailMapping
+                        RecipeIngredients = new RecipeIngredients
+                        {
+                            IngredientsGroupName = x.IngredientsGroupName,
+                            RecipeIngredientsDetailMappings = [.. x.IngredientsDetails.Select(y => new RecipeIngredientsDetailMapping
                         {
                             RecipeIngredientsDetail = new RecipeIngredientsDetail
                             {
@@ -57,20 +60,36 @@ namespace blog.Services
                                 Amount = y.Amount,
                             }
                         })]
-                    }
-                }).ToList() ?? [],
-                RecipeStepMappings = requestDto.Steps.Select(x => new RecipeStepMapping
-                {
-                    RecipeStep = new RecipeStep
+                        }
+                    }).ToList() ?? [],
+                    RecipeStepMappings = requestDto.Steps.Select(x => new RecipeStepMapping
                     {
-                        Step = x.Step,
-                        Description = x.Description,
-                    }
-                }).ToList() ?? []
-            };
+                        RecipeStep = new RecipeStep
+                        {
+                            Step = x.Step,
+                            Description = x.Description,
+                        }
+                    }).ToList() ?? [],
+                };
 
-            context.Recipe.Add(recipe);
-            await context.SaveChangesAsync();
+                if (requestDto.MailImage != null)
+                {
+                    int fileId = await fileHelper.SaveFileAsync(requestDto.MailImage);
+                    recipe.RecipeFileMappings.Add(new RecipeFileMapping
+                    {
+                        FileId = fileId
+                    });
+                }
+
+                context.Recipe.Add(recipe);
+                await context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
     }
 }
