@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace blog.Services
 {
-    public class RecipeService(BlogContext context, IMapper mapper, FileHelper fileHelper, ILogger logger)
+    public class RecipeService(BlogContext context, IMapper mapper, FileHelper fileHelper, ILogger<RecipeService> logger)
     {
         public async Task<PageResponseDto<RecipeResponse>> GetRecipe(RecipeQueryDto queryDto)
         {
