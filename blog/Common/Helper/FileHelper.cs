@@ -21,7 +21,7 @@ namespace blog.Common.Helper
 
             var fileEntity = new Files
             {
-                Path = $"{_filePath}/{fileName}".Replace("\\", "/"),
+                Path = $"/files/{fileName}",
                 FileName = fileName,
             };
 
