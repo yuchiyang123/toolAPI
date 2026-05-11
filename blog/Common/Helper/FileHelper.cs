@@ -19,13 +19,16 @@ namespace blog.Common.Helper
                 await file.CopyToAsync(fileStream);
             }
 
-            context.Files.Add(new Files
+            var fileEntity = new Files
             {
                 Path = path,
                 FileName = fileName,
-            });
+            };
 
-            return await context.SaveChangesAsync();
+            context.Files.Add(fileEntity);
+
+            await context.SaveChangesAsync();
+            return fileEntity.Id;
         }
     }
 }
