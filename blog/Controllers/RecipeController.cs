@@ -38,7 +38,8 @@ namespace blog.Controllers
         /// <returns></returns>
         [HttpPost()]
         [Authorize]
-        public async Task<IActionResult> CreateRecipe([FromBody] RecipeRequest requestDto)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> CreateRecipe([FromForm] RecipeRequest requestDto)
         {
             await service.CreateRecipe(requestDto);
             return Ok();
