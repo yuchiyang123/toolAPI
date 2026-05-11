@@ -48,6 +48,7 @@ builder.Services.AddScoped<ToolService>();
 builder.Services.AddHttpClient<OllamaHelper>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<RecipeService>();
+builder.Services.AddScoped<FileHelper>();
 
 builder.Services.AddAutoMapper(
     (IMapperConfigurationExpression cfg) => { },
