@@ -53,13 +53,13 @@ namespace blog.Services
                         {
                             IngredientsGroupName = x.IngredientsGroupName,
                             RecipeIngredientsDetailMappings = [.. x.IngredientsDetails.Select(y => new RecipeIngredientsDetailMapping
-                        {
-                            RecipeIngredientsDetail = new RecipeIngredientsDetail
                             {
-                                IngredientsName = y.IngredientsName,
-                                Amount = y.Amount,
-                            }
-                        })]
+                                RecipeIngredientsDetail = new RecipeIngredientsDetail
+                                {
+                                    IngredientsName = y.IngredientsName,
+                                    Amount = y.Amount,
+                                }
+                            })]
                         }
                     }).ToList() ?? [],
                     RecipeStepMappings = requestDto.Steps.Select(x => new RecipeStepMapping
@@ -75,10 +75,7 @@ namespace blog.Services
                 if (requestDto.MailImage != null)
                 {
                     int fileId = await fileHelper.SaveFileAsync(requestDto.MailImage);
-                    recipe.RecipeFileMappings.Add(new RecipeFileMapping
-                    {
-                        FileId = fileId
-                    });
+                    recipe.RecipeFileMappings = [new RecipeFileMapping { FileId = fileId }];
                 }
 
                 context.Recipe.Add(recipe);
