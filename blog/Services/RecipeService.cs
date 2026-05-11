@@ -6,10 +6,11 @@ using blog.Dtos.Page;
 using blog.Entities;
 using blog.Entities.Recipes;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace blog.Services
 {
-    public class RecipeService(BlogContext context, IMapper mapper, FileHelper fileHelper)
+    public class RecipeService(BlogContext context, IMapper mapper, FileHelper fileHelper, ILogger logger)
     {
         public async Task<PageResponseDto<RecipeResponse>> GetRecipe(RecipeQueryDto queryDto)
         {
@@ -82,8 +83,9 @@ namespace blog.Services
                 await context.SaveChangesAsync();
                 await transaction.CommitAsync();
             }
-            catch
+            catch (Exception ex)
             {
+                logger.LogError("儲存錯誤，錯誤訊息：{0}", ex.Message);
                 await transaction.RollbackAsync();
                 throw;
             }
