@@ -5,6 +5,7 @@ using blog.Entities;
 using blog.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,6 +68,13 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "files")),
+    RequestPath = "/files"
+});
 
 app.UseCors("AllowAll");
 app.UseHttpsRedirection();
