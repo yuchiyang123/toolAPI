@@ -87,7 +87,7 @@ namespace blog.Services
             }
             catch (Exception ex)
             {
-                logger.LogError("儲存錯誤，錯誤訊息：{0}", ex.Message);
+                logger.LogError("儲存錯誤，錯誤訊息：{ex}", ex.Message);
                 await transaction.RollbackAsync();
                 throw;
             }

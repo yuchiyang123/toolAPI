@@ -7,6 +7,7 @@ using blog.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -65,6 +66,11 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod()
               .AllowAnyHeader();
     });
+});
+
+builder.Host.UseSerilog((ctx, config) =>
+{
+    config.WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day);
 });
 
 var app = builder.Build();
