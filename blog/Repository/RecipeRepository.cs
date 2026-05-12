@@ -8,7 +8,7 @@ namespace blog.Repository
     {
         public IQueryable<Recipe> GetRecipes()
         {
-            return context.Recipe.AsNoTracking().AsSplitQuery()
+            return context.Recipe.AsSplitQuery()
                 .Include(x => x.RecipeDetailMappings)
                     .ThenInclude(x => x.RecipeDetail)
                 .Include(x => x.RecipeTagMappings)
