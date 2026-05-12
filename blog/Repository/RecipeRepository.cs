@@ -19,6 +19,8 @@ namespace blog.Repository
                             .ThenInclude(x => x.RecipeIngredientsDetail)
                 .Include(x => x.RecipeStepMappings)
                     .ThenInclude(x => x.RecipeStep)
+                .Include(x => x.RecipeFileMappings)
+                    .ThenInclude(x => x.Files)
                 .AsQueryable();
         }
     }
