@@ -100,132 +100,77 @@ namespace blog.Services
             {
                 var exist = await repository.GetRecipes().FirstOrDefaultAsync(x => x.Id == id) ?? throw new Exception("找不到對應的食譜");
 
-                context.RecipeTags.RemoveRange(exist.RecipeTagMappings.Select(x => x.RecipeTag));
+                exist.RecipeTagMappings.Clear();
                 if (requestDto.Tags != null && requestDto.Tags.Count != 0)
                 {
                     foreach (var tag in requestDto.Tags)
                     {
-                        var entityTag = new RecipeTag
+                        exist.RecipeTagMappings.Add(new RecipeTagMapping
                         {
-                            Tag = tag.Tag
-                        };
-                        context.RecipeTags.Add(entityTag);
-                        await context.SaveChangesAsync();
-
-                        var tagMapping = new RecipeTagMapping
-                        {
-                            RecipeId = id,
-                            RecipeTagId = entityTag.Id
-                        };
-
-                        context.RecipeTagMappings.Add(tagMapping);
-                        await context.SaveChangesAsync();
+                            RecipeTag = new RecipeTag
+                            {
+                                Tag = tag.Tag
+                            }
+                        });
                     }
                 }
 
-                context.RecipeSteps.RemoveRange(exist.RecipeStepMappings.Select(x => x.RecipeStep));
+                exist.RecipeStepMappings.Clear();
                 if (requestDto.Steps != null && requestDto.Steps.Count != 0)
                 {
                     foreach (var step in requestDto.Steps)
                     {
-                        var entitySteps = new RecipeStep
+                        exist.RecipeStepMappings.Add(new RecipeStepMapping
                         {
-                            Step = step.Step,
-                            Description = step.Description,
-                        };
-
-                        context.RecipeSteps.Add(entitySteps);
-                        await context.SaveChangesAsync();
-
-                        var stepMapping = new RecipeStepMapping
-                        {
-                            RecipeId = id,
-                            RecipeStepId = entitySteps.Id
-                        };
-
-                        context.RecipeStepMappings.Add(stepMapping);
-                        await context.SaveChangesAsync();
+                            RecipeStep = new RecipeStep
+                            {
+                                Step = step.Step,
+                                Description = step.Description,
+                            }
+                        });
                     }
                 }
 
-                context.RecipeDetails.Remove(exist.RecipeDetailMappings.RecipeDetail);
-                if (requestDto.Content != null)
-                {
-                    var entityDetail = new RecipeDetail
-                    {
-                        Content = requestDto.Content,
-                    };
+                if(requestDto.Content != null)
+                    exist.RecipeDetailMappings.RecipeDetail.Content = requestDto.Content;
 
-                    context.RecipeDetails.Add(entityDetail);
-                    await context.SaveChangesAsync();
-
-                    var detailMapping = new RecipeDetailMapping
-                    {
-                        RecipeId = id,
-                        RecipeDetailId = entityDetail.Id
-                    };
-
-                    context.RecipeDetailsMapping.Add(detailMapping);
-                    await context.SaveChangesAsync();
-                }
-
-                context.RecipeIngredients.RemoveRange(exist.RecipeIngredientsMappings.Select(x => x.RecipeIngredients));
+                exist.RecipeIngredientsMappings.Clear();
                 if (requestDto.Ingredients != null && requestDto.Ingredients.Count != 0)
                 {
                     foreach (var ingredients in requestDto.Ingredients)
                     {
-                        var entityIngredients = new RecipeIngredients
+                        exist.RecipeIngredientsMappings.Add(new RecipeIngredientsMapping
                         {
-                            IngredientsGroupName = ingredients.IngredientsGroupName
-                        };
-                        context.RecipeIngredients.Add(entityIngredients);
-                        await context.SaveChangesAsync();
-
-                        var entityIngredientsMapping = new RecipeIngredientsMapping
-                        {
-                            RecipeId = id,
-                            RecipeIngredientsId = entityIngredients.Id
-                        };
-                        context.RecipeIngredientsMappings.Add(entityIngredientsMapping);
-
-                        foreach (var ingredientsDetails in ingredients.IngredientsDetails)
-                        {
-                            var entityIngredientsDetails = new RecipeIngredientsDetail
+                            RecipeIngredients = new RecipeIngredients
                             {
-                                IngredientsName = ingredientsDetails.IngredientsName,
-                                Amount = ingredientsDetails.Amount,
-                            };
-                            context.RecipeIngredientsDetails.Add(entityIngredientsDetails);
-                            await context.SaveChangesAsync();
-
-                            var entityIngredientsDetailsMapping = new RecipeIngredientsDetailMapping
-                            {
-                                RecipeIngredientId = entityIngredients.Id,
-                                RecipeIngredientDetailId = entityIngredientsDetails.Id
-                            };
-                            context.RecipeIngredientsDetailMappings.Add(entityIngredientsDetailsMapping);
-                        }
-
-                        await context.SaveChangesAsync();
+                                IngredientsGroupName = ingredients.IngredientsGroupName,
+                                RecipeIngredientsDetailMappings = [.. ingredients.IngredientsDetails.Select(x => new RecipeIngredientsDetailMapping
+                                {
+                                    RecipeIngredientsDetail = new RecipeIngredientsDetail
+                                    {
+                                        IngredientsName = x.IngredientsName,
+                                        Amount = x.Amount,
+                                    }
+                                })],
+                            }
+                        });
                     }
                 }
 
+                int? deleteFileid = null;
                 if (exist.RecipeFileMappings != null)
                 {
-                    context.RecipeFileMappings.Remove(exist.RecipeFileMappings);
-                    await fileHelper.DeleteFileAsync(exist.RecipeFileMappings.FileId);
+                   context.RecipeFileMappings.Remove(exist.RecipeFileMappings);
+                    deleteFileid = exist.RecipeFileMappings.FileId;
                 }
-                    
+
                 if (requestDto.MailImage != null)
                 {
                     int fileId = await fileHelper.SaveFileAsync(requestDto.MailImage);
-                    var fileMapping = new RecipeFileMapping
+                    exist.RecipeFileMappings = new RecipeFileMapping
                     {
-                        RecipeId = id,
                         FileId = fileId,
                     };
-
-                    context.RecipeFileMappings.Add(fileMapping);
                 }
 
                 exist.RecipeName = requestDto.RecipeName;
@@ -237,6 +182,9 @@ namespace blog.Services
 
                 await context.SaveChangesAsync();
                 await transaction.CommitAsync();
+
+                if (deleteFileid.HasValue)
+                    await fileHelper.DeleteFileAsync(deleteFileid.Value);
             }
             catch
             {
