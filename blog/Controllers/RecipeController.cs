@@ -46,6 +46,21 @@ namespace blog.Controllers
         }
 
         /// <summary>
+        /// 異動食譜
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="requestDto"></param>
+        /// <returns></returns>
+        [HttpPut("{id}")]
+        [Authorize]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UpdateRcipe(int id, [FromForm] RecipeRequest requestDto)
+        {
+            await service.UpdateRecipe(id, requestDto);
+            return Ok();    
+        }
+
+        /// <summary>
         /// 刪除食譜
         /// </summary>
         /// <param name="id"></param>

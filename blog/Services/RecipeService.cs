@@ -5,12 +5,13 @@ using blog.Dtos;
 using blog.Dtos.Page;
 using blog.Entities;
 using blog.Entities.Recipes;
+using blog.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace blog.Services
 {
-    public class RecipeService(BlogContext context, IMapper mapper, FileHelper fileHelper, ILogger<RecipeService> logger)
+    public class RecipeService(BlogContext context, IMapper mapper, FileHelper fileHelper, ILogger<RecipeService> logger, RecipeRepository repository)
     {
         public async Task<PageResponseDto<RecipeResponse>> GetRecipe(RecipeQueryDto queryDto)
         {
@@ -90,6 +91,138 @@ namespace blog.Services
                 await transaction.RollbackAsync();
                 throw;
             }
+        }
+
+        public async Task UpdateRecipe(int id, RecipeRequest requestDto)
+        {
+            using var transaction = await context.Database.BeginTransactionAsync();
+            try
+            {
+                var exist = await repository.GetRecipes().FirstOrDefaultAsync(x => x.Id == id) ?? throw new Exception("找不到對應的食譜");
+
+                context.RecipeTags.RemoveRange(exist.RecipeTagMappings.Select(x => x.RecipeTag));
+                if (requestDto.Tags != null && requestDto.Tags.Count != 0)
+                {
+                    foreach (var tag in requestDto.Tags)
+                    {
+                        var entityTag = new RecipeTag
+                        {
+                            Tag = tag.Tag
+                        };
+                        context.RecipeTags.Add(entityTag);
+                        await context.SaveChangesAsync();
+
+                        var tagMapping = new RecipeTagMapping
+                        {
+                            RecipeId = id,
+                            RecipeTagId = entityTag.Id
+                        };
+
+                        context.RecipeTagMappings.Add(tagMapping);
+                        await context.SaveChangesAsync();
+                    }
+                }
+
+                context.RecipeSteps.RemoveRange(exist.RecipeStepMappings.Select(x => x.RecipeStep));
+                if (requestDto.Steps != null && requestDto.Steps.Count != 0)
+                {
+                    foreach (var step in requestDto.Steps)
+                    {
+                        var entitySteps = new RecipeStep
+                        {
+                            Step = step.Step,
+                            Description = step.Description,
+                        };
+
+                        context.RecipeSteps.Add(entitySteps);
+                        await context.SaveChangesAsync();
+
+                        var stepMapping = new RecipeStepMapping
+                        {
+                            RecipeId = id,
+                            RecipeStepId = entitySteps.Id
+                        };
+
+                        context.RecipeStepMappings.Add(stepMapping);
+                        await context.SaveChangesAsync();
+                    }
+                }
+
+                context.RecipeDetails.Remove(exist.RecipeDetailMappings.RecipeDetail);
+                if (requestDto.Content != null)
+                {
+                    var entityDetail = new RecipeDetail
+                    {
+                        Content = requestDto.Content,
+                    };
+
+                    context.RecipeDetails.Add(entityDetail);
+                    await context.SaveChangesAsync();
+
+                    var detailMapping = new RecipeDetailMapping
+                    {
+                        RecipeId = id,
+                        RecipeDetailId = entityDetail.Id
+                    };
+
+                    context.RecipeDetailsMapping.Add(detailMapping);
+                    await context.SaveChangesAsync();
+                }
+
+                context.RecipeIngredients.RemoveRange(exist.RecipeIngredientsMappings.Select(x => x.RecipeIngredients));
+                if (requestDto.Ingredients != null && requestDto.Ingredients.Count != 0)
+                {
+                    foreach (var ingredients in requestDto.Ingredients)
+                    {
+                        var entityIngredients = new RecipeIngredients
+                        {
+                            IngredientsGroupName = ingredients.IngredientsGroupName
+                        };
+                        context.RecipeIngredients.Add(entityIngredients);
+                        await context.SaveChangesAsync();
+
+                        var entityIngredientsMapping = new RecipeIngredientsMapping
+                        {
+                            RecipeId = id,
+                            RecipeIngredientsId = entityIngredients.Id
+                        };
+                        context.RecipeIngredientsMappings.Add(entityIngredientsMapping);
+
+                        foreach (var ingredientsDetails in ingredients.IngredientsDetails)
+                        {
+                            var entityIngredientsDetails = new RecipeIngredientsDetail
+                            {
+                                IngredientsName = ingredientsDetails.IngredientsName,
+                                Amount = ingredientsDetails.Amount,
+                            };
+                            context.RecipeIngredientsDetails.Add(entityIngredientsDetails);
+                            await context.SaveChangesAsync();
+
+                            var entityIngredientsDetailsMapping = new RecipeIngredientsDetailMapping
+                            {
+                                RecipeIngredientId = entityIngredients.Id,
+                                RecipeIngredientDetailId = entityIngredientsDetails.Id
+                            };
+                            context.RecipeIngredientsDetailMappings.Add(entityIngredientsDetailsMapping);
+                        }
+
+                        await context.SaveChangesAsync();
+                    }
+                }
+
+                exist.RecipeName = requestDto.RecipeName;
+                exist.Amount = requestDto.TotalAmount;
+                exist.CookingTime = requestDto.CookingTime;
+                exist.Complexity = requestDto.Complexity;
+                exist.Description = requestDto.Description;
+                exist.UpdateDate = DateTime.Now;
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }            
         }
 
         public async Task DeleteRecipe(int id)
