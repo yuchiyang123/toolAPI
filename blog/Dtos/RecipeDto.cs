@@ -1,4 +1,6 @@
-﻿using blog.Dtos.Page;
+﻿using blog.Common.Helper;
+using blog.Dtos.Page;
+using Microsoft.AspNetCore.Mvc;
 
 namespace blog.Dtos
 {
@@ -141,14 +143,17 @@ namespace blog.Dtos
         /// <summary>
         /// 食材
         /// </summary>
+        [ModelBinder(BinderType = typeof(JsonModelBinder))]
         public required List<Ingredients> Ingredients { get; init; }
         /// <summary>
         /// 食譜步驟
         /// </summary>
+        [ModelBinder(BinderType = typeof(JsonModelBinder))]
         public required List<Steps> Steps { get; init; }
         /// <summary>
         /// 食譜標籤
         /// </summary>
+        [ModelBinder(BinderType = typeof(JsonModelBinder))]
         public List<Tags>? Tags { get; init; }
     }
     #endregion

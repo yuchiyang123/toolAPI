@@ -14,7 +14,8 @@ namespace blog.Services
     {
         public async Task<PageResponseDto<RecipeResponse>> GetRecipe(RecipeQueryDto queryDto)
         {
-            return await context.Recipe.ProjectTo<RecipeResponse>(mapper.ConfigurationProvider).ToPageResponseDto(queryDto.PageIndex, queryDto.PageSize);
+            return await context.Recipe.Include(x => x.RecipeFileMappings).ThenInclude(x => x.Files)
+                .ProjectTo<RecipeResponse>(mapper.ConfigurationProvider).ToPageResponseDto(queryDto.PageIndex, queryDto.PageSize);
         }
 
         public async Task<RecipeDetailResponse> GetRecipeDetail(int id)

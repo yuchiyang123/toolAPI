@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using blog.Dtos;
 using blog.Entities.Recipes;
+using Microsoft.Extensions.ObjectPool;
 
 namespace blog.Common.Profiles
 {
@@ -8,7 +9,8 @@ namespace blog.Common.Profiles
     {
         public RecipeProfile()
         {
-            CreateMap<Recipe, RecipeResponse>();
+            CreateMap<Recipe, RecipeResponse>()
+                .ForMember(dest => dest.MainImageUrl, opt => opt.MapFrom(src => src.RecipeFileMappings.Select(x => x.Files.FileName)));
 
             CreateMap<Recipe, RecipeDetailResponse>()
                 .IncludeBase<Recipe, RecipeResponse>()

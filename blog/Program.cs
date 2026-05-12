@@ -71,8 +71,7 @@ app.UseAuthorization();
 
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new PhysicalFileProvider(
-        Path.Combine(builder.Environment.ContentRootPath, "files")),
+    FileProvider = new PhysicalFileProvider("C:\\PushAPI\\files"),
     RequestPath = "/files"
 });
 
