@@ -210,9 +210,12 @@ namespace blog.Services
                     }
                 }
 
-                context.RecipeFileMappings.Remove(exist.RecipeFileMappings);
                 if (exist.RecipeFileMappings != null)
+                {
+                    context.RecipeFileMappings.Remove(exist.RecipeFileMappings);
                     await fileHelper.DeleteFileAsync(exist.RecipeFileMappings.FileId);
+                }
+                    
                 if (requestDto.MailImage != null)
                 {
                     int fileId = await fileHelper.SaveFileAsync(requestDto.MailImage);
