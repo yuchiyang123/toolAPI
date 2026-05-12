@@ -201,7 +201,7 @@ namespace blog.Entities
                 entity.Property(x => x.FileId).IsRequired();
 
                 entity.HasOne(e => e.Recipe).WithOne(e => e.RecipeFileMappings).HasForeignKey<RecipeFileMapping>(e => e.RecipeId).HasPrincipalKey<Recipe>(e => e.Id).OnDelete(DeleteBehavior.Cascade);
-                entity.HasOne(e => e.Files).WithOne(e => e.RecipeFileMapping).HasForeignKey<RecipeFileMapping>(e => e.FileId).HasPrincipalKey<Recipe>(e => e.Id).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.Files).WithOne(e => e.RecipeFileMapping).HasForeignKey<RecipeFileMapping>(e => e.FileId).HasPrincipalKey<Files>(e => e.Id).OnDelete(DeleteBehavior.Cascade);
             });
             #endregion
         }
