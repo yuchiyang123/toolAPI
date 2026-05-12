@@ -10,6 +10,6 @@ namespace blog.Entities
         public required string Path { get; set; }
         public required string FileName { get; set; }
         public DateTime CreateDate { get; set; }
-        public ICollection<RecipeFileMapping> RecipeFileMappings { get; set; }
+        public RecipeFileMapping RecipeFileMapping { get; set; }
     }
 }

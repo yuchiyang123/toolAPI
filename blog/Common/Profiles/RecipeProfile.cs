@@ -10,7 +10,7 @@ namespace blog.Common.Profiles
         public RecipeProfile()
         {
             CreateMap<Recipe, RecipeResponse>()
-                .ForMember(dest => dest.MainImageUrl, opt => opt.MapFrom(src => src.RecipeFileMappings.Select(x => x.Files.FileName)));
+                .ForMember(dest => dest.MainImageUrl, opt => opt.MapFrom(src => src.RecipeFileMappings.Files.FileName));
 
             CreateMap<Recipe, RecipeDetailResponse>()
                 .IncludeBase<Recipe, RecipeResponse>()
