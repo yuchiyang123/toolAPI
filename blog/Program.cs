@@ -2,6 +2,7 @@ using System.Text;
 using AutoMapper;
 using blog.Common.Helper;
 using blog.Entities;
+using blog.Repository;
 using blog.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -50,6 +51,7 @@ builder.Services.AddHttpClient<OllamaHelper>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<RecipeService>();
 builder.Services.AddScoped<FileHelper>();
+builder.Services.AddScoped<RecipeRepository>();
 
 builder.Services.AddAutoMapper(
     (IMapperConfigurationExpression cfg) => { },
