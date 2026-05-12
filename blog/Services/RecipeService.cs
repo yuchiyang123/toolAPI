@@ -77,7 +77,7 @@ namespace blog.Services
                 if (requestDto.MailImage != null)
                 {
                     int fileId = await fileHelper.SaveFileAsync(requestDto.MailImage);
-                    recipe.RecipeFileMappings = [new RecipeFileMapping { FileId = fileId }];
+                    recipe.RecipeFileMappings = new RecipeFileMapping { FileId = fileId };
                 }
 
                 context.Recipe.Add(recipe);
