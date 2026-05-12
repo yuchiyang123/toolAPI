@@ -30,5 +30,16 @@ namespace blog.Common.Helper
             await context.SaveChangesAsync();
             return fileEntity.Id;
         }
+
+        public async Task DeleteFileAsync(int id)
+        {
+            var file = await context.Files.FindAsync(id) ?? throw new NotImplementedException();
+
+            // 刪除檔案
+            var filePath = Path.Combine(_filePath, file.FileName);
+            if (File.Exists(filePath)) File.Delete(filePath);
+
+            context.Files.Remove(file);
+        }
     }
 }

@@ -210,12 +210,28 @@ namespace blog.Services
                     }
                 }
 
+                if(exist.RecipeFileMappings != null)
+                    await fileHelper.DeleteFileAsync(exist.RecipeFileMappings.FileId);
+                if (requestDto.MailImage != null)
+                {
+                    int fileId = await fileHelper.SaveFileAsync(requestDto.MailImage);
+                    var fileMapping = new RecipeFileMapping
+                    {
+                        RecipeId = id,
+                        FileId = fileId,
+                    };
+
+                    context.RecipeFileMappings.Add(fileMapping);
+                }
+
                 exist.RecipeName = requestDto.RecipeName;
                 exist.Amount = requestDto.TotalAmount;
                 exist.CookingTime = requestDto.CookingTime;
                 exist.Complexity = requestDto.Complexity;
                 exist.Description = requestDto.Description;
                 exist.UpdateDate = DateTime.Now;
+
+                await context.SaveChangesAsync();
                 await transaction.CommitAsync();
             }
             catch
