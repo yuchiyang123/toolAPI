@@ -210,7 +210,8 @@ namespace blog.Services
                     }
                 }
 
-                if(exist.RecipeFileMappings != null)
+                context.RecipeFileMappings.Remove(exist.RecipeFileMappings);
+                if (exist.RecipeFileMappings != null)
                     await fileHelper.DeleteFileAsync(exist.RecipeFileMappings.FileId);
                 if (requestDto.MailImage != null)
                 {
@@ -238,7 +239,7 @@ namespace blog.Services
             {
                 await transaction.RollbackAsync();
                 throw;
-            }            
+            }
         }
 
         public async Task DeleteRecipe(int id)
