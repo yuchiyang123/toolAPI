@@ -33,6 +33,10 @@ namespace blog.Dtos
         /// 食譜標籤
         /// </summary>
         public List<Tags>? Tags { get; init; }
+        /// <summary>
+        /// 描述，筆記
+        /// </summary>
+        public required string Description { get; init; }
     }
 
     public class RecipeDetailResponse : RecipeResponse
@@ -41,10 +45,6 @@ namespace blog.Dtos
         /// 總共多少份
         /// </summary>
         public required int TotalAmount { get; init; }
-        /// <summary>
-        /// 描述，筆記
-        /// </summary>
-        public required string Description { get; init; }
         /// <summary>
         /// 詳細內容
         /// </summary>
