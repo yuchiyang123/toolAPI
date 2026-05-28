@@ -29,6 +29,10 @@ namespace blog.Dtos
         /// 最後更新時間
         /// </summary>
         public DateTime UpdateDate { get; init; }
+        /// <summary>
+        /// 食譜標籤
+        /// </summary>
+        public List<Tags>? Tags { get; init; }
     }
 
     public class RecipeDetailResponse : RecipeResponse
@@ -53,10 +57,6 @@ namespace blog.Dtos
         /// 食譜步驟
         /// </summary>
         public required List<Steps> Steps { get; init; }
-        /// <summary>
-        /// 食譜標籤
-        /// </summary>
-        public List<Tags>? Tags { get; init; }
     }
 
     public class Ingredients
