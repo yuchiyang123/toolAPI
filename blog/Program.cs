@@ -2,6 +2,7 @@ using System.Text;
 using AutoMapper;
 using blog.Common.Helper;
 using blog.Entities;
+using blog.Middleware;
 using blog.Repository;
 using blog.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -89,5 +90,7 @@ app.UseAuthorization();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.MapControllers();
+
+app.UseMiddleware<InternalSecretMiddleware>();
 
 app.Run();
