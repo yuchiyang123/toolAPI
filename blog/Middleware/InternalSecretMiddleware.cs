@@ -1,6 +1,6 @@
 ﻿namespace blog.Middleware
 {
-    public class InternalSecretMiddleware(RequestDelegate next, IConfigurationManager configurationManager)
+    public class InternalSecretMiddleware(RequestDelegate next, IConfiguration configurationManager)
     {
         private readonly RequestDelegate _next = next;
         private readonly string _secret = configurationManager["Secret:INTERNAL_SECRET"]!;
