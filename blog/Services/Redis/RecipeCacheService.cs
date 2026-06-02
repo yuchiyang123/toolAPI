@@ -1,10 +1,7 @@
 ﻿using System.Text.Json;
-using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using blog.Common.Helper;
 using blog.Dtos;
 using blog.Repository;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace blog.Services.Redis

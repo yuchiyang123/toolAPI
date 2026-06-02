@@ -20,7 +20,7 @@ namespace blog.Common.Helper
             await cache.SaveReditForStringAsync(key, saveDataString, ct);
         }
 
-        public static async Task SaveReditForStringAsync(this IDistributedCache cache, string saveData,string key, CancellationToken ct, TimeSpan? time = null)
+        public static async Task SaveReditForStringAsync(this IDistributedCache cache, string key, string saveData, CancellationToken ct, TimeSpan? time = null)
         {
             await cache.SetStringAsync(key, saveData, new DistributedCacheEntryOptions
             {
