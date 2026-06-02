@@ -1,12 +1,7 @@
-﻿using System;
-using System.Linq.Expressions;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using blog.Dtos;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Caching.Distributed;
 using StackExchange.Redis;
 
@@ -85,8 +80,5 @@ namespace blog.Common.Helper
                 return await SaveCacheAsync(key, factory, ct);
             }
         }
-
-
-        
     }
 }
