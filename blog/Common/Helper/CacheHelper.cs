@@ -1,15 +1,19 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
+﻿using StackExchange.Redis;
 
 namespace blog.Common.Helper
 {
-    public static class CacheHelper
+    public class CacheHelper(IConnectionMultiplexer multiplexer)
     {
-        public static async Task SaveRedisForNull(this IDistributedCache cache, string key, CancellationToken ct, TimeSpan? time = null)
+        public async Task<bool> AcquireLock(string lockKey, TimeSpan expiry)
         {
-            await cache.SetStringAsync(key, "null", new DistributedCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = time ?? TimeSpan.FromMinutes(5)
-            }, ct);
+            var db = multiplexer.GetDatabase();
+            return await db.StringSetAsync(lockKey, "1", expiry, When.NotExists);
+        }
+
+        public async Task<bool> ReleaseLock(string lockKey)
+        {
+            var db = multiplexer.GetDatabase();
+            return await db.KeyDeleteAsync(lockKey);
         }
     }
 }

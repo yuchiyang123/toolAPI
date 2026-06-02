@@ -1,6 +1,7 @@
 ﻿using blog.Dtos;
 using blog.Dtos.Page;
 using blog.Services;
+using blog.Services.Redis;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

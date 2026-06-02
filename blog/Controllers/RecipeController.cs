@@ -1,6 +1,7 @@
 ﻿using blog.Dtos;
 using blog.Dtos.Page;
 using blog.Services;
+using blog.Services.Redis;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,7 +9,7 @@ namespace blog.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RecipeController(RecipeService service) : ControllerBase
+    public class RecipeController(RecipeService service, RecipeCacheService recipeCacheService) : ControllerBase
     {
         /// <summary>
         /// 取得食譜列表
@@ -26,9 +27,9 @@ namespace blog.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<RecipeDetailResponse> GetRecipeDetail(int id)
+        public async Task<RecipeDetailResponse?> GetRecipeDetail(int id)
         {
-            return await service.GetRecipeDetail(id);
+            return await recipeCacheService.GetRecipeDetailAsync(id);
         }
 
         /// <summary>
@@ -57,7 +58,8 @@ namespace blog.Controllers
         public async Task<IActionResult> UpdateRcipe(int id, [FromForm] RecipeRequest requestDto)
         {
             await service.UpdateRecipe(id, requestDto);
-            return Ok();    
+            await recipeCacheService.InvalidateRecipeAsync(id);
+            return Ok();
         }
 
         /// <summary>
@@ -69,6 +71,7 @@ namespace blog.Controllers
         public async Task<IActionResult> DeleteRecipe(int id)
         {
             await service.DeleteRecipe(id);
+            await recipeCacheService.InvalidateRecipeAsync(id);
             return Ok();
         }
     }

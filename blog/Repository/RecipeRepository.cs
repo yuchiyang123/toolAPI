@@ -23,5 +23,10 @@ namespace blog.Repository
                     .ThenInclude(x => x.Files)
                 .AsQueryable();
         }
+
+        public IQueryable<Recipe> GetRecipesNoInclaude()
+        {
+            return context.Recipe.AsQueryable();
+        }
     }
 }

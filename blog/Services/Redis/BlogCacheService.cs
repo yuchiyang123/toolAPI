@@ -3,15 +3,13 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using blog.Common.Helper;
 using blog.Dtos;
-using blog.Dtos.AI;
 using blog.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
-using StackExchange.Redis;
 
-namespace blog.Services
+namespace blog.Services.Redis
 {
-    public class BlogCacheService(IDistributedCache cache, IConnectionMultiplexer multiplexer, IMapper mapper, PostRepository repository, OllamaHelper ollamaHelper)
+    public class BlogCacheService(IDistributedCache cache, IMapper mapper, CacheHelper cacheHelper, PostRepository repository, OllamaHelper ollamaHelper)
     {
         #region PostDetail Cache
         public async Task<PostDetailDto?> GetPostDetailAsync(int id, CancellationToken ct = default)
@@ -30,14 +28,14 @@ namespace blog.Services
             }
 
             var lockKey = CacheKeys.LockKey(key);
-            if (await AcquireLock(lockKey, TimeSpan.FromMinutes(10)))
+            if (await cacheHelper.AcquireLock(lockKey, TimeSpan.FromMinutes(10)))
             {
                 try
                 {
                     var postDetail = await repository.GetPostDetail().ProjectTo<PostDetailDto>(mapper.ConfigurationProvider).FirstOrDefaultAsync(x => x.Id == id, ct);
                     if (postDetail is null)
                     {
-                        await cache.SaveRedisForNull(key, ct);
+                        await cache.SaveRedisForNullAsync(key, ct);
                         return null;
                     }
 
@@ -51,7 +49,7 @@ namespace blog.Services
                 }
                 finally
                 {
-                    await ReleaseLock(lockKey);
+                    await cacheHelper.ReleaseLock(lockKey);
                 }
             }
             else
@@ -80,7 +78,7 @@ namespace blog.Services
             }
 
             var lockKey = CacheKeys.LockKey(key);
-            if (await AcquireLock(lockKey, TimeSpan.FromMinutes(10)))
+            if (await cacheHelper.AcquireLock(lockKey, TimeSpan.FromMinutes(10)))
             {
                 try
                 {
@@ -88,7 +86,7 @@ namespace blog.Services
 
                     if (content is null)
                     {
-                        await cache.SaveRedisForNull(key, ct);
+                        await cache.SaveRedisForNullAsync(key, ct);
                         return null;
                     }
 
@@ -104,7 +102,7 @@ namespace blog.Services
                     }
                     else
                     {
-                        await cache.SaveRedisForNull(key, ct);
+                        await cache.SaveRedisForNullAsync(key, ct);
                         return null;
                     }
 
@@ -112,7 +110,7 @@ namespace blog.Services
                 }
                 finally
                 {
-                    await ReleaseLock(lockKey);
+                    await cacheHelper.ReleaseLock(lockKey);
                 }
             }
             else
@@ -127,18 +125,6 @@ namespace blog.Services
             await cache.RemoveAsync(CacheKeys.PostSummary(id));
         }
         #endregion
-
-        public async Task<bool> AcquireLock(string lockKey, TimeSpan expiry)
-        {
-            var db = multiplexer.GetDatabase();
-            return await db.StringSetAsync(lockKey, "1", expiry, When.NotExists);
-        }
-
-        public async Task<bool> ReleaseLock(string lockKey)
-        {
-            var db = multiplexer.GetDatabase();
-            return await db.KeyDeleteAsync(lockKey);
-        }
 
         /// <summary>
         /// TODO: 改用 Redis INCR 累加，定時批次回寫 DB

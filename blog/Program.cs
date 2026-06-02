@@ -5,6 +5,7 @@ using blog.Entities;
 using blog.Middleware;
 using blog.Repository;
 using blog.Services;
+using blog.Services.Redis;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -55,6 +56,7 @@ builder.Services.AddScoped<FileHelper>();
 builder.Services.AddScoped<RecipeRepository>();
 builder.Services.AddScoped<PostRepository>();
 builder.Services.AddScoped<BlogCacheService>();
+builder.Services.AddScoped<RecipeCacheService>();
 
 builder.Services.AddAutoMapper(
     (IMapperConfigurationExpression cfg) => { },
