@@ -7,7 +7,6 @@ using blog.Entities;
 using blog.Entities.Recipes;
 using blog.Repository;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace blog.Services
 {

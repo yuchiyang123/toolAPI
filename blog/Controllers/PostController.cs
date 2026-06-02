@@ -57,6 +57,7 @@ namespace blog.Controllers
         public async Task<ActionResult> DeletePostAsync(int id)
         {
             await service.DeletePostAsync(id);
+            await blogCacheService.InvalidatePostAsync(id);
             return Ok();
         }
 
