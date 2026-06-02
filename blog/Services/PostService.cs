@@ -112,7 +112,7 @@ namespace blog.Services
 
         public async Task UpdatePostsViewAsync(int id)
         {
-            var entity = await repository.GetPostNoIncludeAny().FirstOrDefaultAsync() 
+            var entity = await repository.GetPostNoIncludeAny().FirstOrDefaultAsync(x => x.Id == id) 
                 ?? throw new Exception("找不到對應的文章");
             entity.View += 1;
             await context.SaveChangesAsync();
