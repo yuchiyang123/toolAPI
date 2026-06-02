@@ -22,7 +22,7 @@ namespace blog.Services
                 if (cached == "null") return null;
                 var dto = JsonSerializer.Deserialize<PostDetailDto>(cached);
                 if (dto is null) return null;
-                var view = await UpdateRedisViewCount(id);
+                var view = await GetViewCountFromDbAsync(id);
                 dto.View = view.ToString();
                 return dto;
             }
@@ -79,7 +79,12 @@ namespace blog.Services
             await cache.RemoveAsync(CacheKeys.Post(id));
         }
 
-        private async Task<int> UpdateRedisViewCount(int id)
+        /// <summary>
+        /// TODO: 改用 Redis INCR 累加，定時批次回寫 DB
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        private async Task<int> GetViewCountFromDbAsync(int id)
         {
             return await repository.GetPostNoIncludeAny().Where(x => x.Id == id).Select(x => x.View).FirstOrDefaultAsync();
         }

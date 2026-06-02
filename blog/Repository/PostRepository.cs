@@ -36,6 +36,5 @@ namespace blog.Repository
         {
             return context.PostsTagsMapping.AsQueryable();
         }
-
     }
 }
