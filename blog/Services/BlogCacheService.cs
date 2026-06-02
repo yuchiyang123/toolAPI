@@ -20,9 +20,12 @@ namespace blog.Services
             if (cached is not null)
             {
                 if (cached == "null") return null;
-                return JsonSerializer.Deserialize<PostDetailDto>(cached);
+                var dto = JsonSerializer.Deserialize<PostDetailDto>(cached);
+                if (dto is null) return null;
+                var view = await UpdateRedisViewCount(id);
+                dto.View = view.ToString();
+                return dto;
             }
-
 
             var lockKey = CacheKeys.LockKey(key);
             if (await AcquireLock(lockKey, TimeSpan.FromMinutes(10)))
@@ -74,6 +77,11 @@ namespace blog.Services
         public async Task InvalidatePostAsync(int id)
         {
             await cache.RemoveAsync(CacheKeys.Post(id));
+        }
+
+        private async Task<int> UpdateRedisViewCount(int id)
+        {
+            return await repository.GetPostNoIncludeAny().Where(x => x.Id == id).Select(x => x.View).FirstOrDefaultAsync();
         }
     }
 }
