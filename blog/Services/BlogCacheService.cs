@@ -3,6 +3,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using blog.Common.Helper;
 using blog.Dtos;
+using blog.Dtos.AI;
 using blog.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
@@ -10,8 +11,9 @@ using StackExchange.Redis;
 
 namespace blog.Services
 {
-    public class BlogCacheService(IDistributedCache cache, IConnectionMultiplexer multiplexer, PostRepository repository, IMapper mapper)
+    public class BlogCacheService(IDistributedCache cache, IConnectionMultiplexer multiplexer, IMapper mapper, PostRepository repository, OllamaHelper ollamaHelper)
     {
+        #region PostDetail Cache
         public async Task<PostDetailDto?> GetPostDetailAsync(int id, CancellationToken ct = default)
         {
             var key = CacheKeys.Post(id);
@@ -35,10 +37,7 @@ namespace blog.Services
                     var postDetail = await repository.GetPostDetail().ProjectTo<PostDetailDto>(mapper.ConfigurationProvider).FirstOrDefaultAsync(x => x.Id == id, ct);
                     if (postDetail is null)
                     {
-                        await cache.SetStringAsync(key, "null", new DistributedCacheEntryOptions
-                        {
-                            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
-                        }, ct);
+                        await cache.SaveRedisForNull(key, ct);
                         return null;
                     }
 
@@ -62,6 +61,73 @@ namespace blog.Services
             }
         }
 
+        public async Task InvalidatePostAsync(int id)
+        {
+            await cache.RemoveAsync(CacheKeys.Post(id));
+        }
+        #endregion
+
+        #region Post Summary
+        public async Task<string?> GetPostSummaryAsync(int id, CancellationToken ct = default)
+        {
+            var key = CacheKeys.PostSummary(id);
+            var cached = await cache.GetStringAsync(key, ct);
+
+            if (cached is not null)
+            {
+                if (cached == "null") return null;
+                return cached;
+            }
+
+            var lockKey = CacheKeys.LockKey(key);
+            if (await AcquireLock(lockKey, TimeSpan.FromMinutes(10)))
+            {
+                try
+                {
+                    var content = await repository.GetPostNoIncludeAny().Where(x => x.Id == id).Select(x => x.Content).FirstOrDefaultAsync(ct);
+
+                    if (content is null)
+                    {
+                        await cache.SaveRedisForNull(key, ct);
+                        return null;
+                    }
+
+                    var dto = ollamaHelper.GetAiDtoRequest(content);
+                    var aiResponse = await ollamaHelper.GetOllamaResponse(dto);
+
+                    if (aiResponse is not null)
+                    {
+                        await cache.SetStringAsync(key, aiResponse, new DistributedCacheEntryOptions
+                        {
+                            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30 + Random.Shared.Next(0, 10))
+                        }, ct);
+                    }
+                    else
+                    {
+                        await cache.SaveRedisForNull(key, ct);
+                        return null;
+                    }
+
+                    return aiResponse;
+                }
+                finally
+                {
+                    await ReleaseLock(lockKey);
+                }
+            }
+            else
+            {
+                await Task.Delay(50, ct);
+                return await GetPostSummaryAsync(id, ct);
+            }
+        }
+
+        public async Task InvalidataPostSummaryAsync(int id)
+        {
+            await cache.RemoveAsync(CacheKeys.PostSummary(id));
+        }
+        #endregion
+
         public async Task<bool> AcquireLock(string lockKey, TimeSpan expiry)
         {
             var db = multiplexer.GetDatabase();
@@ -72,11 +138,6 @@ namespace blog.Services
         {
             var db = multiplexer.GetDatabase();
             return await db.KeyDeleteAsync(lockKey);
-        }
-
-        public async Task InvalidatePostAsync(int id)
-        {
-            await cache.RemoveAsync(CacheKeys.Post(id));
         }
 
         /// <summary>
@@ -90,3 +151,5 @@ namespace blog.Services
         }
     }
 }
+
+

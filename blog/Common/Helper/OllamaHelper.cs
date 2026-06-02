@@ -21,5 +21,13 @@ namespace blog.Common.Helper
 
             return result?.Response ?? throw new Exception("Ai回傳為空");
         }
+
+        public AiDtoRequest GetAiDtoRequest(string content)
+        {
+            return new AiDtoRequest
+            {
+                Prompt = $"用繁體中文輸出詳細的摘要，只輸出摘要：\n{content}"
+            };
+        }
     }
 }

@@ -44,6 +44,8 @@ namespace blog.Controllers
             try
             {
                 await service.UpdatePostAsync(dto);
+                await blogCacheService.InvalidatePostAsync(dto.Id);
+                await blogCacheService.InvalidataPostSummaryAsync(dto.Id);
                 return Ok();
             }
             catch
@@ -58,6 +60,7 @@ namespace blog.Controllers
         {
             await service.DeletePostAsync(id);
             await blogCacheService.InvalidatePostAsync(id);
+            await blogCacheService.InvalidataPostSummaryAsync(id);
             return Ok();
         }
 
@@ -71,7 +74,7 @@ namespace blog.Controllers
         [HttpGet("{id}/summary")]
         public async Task<ActionResult<string>> GetAiSummaryAsync(int id)
         {
-            var content = await service.GetPostAISummary(id);
+            var content = await blogCacheService.GetPostSummaryAsync(id);
             return Ok(content);
         }
 

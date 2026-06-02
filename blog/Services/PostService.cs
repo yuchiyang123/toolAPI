@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace blog.Services
 {
-    public class PostService(IMapper mapper, BlogContext context, PostRepository repository, BlogCacheService cacheService , OllamaHelper ollamaHelper)
+    public class PostService(IMapper mapper, BlogContext context, PostRepository repository , OllamaHelper ollamaHelper)
     {
         public async Task<PageResponseDto<PostDto>> GetPostAsync(PostRequestDto requestDto)
         {
