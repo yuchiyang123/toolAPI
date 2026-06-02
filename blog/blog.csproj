@@ -42,7 +42,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Common\enum\" />
+    <Folder Include="Common\Enum\" />
   </ItemGroup>
 
 </Project>

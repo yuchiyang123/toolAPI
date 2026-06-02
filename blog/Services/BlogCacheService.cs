@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using blog.Common.Helper;
 using blog.Dtos;
 using blog.Repository;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,7 @@ namespace blog.Services
     {
         public async Task<PostDetailDto?> GetPostDetailAsync(int id, CancellationToken ct = default)
         {
-            var key = $"Post:{id}";
+            var key = CacheKeys.Post(id);
             var cached = await cache.GetStringAsync(key, ct);
 
             if (cached is not null)
@@ -23,7 +24,7 @@ namespace blog.Services
             }
 
 
-            var lockKey = $"lock:{key}";
+            var lockKey = CacheKeys.LockKey(key);
             if (await AcquireLock(lockKey, TimeSpan.FromMinutes(10)))
             {
                 try
@@ -72,7 +73,7 @@ namespace blog.Services
 
         public async Task InvalidatePostAsync(int id)
         {
-            await cache.RemoveAsync($"Post:{id}");
+            await cache.RemoveAsync(CacheKeys.Post(id));
         }
     }
 }

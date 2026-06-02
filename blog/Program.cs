@@ -103,6 +103,6 @@ app.UseSwagger();
 app.UseSwaggerUI();
 app.MapControllers();
 
-app.UseMiddleware<InternalSecretMiddleware>();
+//app.UseMiddleware<InternalSecretMiddleware>();
 
 app.Run();
