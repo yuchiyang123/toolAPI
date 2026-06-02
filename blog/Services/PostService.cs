@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Linq.Dynamic.Core;
+using System.Net.Http;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using blog.Common.Helper;
@@ -7,27 +8,22 @@ using blog.Dtos.AI;
 using blog.Dtos.Page;
 using blog.Entities;
 using blog.Entities.Blog;
+using blog.Repository;
 using Microsoft.EntityFrameworkCore;
 
 namespace blog.Services
 {
-    public class PostService(IMapper mapper, BlogContext context, OllamaHelper ollamaHelper)
+    public class PostService(IMapper mapper, BlogContext context, PostRepository repository, OllamaHelper ollamaHelper)
     {
         public async Task<PageResponseDto<PostDto>> GetPostAsync(PostRequestDto requestDto)
         {
-            var query = context.Posts.Include(x => x.PostsTagsMapping).ThenInclude(x => x.PostsTag).Include(x => x.User).OrderByDescending(x => x.CreateDate).AsQueryable();
-            if (requestDto.TagIds.Count != 0)
-                query = query.Where(x => x.PostsTagsMapping.Any(y => requestDto.TagIds.Contains(y.Id)));
-            if (!string.IsNullOrEmpty(requestDto.Title))
-                query = query.Where(x => x.Title.Contains(requestDto.Title));
-            return await query
-                    .ProjectTo<PostDto>(mapper.ConfigurationProvider).ToPageResponseDto(requestDto.PageIndex, requestDto.PageSize);
+            return await repository.GetPost(requestDto).ProjectTo<PostDto>(mapper.ConfigurationProvider).ToPageResponseDto(requestDto.PageIndex, requestDto.PageSize);
         }
 
         public async Task<PostDetailDto> GetPostDetailAsync(int id)
         {
-            return await context.Posts.Include(x => x.PostsTagsMapping).ThenInclude(x => x.PostsTag).Include(x => x.User).Include(x => x.PostsChangeRecords)
-                .ProjectTo<PostDetailDto>(mapper.ConfigurationProvider).FirstOrDefaultAsync(x => x.Id == id) ?? throw new Exception("找不到對應的文章");
+            return await repository.GetPostDetail().ProjectTo<PostDetailDto>(mapper.ConfigurationProvider).FirstOrDefaultAsync(x => x.Id == id) 
+                ?? throw new Exception("找不到對應的文章");
         }
 
         public async Task CreatePostAsync(CreatePostDto postDto)
@@ -63,7 +59,8 @@ namespace blog.Services
             using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
-                var entity = await context.Posts.Include(x => x.PostsTagsMapping).ThenInclude(x => x.PostsTag).Where(x => x.Id == updatePostDto.Id).FirstOrDefaultAsync() ?? throw new Exception("找不到對應的文章");
+                var entity = await repository.GetPostTag().FirstOrDefaultAsync(x => x.Id == updatePostDto.Id) 
+                    ?? throw new Exception("找不到對應的文章");
                 var changeRecord = await GetChangeRecords(entity.Title, updatePostDto.Title, entity.Content, updatePostDto.Content,
                     string.Join(",", entity.PostsTagsMapping.Select(x => x.PostsTag.Tag) ?? []), string.Join(",", updatePostDto.Tags ?? []));
                 var changeRecordEntity = new PostsChangeRecord
@@ -107,21 +104,24 @@ namespace blog.Services
 
         public async Task DeletePostAsync(int id)
         {
-            var entity = await context.Posts.Where(x => x.Id == id).FirstOrDefaultAsync() ?? throw new Exception("找不到對應的文章");
+            var entity = await repository.GetPostNoIncludeAny().FirstOrDefaultAsync(x => x.Id == id) 
+                ?? throw new Exception("找不到對應的文章");
             context.Posts.Remove(entity);
             await context.SaveChangesAsync();
         }
 
         public async Task UpdatePostsViewAsync(int id)
         {
-            var entity = await context.Posts.Where(x => x.Id == id).FirstOrDefaultAsync() ?? throw new Exception("找不到對應的文章");
+            var entity = await repository.GetPostNoIncludeAny().FirstOrDefaultAsync() 
+                ?? throw new Exception("找不到對應的文章");
             entity.View += 1;
             await context.SaveChangesAsync();
         }
 
         public async Task<string> GetPostAISummary(int id)
         {
-            var content = await context.Posts.Where(x => x.Id == id).Select(x => x.Content).FirstOrDefaultAsync() ?? throw new Exception("找不到對應文章");
+            var content = await repository.GetPostNoIncludeAny().Where(x => x.Id == id).Select(x => x.Content).FirstOrDefaultAsync() 
+                ?? throw new Exception("找不到對應文章");
 
             var dto = new AiDtoRequest
             {
@@ -133,10 +133,10 @@ namespace blog.Services
 
         public async Task<List<string>> GetTags()
         {
-            return await context.PostsTagsMapping.Select(x => x.PostsTag.Tag).Distinct().ToListAsync();
+            return await repository.GetTags().Select(x => x.PostsTag.Tag).Distinct().ToListAsync();
         }
 
-        private List<PostsTag> ConvertPostsTags(List<string> tags)
+        private static List<PostsTag> ConvertPostsTags(List<string> tags)
         {
             var tagsEntity = new List<PostsTag>();
             foreach (var tag in tags)
@@ -149,7 +149,7 @@ namespace blog.Services
             return tagsEntity;
         }
 
-        private List<PostsTagMapping> ConvertPostTagMapping(int postId, List<int> tagsIds)
+        private static List<PostsTagMapping> ConvertPostTagMapping(int postId, List<int> tagsIds)
         {
             var postsTagMapping = new List<PostsTagMapping>();
             foreach (var tag in tagsIds)
@@ -171,12 +171,6 @@ namespace blog.Services
             };
 
             return await ollamaHelper.GetOllamaResponse(dto);
-        }
-
-        public async Task<string> GetSql()
-        {
-            var entity = context.Posts.Where(x => x.CreateUserId == 2).ToQueryString();
-            return entity;
         }
     }
 }

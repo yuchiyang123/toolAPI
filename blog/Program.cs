@@ -41,8 +41,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
-
 builder.Services.AddDbContext<BlogContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -54,6 +52,8 @@ builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<RecipeService>();
 builder.Services.AddScoped<FileHelper>();
 builder.Services.AddScoped<RecipeRepository>();
+builder.Services.AddScoped<PostRepository>();
+builder.Services.AddScoped<BlogCacheService>();
 
 builder.Services.AddAutoMapper(
     (IMapperConfigurationExpression cfg) => { },
@@ -67,6 +67,12 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod()
               .AllowAnyHeader();
     });
+});
+
+builder.Services.AddStackExchangeRedisCache(option =>
+{
+    option.Configuration = builder.Configuration.GetConnectionString("Redis");
+    option.InstanceName = "Blog";
 });
 
 builder.Host.UseSerilog((ctx, config) =>
