@@ -1,8 +1,18 @@
-﻿using StackExchange.Redis;
+﻿using System;
+using System.Linq.Expressions;
+using System.Text.Json;
+using System.Threading.Tasks;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using blog.Dtos;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Caching.Distributed;
+using StackExchange.Redis;
 
 namespace blog.Common.Helper
 {
-    public class CacheHelper(IConnectionMultiplexer multiplexer)
+    public class CacheHelper(IConnectionMultiplexer multiplexer, IDistributedCache cache, IMapper mapper)
     {
         public async Task<bool> AcquireLock(string lockKey, TimeSpan expiry)
         {
@@ -15,5 +25,68 @@ namespace blog.Common.Helper
             var db = multiplexer.GetDatabase();
             return await db.KeyDeleteAsync(lockKey);
         }
+
+        public async Task<T?> SaveCacheAsync<T>(string key, Func<IQueryable> saveData, Expression<Func<T, bool>> predicate, CancellationToken ct) where T : class
+        {
+            var lockKey = CacheKeys.LockKey(key);
+            if (await AcquireLock(lockKey, TimeSpan.FromMinutes(10)))
+            {
+                try
+                {
+                    var data = await saveData().ProjectTo<T>(mapper.ConfigurationProvider).FirstOrDefaultAsync(predicate, ct);
+                    if (data is null)
+                    {
+                        await cache.SaveRedisForNullAsync(key, ct);
+                        return null;
+                    }
+
+                    await cache.SaveReditForObjectAsync<T>(key, data, ct);
+
+                    return data;
+                }
+                finally
+                {
+                    await ReleaseLock(lockKey);
+                }
+            }
+            else
+            {
+                await Task.Delay(50, ct);
+                return await SaveCacheAsync(key, saveData, predicate, ct);
+            }
+        }
+
+        public async Task<string?> SaveCacheAsync(string key, Func<Task<string?>> factory, CancellationToken ct)
+        {
+            var lockKey = CacheKeys.LockKey(key);
+            if (await AcquireLock(lockKey, TimeSpan.FromMinutes(10)))
+            {
+                try
+                {
+                    var stringData = await factory();
+                    if (stringData is null)
+                    {
+                        await cache.SaveRedisForNullAsync(key, ct);
+                        return null;
+                    }
+
+                    await cache.SaveReditForStringAsync(key, stringData, ct);
+
+                    return stringData;
+                }
+                finally
+                {
+                    await ReleaseLock(lockKey);
+                }
+            }
+            else
+            {
+                await Task.Delay(50, ct);
+                return await SaveCacheAsync(key, factory, ct);
+            }
+        }
+
+
+        
     }
 }
