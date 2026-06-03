@@ -21,7 +21,6 @@ namespace blog.Controllers
         }
 
         [HttpPost("Create")]
-        [Authorize]
         public async Task<ActionResult> Create(CreateUserDto userDto)
         {
             var valid = await service.ValidUserName(userDto.UserName);
