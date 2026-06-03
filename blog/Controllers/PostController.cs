@@ -1,4 +1,5 @@
-﻿using blog.Dtos;
+﻿using System.Security.Claims;
+using blog.Dtos;
 using blog.Dtos.Page;
 using blog.Services;
 using blog.Services.Redis;
@@ -42,6 +43,8 @@ namespace blog.Controllers
         [Authorize]
         public async Task<ActionResult> UpdatePostAsync([FromBody] UpdatePostDto dto)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!await service.ValidUpdatePostUser(dto.Id, userId)) return Forbid();
             try
             {
                 await service.UpdatePostAsync(dto);
@@ -59,6 +62,9 @@ namespace blog.Controllers
         [Authorize]
         public async Task<ActionResult> DeletePostAsync(int id)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!await service.ValidUpdatePostUser(id, userId)) return Forbid();
+
             await service.DeletePostAsync(id);
             await blogCacheService.InvalidatePostAsync(id);
             await blogCacheService.InvalidataPostSummaryAsync(id);

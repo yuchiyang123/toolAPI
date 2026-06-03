@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace blog.Services
 {
-    public class PostService(IMapper mapper, BlogContext context, PostRepository repository , OllamaHelper ollamaHelper)
+    public class PostService(IMapper mapper, BlogContext context, PostRepository repository, OllamaHelper ollamaHelper)
     {
         public async Task<PageResponseDto<PostDto>> GetPostAsync(PostRequestDto requestDto)
         {
@@ -22,7 +22,7 @@ namespace blog.Services
 
         public async Task<PostDetailDto> GetPostDetailAsync(int id)
         {
-            return await repository.GetPostDetail().ProjectTo<PostDetailDto>(mapper.ConfigurationProvider).FirstOrDefaultAsync(x => x.Id == id) 
+            return await repository.GetPostDetail().ProjectTo<PostDetailDto>(mapper.ConfigurationProvider).FirstOrDefaultAsync(x => x.Id == id)
                 ?? throw new Exception("找不到對應的文章");
         }
 
@@ -59,8 +59,7 @@ namespace blog.Services
             using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
-                var entity = await repository.GetPostTag().FirstOrDefaultAsync(x => x.Id == updatePostDto.Id) 
-                    ?? throw new Exception("找不到對應的文章");
+                var entity = await repository.GetPostTag().FirstAsync(x => x.Id == updatePostDto.Id);
                 var changeRecord = await GetChangeRecords(entity.Title, updatePostDto.Title, entity.Content, updatePostDto.Content,
                     string.Join(",", entity.PostsTagsMapping.Select(x => x.PostsTag.Tag) ?? []), string.Join(",", updatePostDto.Tags ?? []));
                 var changeRecordEntity = new PostsChangeRecord
@@ -104,15 +103,14 @@ namespace blog.Services
 
         public async Task DeletePostAsync(int id)
         {
-            var entity = await repository.GetPostNoIncludeAny().FirstOrDefaultAsync(x => x.Id == id) 
-                ?? throw new Exception("找不到對應的文章");
+            var entity = await repository.GetPostNoIncludeAny().FirstAsync(x => x.Id == id);
             context.Posts.Remove(entity);
             await context.SaveChangesAsync();
         }
 
         public async Task UpdatePostsViewAsync(int id)
         {
-            var entity = await repository.GetPostNoIncludeAny().FirstOrDefaultAsync(x => x.Id == id) 
+            var entity = await repository.GetPostNoIncludeAny().FirstOrDefaultAsync(x => x.Id == id)
                 ?? throw new Exception("找不到對應的文章");
             entity.View += 1;
             await context.SaveChangesAsync();
@@ -120,7 +118,7 @@ namespace blog.Services
 
         public async Task<string> GetPostAISummary(int id)
         {
-            var content = await repository.GetPostNoIncludeAny().Where(x => x.Id == id).Select(x => x.Content).FirstOrDefaultAsync() 
+            var content = await repository.GetPostNoIncludeAny().Where(x => x.Id == id).Select(x => x.Content).FirstOrDefaultAsync()
                 ?? throw new Exception("找不到對應文章");
 
             var dto = new AiDtoRequest
@@ -134,6 +132,14 @@ namespace blog.Services
         public async Task<List<string>> GetTags()
         {
             return await repository.GetTags().Select(x => x.PostsTag.Tag).Distinct().ToListAsync();
+        }
+
+        public async Task<bool> ValidUpdatePostUser(int id, string? userId)
+        {
+            var postEntity = await context.Posts.FirstOrDefaultAsync(x => x.Id == id);
+            if (postEntity is null || userId is null) return false;
+            if (postEntity.CreateUserId.ToString() != userId) return false;
+            return true;
         }
 
         private static List<PostsTag> ConvertPostsTags(List<string> tags)
