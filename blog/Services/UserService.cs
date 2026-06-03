@@ -2,6 +2,7 @@
 using blog.Dtos;
 using blog.Entities;
 using blog.Entities.User;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace blog.Services
@@ -11,6 +12,8 @@ namespace blog.Services
         public async Task CreateUserAsync(CreateUserDto userDto)
         {
             var entity = mapper.Map<Users>(userDto);
+            var hasher = new PasswordHasher<Users>();
+            entity.PasswordHash = hasher.HashPassword(entity, userDto.Password);
             context.Users.Add(entity);
             await context.SaveChangesAsync();
         }
@@ -18,12 +21,16 @@ namespace blog.Services
         public async Task<bool> ValidUserName(string userName)
         {
             var isRepeat = await context.Users.AnyAsync(x => x.UserName == userName);
-            return isRepeat ? false : true;
+            return !isRepeat;
         }
 
         public async Task<bool> LoginAsync(string userName, string password)
         {
-            return await context.Users.AnyAsync(x => x.UserName == userName && x.Password == password);
+            var users = await context.Users.FirstOrDefaultAsync(x => x.UserName == userName);
+            if (users is null) return false;
+            var hasher = new PasswordHasher<Users>();
+            var result = hasher.VerifyHashedPassword(users, users.PasswordHash, password);
+            return result != PasswordVerificationResult.Failed;
         }
     }
 }

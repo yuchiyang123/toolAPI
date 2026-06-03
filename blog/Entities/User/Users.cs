@@ -1,6 +1,5 @@
-﻿using blog.Entities.Blog;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using blog.Entities.Blog;
 
 namespace blog.Entities.User
 {
@@ -9,7 +8,7 @@ namespace blog.Entities.User
     {
         public int Id { get; set; }
         public string UserName { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
+        public string PasswordHash { get; set; } = string.Empty;
         public DateTime LogInDate { get; set; }
         public DateTime CreateDate { get; set; }
         public ICollection<Posts> Posts { get; set; }
