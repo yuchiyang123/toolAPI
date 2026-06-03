@@ -4,7 +4,7 @@ namespace blog.Entities.Flows
 {
     public class FlowNode
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public int FlowVersionId { get; set; }
         public required string StageName { get; set; }
         public int Type { get; set; }

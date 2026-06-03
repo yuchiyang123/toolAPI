@@ -6,8 +6,8 @@ namespace blog.Entities.Flows
     {
         public int Id { get; set; }
         public int FlowVersionId { get; set; }
-        public int SourceNodeId { get; set; }
-        public int TargetNodeId { get; set; }
+        public Guid SourceNodeId { get; set; }
+        public Guid TargetNodeId { get; set; }
         public string? DataJson { get; set; }
         public required DateTime UpdateDate { get; set; }
         public required int UpdateUser { get; set; }

@@ -343,6 +343,7 @@ namespace blog.Entities
             builder.Entity<FlowNode>(entity =>
             {
                 entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
                 entity
                     .HasMany(e => e.FlowRules)
                     .WithOne(e => e.FlowNode)

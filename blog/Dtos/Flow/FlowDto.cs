@@ -61,9 +61,9 @@
 
     public class FlowEdgeDto
     {
-        public int Id { get; set; }
-        public int SourceNodeId { get; set; }
-        public int TargetNodeId { get; set; }
+        public Guid Id { get; set; }
+        public Guid SourceNodeId { get; set; }
+        public Guid TargetNodeId { get; set; }
         public string? DataJson { get; set; }
     }
 
