@@ -64,7 +64,7 @@
         public Guid Id { get; set; }
         public Guid SourceNodeId { get; set; }
         public Guid TargetNodeId { get; set; }
-        public string? DataJson { get; set; }
+        public ConditionGroup? Condition { get; set; }
     }
 
     public class FlowRuleDto
