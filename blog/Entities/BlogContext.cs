@@ -297,58 +297,68 @@ namespace blog.Entities
             builder.Entity<Flow>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.HasMany(e => e.FlowVersion)
-                      .WithOne(e => e.Flows)
-                      .HasForeignKey(e => e.FlowId);
-                entity.HasOne(e => e.UpdateUsers)
-                      .WithMany()
-                      .HasForeignKey(e => e.UpdateUser)
-                      .HasPrincipalKey(e => e.Id)
-                      .OnDelete(DeleteBehavior.Cascade);
-                entity.HasOne(e => e.CreateUsers)
-                      .WithMany()
-                      .HasForeignKey(e => e.CreateUser)
-                      .HasPrincipalKey(e => e.Id)
-                      .OnDelete(DeleteBehavior.Cascade);
+                entity
+                    .HasMany(e => e.FlowVersion)
+                    .WithOne(e => e.Flows)
+                    .HasForeignKey(e => e.FlowId);
+                entity
+                    .HasOne(e => e.UpdateUsers)
+                    .WithMany()
+                    .HasForeignKey(e => e.UpdateUser)
+                    .HasPrincipalKey(e => e.Id)
+                    .OnDelete(DeleteBehavior.Cascade);
+                entity
+                    .HasOne(e => e.CreateUsers)
+                    .WithMany()
+                    .HasForeignKey(e => e.CreateUser)
+                    .HasPrincipalKey(e => e.Id)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             builder.Entity<FlowVersion>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.HasMany(e => e.FlowNodes)
-                      .WithOne(e => e.FlowVersion)
-                      .HasForeignKey(e => e.FlowVersionId);
-                entity.HasMany(e => e.FlowEdges)
-                      .WithOne(e => e.FlowVersion)
-                      .HasForeignKey(e => e.FlowVersionId);
-                entity.HasOne(e => e.UpdateUsers)
-                      .WithMany()
-                      .HasForeignKey(e => e.UpdateUser)
-                      .HasPrincipalKey(e => e.Id)
-                      .OnDelete(DeleteBehavior.Cascade);
-                entity.HasOne(e => e.CreateUsers)
-                      .WithMany()
-                      .HasForeignKey(e => e.CreateUser)
-                      .HasPrincipalKey(e => e.Id)
-                      .OnDelete(DeleteBehavior.Cascade);
+                entity
+                    .HasMany(e => e.FlowNodes)
+                    .WithOne(e => e.FlowVersion)
+                    .HasForeignKey(e => e.FlowVersionId);
+                entity
+                    .HasMany(e => e.FlowEdges)
+                    .WithOne(e => e.FlowVersion)
+                    .HasForeignKey(e => e.FlowVersionId);
+                entity
+                    .HasOne(e => e.UpdateUsers)
+                    .WithMany()
+                    .HasForeignKey(e => e.UpdateUser)
+                    .HasPrincipalKey(e => e.Id)
+                    .OnDelete(DeleteBehavior.Cascade);
+                entity
+                    .HasOne(e => e.CreateUsers)
+                    .WithMany()
+                    .HasForeignKey(e => e.CreateUser)
+                    .HasPrincipalKey(e => e.Id)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             builder.Entity<FlowNode>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.HasMany(e => e.FlowRules)
-                      .WithOne(e => e.FlowNode)
-                      .HasForeignKey(e => e.FlowNodeId);
-                entity.HasOne(e => e.UpdateUsers)
-                      .WithMany()
-                      .HasForeignKey(e => e.UpdateUser)
-                      .HasPrincipalKey(e => e.Id)
-                      .OnDelete(DeleteBehavior.Cascade);
-                entity.HasOne(e => e.CreateUsers)
-                      .WithMany()
-                      .HasForeignKey(e => e.CreateUser)
-                      .HasPrincipalKey(e => e.Id)
-                      .OnDelete(DeleteBehavior.Cascade);
+                entity
+                    .HasMany(e => e.FlowRules)
+                    .WithOne(e => e.FlowNode)
+                    .HasForeignKey(e => e.FlowNodeId);
+                entity
+                    .HasOne(e => e.UpdateUsers)
+                    .WithMany()
+                    .HasForeignKey(e => e.UpdateUser)
+                    .HasPrincipalKey(e => e.Id)
+                    .OnDelete(DeleteBehavior.Cascade);
+                entity
+                    .HasOne(e => e.CreateUsers)
+                    .WithMany()
+                    .HasForeignKey(e => e.CreateUser)
+                    .HasPrincipalKey(e => e.Id)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             builder.Entity<FlowRule>(entity =>
@@ -359,24 +369,28 @@ namespace blog.Entities
             builder.Entity<FlowEdge>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.HasOne(e => e.FlowSourceNode)
-                      .WithMany()
-                      .HasForeignKey(e => e.SourceNodeId)
-                      .OnDelete(DeleteBehavior.Restrict);
-                entity.HasOne(e => e.FlowTargetNode)
-                      .WithMany()
-                      .HasForeignKey(e => e.TargetNodeId)
-                      .OnDelete(DeleteBehavior.Restrict);
-                entity.HasOne(e => e.UpdateUsers)
-      .WithMany()
-      .HasForeignKey(e => e.UpdateUser)
-      .HasPrincipalKey(e => e.Id)
-      .OnDelete(DeleteBehavior.Cascade);
-                entity.HasOne(e => e.CreateUsers)
-                      .WithMany()
-                      .HasForeignKey(e => e.CreateUser)
-                      .HasPrincipalKey(e => e.Id)
-                      .OnDelete(DeleteBehavior.Cascade);
+                entity
+                    .HasOne(e => e.FlowSourceNode)
+                    .WithMany()
+                    .HasForeignKey(e => e.SourceNodeId)
+                    .OnDelete(DeleteBehavior.Restrict);
+                entity
+                    .HasOne(e => e.FlowTargetNode)
+                    .WithMany()
+                    .HasForeignKey(e => e.TargetNodeId)
+                    .OnDelete(DeleteBehavior.Restrict);
+                entity
+                    .HasOne(e => e.UpdateUsers)
+                    .WithMany()
+                    .HasForeignKey(e => e.UpdateUser)
+                    .HasPrincipalKey(e => e.Id)
+                    .OnDelete(DeleteBehavior.Cascade);
+                entity
+                    .HasOne(e => e.CreateUsers)
+                    .WithMany()
+                    .HasForeignKey(e => e.CreateUser)
+                    .HasPrincipalKey(e => e.Id)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
             #endregion
         }
