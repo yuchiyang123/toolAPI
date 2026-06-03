@@ -9,9 +9,9 @@ namespace blog.Entities.Flows
         public required string Version { get; set; }
         public bool IsActive { get; set; }
         public required DateTime UpdateDate { get; set; }
-        public required string UpdateUser { get; set; }
+        public required int UpdateUser { get; set; }
         public required DateTime CreateDate { get; set; }
-        public required string CreateUser { get; set; }
+        public required int CreateUser { get; set; }
         public Flow Flows { get; set; }
         public ICollection<FlowNode> FlowNodes { get; set; }
         public ICollection<FlowEdge> FlowEdges { get; set; }
