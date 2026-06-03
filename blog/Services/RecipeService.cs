@@ -10,17 +10,29 @@ using Microsoft.EntityFrameworkCore;
 
 namespace blog.Services
 {
-    public class RecipeService(BlogContext context, IMapper mapper, FileHelper fileHelper, ILogger<RecipeService> logger, RecipeRepository repository)
+    public class RecipeService(
+        BlogContext context,
+        IMapper mapper,
+        FileHelper fileHelper,
+        ILogger<RecipeService> logger,
+        RecipeRepository repository
+    )
     {
         public async Task<PageResponseDto<RecipeResponse>> GetRecipe(RecipeQueryDto queryDto)
         {
-            return await context.Recipe.Include(x => x.RecipeFileMappings).ThenInclude(x => x.Files)
-                .ProjectTo<RecipeResponse>(mapper.ConfigurationProvider).ToPageResponseDto(queryDto.PageIndex, queryDto.PageSize);
+            return await context
+                .Recipe.Include(x => x.RecipeFileMappings)
+                    .ThenInclude(x => x.Files)
+                .ProjectTo<RecipeResponse>(mapper.ConfigurationProvider)
+                .ToPageResponseDto(queryDto.PageIndex, queryDto.PageSize);
         }
 
         public async Task<RecipeDetailResponse> GetRecipeDetail(int id)
         {
-            return await context.Recipe.ProjectTo<RecipeDetailResponse>(mapper.ConfigurationProvider).FirstOrDefaultAsync(x => x.Id == id) ?? throw new Exception("找不到對應的文章");
+            return await context
+                    .Recipe.ProjectTo<RecipeDetailResponse>(mapper.ConfigurationProvider)
+                    .FirstOrDefaultAsync(x => x.Id == id)
+                ?? throw new Exception("找不到對應的文章");
         }
 
         public async Task CreateRecipe(RecipeRequest requestDto)
@@ -35,43 +47,55 @@ namespace blog.Services
                     CookingTime = requestDto.CookingTime,
                     Complexity = requestDto.Complexity,
                     Description = requestDto.Description,
-                    RecipeTagMappings = requestDto.Tags?.Select(x => new RecipeTagMapping
-                    {
-                        RecipeTag = new RecipeTag
-                        {
-                            Tag = x.Tag,
-                        }
-                    }).ToList() ?? [],
+                    RecipeTagMappings =
+                        requestDto
+                            .Tags?.Select(x => new RecipeTagMapping
+                            {
+                                RecipeTag = new RecipeTag { Tag = x.Tag },
+                            })
+                            .ToList()
+                        ?? [],
                     RecipeDetailMappings = new RecipeDetailMapping
                     {
-                        RecipeDetail = new RecipeDetail
-                        {
-                            Content = requestDto.Content,
-                        }
+                        RecipeDetail = new RecipeDetail { Content = requestDto.Content },
                     },
-                    RecipeIngredientsMappings = requestDto.Ingredients?.Select(x => new RecipeIngredientsMapping
-                    {
-                        RecipeIngredients = new RecipeIngredients
-                        {
-                            IngredientsGroupName = x.IngredientsGroupName,
-                            RecipeIngredientsDetailMappings = [.. x.IngredientsDetails.Select(y => new RecipeIngredientsDetailMapping
+                    RecipeIngredientsMappings =
+                        requestDto
+                            .Ingredients?.Select(x => new RecipeIngredientsMapping
                             {
-                                RecipeIngredientsDetail = new RecipeIngredientsDetail
+                                RecipeIngredients = new RecipeIngredients
                                 {
-                                    IngredientsName = y.IngredientsName,
-                                    Amount = y.Amount,
-                                }
-                            })]
-                        }
-                    }).ToList() ?? [],
-                    RecipeStepMappings = requestDto.Steps.Select(x => new RecipeStepMapping
-                    {
-                        RecipeStep = new RecipeStep
-                        {
-                            Step = x.Step,
-                            Description = x.Description,
-                        }
-                    }).ToList() ?? [],
+                                    IngredientsGroupName = x.IngredientsGroupName,
+                                    RecipeIngredientsDetailMappings =
+                                    [
+                                        .. x.IngredientsDetails.Select(
+                                            y => new RecipeIngredientsDetailMapping
+                                            {
+                                                RecipeIngredientsDetail =
+                                                    new RecipeIngredientsDetail
+                                                    {
+                                                        IngredientsName = y.IngredientsName,
+                                                        Amount = y.Amount,
+                                                    },
+                                            }
+                                        ),
+                                    ],
+                                },
+                            })
+                            .ToList()
+                        ?? [],
+                    RecipeStepMappings =
+                        requestDto
+                            .Steps.Select(x => new RecipeStepMapping
+                            {
+                                RecipeStep = new RecipeStep
+                                {
+                                    Step = x.Step,
+                                    Description = x.Description,
+                                },
+                            })
+                            .ToList()
+                        ?? [],
                 };
 
                 if (requestDto.MailImage != null)
@@ -97,20 +121,18 @@ namespace blog.Services
             using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
-                var exist = await repository.GetRecipes().FirstOrDefaultAsync(x => x.Id == id) ?? throw new Exception("找不到對應的食譜");
+                var exist =
+                    await repository.GetRecipes().FirstOrDefaultAsync(x => x.Id == id)
+                    ?? throw new Exception("找不到對應的食譜");
 
                 exist.RecipeTagMappings.Clear();
                 if (requestDto.Tags != null && requestDto.Tags.Count != 0)
                 {
                     foreach (var tag in requestDto.Tags)
                     {
-                        exist.RecipeTagMappings.Add(new RecipeTagMapping
-                        {
-                            RecipeTag = new RecipeTag
-                            {
-                                Tag = tag.Tag
-                            }
-                        });
+                        exist.RecipeTagMappings.Add(
+                            new RecipeTagMapping { RecipeTag = new RecipeTag { Tag = tag.Tag } }
+                        );
                     }
                 }
 
@@ -119,18 +141,20 @@ namespace blog.Services
                 {
                     foreach (var step in requestDto.Steps)
                     {
-                        exist.RecipeStepMappings.Add(new RecipeStepMapping
-                        {
-                            RecipeStep = new RecipeStep
+                        exist.RecipeStepMappings.Add(
+                            new RecipeStepMapping
                             {
-                                Step = step.Step,
-                                Description = step.Description,
+                                RecipeStep = new RecipeStep
+                                {
+                                    Step = step.Step,
+                                    Description = step.Description,
+                                },
                             }
-                        });
+                        );
                     }
                 }
 
-                if(requestDto.Content != null)
+                if (requestDto.Content != null)
                     exist.RecipeDetailMappings.RecipeDetail.Content = requestDto.Content;
 
                 exist.RecipeIngredientsMappings.Clear();
@@ -138,38 +162,43 @@ namespace blog.Services
                 {
                     foreach (var ingredients in requestDto.Ingredients)
                     {
-                        exist.RecipeIngredientsMappings.Add(new RecipeIngredientsMapping
-                        {
-                            RecipeIngredients = new RecipeIngredients
+                        exist.RecipeIngredientsMappings.Add(
+                            new RecipeIngredientsMapping
                             {
-                                IngredientsGroupName = ingredients.IngredientsGroupName,
-                                RecipeIngredientsDetailMappings = [.. ingredients.IngredientsDetails.Select(x => new RecipeIngredientsDetailMapping
+                                RecipeIngredients = new RecipeIngredients
                                 {
-                                    RecipeIngredientsDetail = new RecipeIngredientsDetail
-                                    {
-                                        IngredientsName = x.IngredientsName,
-                                        Amount = x.Amount,
-                                    }
-                                })],
+                                    IngredientsGroupName = ingredients.IngredientsGroupName,
+                                    RecipeIngredientsDetailMappings =
+                                    [
+                                        .. ingredients.IngredientsDetails.Select(
+                                            x => new RecipeIngredientsDetailMapping
+                                            {
+                                                RecipeIngredientsDetail =
+                                                    new RecipeIngredientsDetail
+                                                    {
+                                                        IngredientsName = x.IngredientsName,
+                                                        Amount = x.Amount,
+                                                    },
+                                            }
+                                        ),
+                                    ],
+                                },
                             }
-                        });
+                        );
                     }
                 }
 
                 int? deleteFileid = null;
                 if (exist.RecipeFileMappings != null)
                 {
-                   context.RecipeFileMappings.Remove(exist.RecipeFileMappings);
+                    context.RecipeFileMappings.Remove(exist.RecipeFileMappings);
                     deleteFileid = exist.RecipeFileMappings.FileId;
                 }
 
                 if (requestDto.MailImage != null)
                 {
                     int fileId = await fileHelper.SaveFileAsync(requestDto.MailImage);
-                    exist.RecipeFileMappings = new RecipeFileMapping
-                    {
-                        FileId = fileId,
-                    };
+                    exist.RecipeFileMappings = new RecipeFileMapping { FileId = fileId };
                 }
 
                 exist.RecipeName = requestDto.RecipeName;
@@ -194,7 +223,9 @@ namespace blog.Services
 
         public async Task DeleteRecipe(int id)
         {
-            var entity = await context.Recipe.FirstOrDefaultAsync(x => x.Id == id) ?? throw new Exception("找不到對應的文章");
+            var entity =
+                await context.Recipe.FirstOrDefaultAsync(x => x.Id == id)
+                ?? throw new Exception("找不到對應的文章");
             context.Recipe.Remove(entity);
             await context.SaveChangesAsync();
         }

@@ -18,7 +18,8 @@ namespace blog.Migrations
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "nvarchar(60)",
-                oldMaxLength: 60);
+                oldMaxLength: 60
+            );
         }
 
         /// <inheritdoc />
@@ -32,7 +33,8 @@ namespace blog.Migrations
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "nvarchar(256)",
-                oldMaxLength: 256);
+                oldMaxLength: 256
+            );
         }
     }
 }

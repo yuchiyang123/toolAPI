@@ -6,14 +6,17 @@
         /// 每頁顯示數量
         /// </summary>
         public int PageSize { get; set; } = 10;
+
         /// <summary>
         /// 當前頁碼
         /// </summary>
         public required int PageIndex { get; set; }
+
         /// <summary>
         /// 總頁數
         /// </summary>
         public int PageTotal { get; set; }
+
         /// <summary>
         /// 是否有下一頁
         /// </summary>
@@ -26,6 +29,7 @@
         /// 每頁顯示數量
         /// </summary>
         public int PageSize { get; set; } = 10;
+
         /// <summary>
         /// 當前頁碼
         /// </summary>

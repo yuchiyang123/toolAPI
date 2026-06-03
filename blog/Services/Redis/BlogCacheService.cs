@@ -9,7 +9,13 @@ using Microsoft.Extensions.Caching.Distributed;
 
 namespace blog.Services.Redis
 {
-    public class BlogCacheService(IDistributedCache cache, IMapper mapper, CacheHelper cacheHelper, PostRepository repository, OllamaHelper ollamaHelper)
+    public class BlogCacheService(
+        IDistributedCache cache,
+        IMapper mapper,
+        CacheHelper cacheHelper,
+        PostRepository repository,
+        OllamaHelper ollamaHelper
+    )
     {
         #region PostDetail Cache
         public async Task<PostDetailDto?> GetPostDetailAsync(int id, CancellationToken ct = default)
@@ -19,15 +25,22 @@ namespace blog.Services.Redis
 
             if (cached is not null)
             {
-                if (cached.IsCachedNull()) return null;
+                if (cached.IsCachedNull())
+                    return null;
                 var dto = JsonSerializer.Deserialize<PostDetailDto>(cached);
-                if (dto is null) return null;
+                if (dto is null)
+                    return null;
                 var view = await GetViewCountFromDbAsync(id);
                 dto.View = view.ToString();
                 return dto;
             }
 
-            return await cacheHelper.SaveCacheAsync<PostDetailDto>(key, () => repository.GetPostDetail(), x => x.Id == id, ct);
+            return await cacheHelper.SaveCacheAsync<PostDetailDto>(
+                key,
+                () => repository.GetPostDetail(),
+                x => x.Id == id,
+                ct
+            );
         }
 
         public async Task InvalidatePostAsync(int id)
@@ -44,7 +57,8 @@ namespace blog.Services.Redis
 
             if (cached is not null)
             {
-                if (cached.IsCachedNull()) return null;
+                if (cached.IsCachedNull())
+                    return null;
                 return cached;
             }
 
@@ -53,7 +67,11 @@ namespace blog.Services.Redis
             {
                 try
                 {
-                    var content = await repository.GetPostNoIncludeAny().Where(x => x.Id == id).Select(x => x.Content).FirstOrDefaultAsync(ct);
+                    var content = await repository
+                        .GetPostNoIncludeAny()
+                        .Where(x => x.Id == id)
+                        .Select(x => x.Content)
+                        .FirstOrDefaultAsync(ct);
 
                     if (content is null)
                     {
@@ -101,9 +119,11 @@ namespace blog.Services.Redis
         /// <returns></returns>
         private async Task<int> GetViewCountFromDbAsync(int id)
         {
-            return await repository.GetPostNoIncludeAny().Where(x => x.Id == id).Select(x => x.View).FirstOrDefaultAsync();
+            return await repository
+                .GetPostNoIncludeAny()
+                .Where(x => x.Id == id)
+                .Select(x => x.View)
+                .FirstOrDefaultAsync();
         }
     }
 }
-
-

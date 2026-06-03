@@ -8,9 +8,14 @@ namespace blog.Common.Helper
         public Task BindModelAsync(ModelBindingContext bindingContext)
         {
             var value = bindingContext.ValueProvider.GetValue(bindingContext.ModelName).FirstValue;
-            if(value == null) return Task.CompletedTask;
+            if (value == null)
+                return Task.CompletedTask;
 
-            var result = JsonSerializer.Deserialize(value, bindingContext.ModelType, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            var result = JsonSerializer.Deserialize(
+                value,
+                bindingContext.ModelType,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            );
             bindingContext.Result = ModelBindingResult.Success(result);
             return Task.CompletedTask;
         }

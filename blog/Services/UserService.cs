@@ -27,7 +27,8 @@ namespace blog.Services
         public async Task<bool> LoginAsync(string userName, string password)
         {
             var users = await context.Users.FirstOrDefaultAsync(x => x.UserName == userName);
-            if (users is null) return false;
+            if (users is null)
+                return false;
             var hasher = new PasswordHasher<Users>();
             var result = hasher.VerifyHashedPassword(users, users.PasswordHash, password);
             return result != PasswordVerificationResult.Failed;

@@ -10,7 +10,11 @@ namespace blog.Common.Helper
             return query.Skip((pageIndex - 1) * pageSize).Take(pageSize);
         }
 
-        public static async Task<PageResponseDto<T>> ToPageResponseDto<T>(this IQueryable<T> query, int pageIndex, int pageSize)
+        public static async Task<PageResponseDto<T>> ToPageResponseDto<T>(
+            this IQueryable<T> query,
+            int pageIndex,
+            int pageSize
+        )
         {
             var total = query.Count();
 
@@ -19,7 +23,7 @@ namespace blog.Common.Helper
                 PageIndex = pageIndex,
                 PageTotal = (int)Math.Ceiling(total / (double)pageSize),
                 HasNextPage = total > pageIndex * pageSize,
-                Items = await query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync()
+                Items = await query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync(),
             };
         }
     }

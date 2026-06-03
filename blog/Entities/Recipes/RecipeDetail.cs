@@ -6,6 +6,7 @@ namespace blog.Entities.Recipes
     public class RecipeDetail
     {
         public int Id { get; set; }
+
         /// <summary>
         /// 心得
         /// </summary>

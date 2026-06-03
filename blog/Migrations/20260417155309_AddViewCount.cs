@@ -15,15 +15,14 @@ namespace blog.Migrations
                 table: "Posts",
                 type: "int",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 0
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "View",
-                table: "Posts");
+            migrationBuilder.DropColumn(name: "View", table: "Posts");
         }
     }
 }

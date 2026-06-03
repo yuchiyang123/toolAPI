@@ -19,23 +19,26 @@ var builder = WebApplication.CreateBuilder(args);
 var jwtConfig = builder.Configuration.GetSection("Jwt");
 var key = Encoding.UTF8.GetBytes(jwtConfig["Key"]!);
 
-builder.Services.AddAuthentication(option =>
-{
-    option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    option.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(option =>
-{
-    option.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+builder
+    .Services.AddAuthentication(option =>
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtConfig["Issuer"],
-        ValidAudience = jwtConfig["Audience"],
-        IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(key)
-    };
-});
+        option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        option.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(option =>
+    {
+        option.TokenValidationParameters =
+            new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = jwtConfig["Issuer"],
+                ValidAudience = jwtConfig["Audience"],
+                IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(key),
+            };
+    });
 
 builder.Services.AddAuthorization();
 
@@ -44,7 +47,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<BlogContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+);
 
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<PostService>();
@@ -65,12 +69,13 @@ builder.Services.AddAutoMapper(
 );
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
-    {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
-    });
+    options.AddPolicy(
+        "AllowAll",
+        policy =>
+        {
+            policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+        }
+    );
 });
 
 builder.Services.AddStackExchangeRedisCache(option =>
@@ -79,25 +84,29 @@ builder.Services.AddStackExchangeRedisCache(option =>
     option.InstanceName = "Blog";
 });
 
-// ¥Îsingleton ¬O¦]¬° redis tcp³s½u ¦pªG·s¼W¤@­Ó¹ê¨Ò ´N·|»Ý­n­«³s¤@¦¸ ³o¬O­ì¥Í³]­pªº°ÝÃD
+// ï¿½ï¿½singleton ï¿½Oï¿½]ï¿½ï¿½ redis tcpï¿½sï¿½u ï¿½pï¿½Gï¿½sï¿½Wï¿½@ï¿½Ó¹ï¿½ï¿½ ï¿½Nï¿½|ï¿½Ý­nï¿½ï¿½ï¿½sï¿½@ï¿½ï¿½ ï¿½oï¿½Oï¿½ï¿½Í³]ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½D
 builder.Services.AddSingleton<IConnectionMultiplexer>(
     ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis")!)
 );
 
-builder.Host.UseSerilog((ctx, config) =>
-{
-    config.WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day);
-});
+builder.Host.UseSerilog(
+    (ctx, config) =>
+    {
+        config.WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day);
+    }
+);
 
 var app = builder.Build();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider("C:\\PushAPI\\files"),
-    RequestPath = "/files"
-});
+app.UseStaticFiles(
+    new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider("C:\\PushAPI\\files"),
+        RequestPath = "/files",
+    }
+);
 
 app.UseCors("AllowAll");
 app.UseHttpsRedirection();

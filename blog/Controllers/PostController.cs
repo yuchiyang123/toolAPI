@@ -10,7 +10,8 @@ namespace blog.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PostController(PostService service, BlogCacheService blogCacheService) : ControllerBase
+    public class PostController(PostService service, BlogCacheService blogCacheService)
+        : ControllerBase
     {
         [HttpGet()]
         public async Task<PageResponseDto<PostDto>> GetPostAsync([FromQuery] PostRequestDto dto)
@@ -44,7 +45,8 @@ namespace blog.Controllers
         public async Task<ActionResult> UpdatePostAsync([FromBody] UpdatePostDto dto)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!await service.ValidUpdatePostUser(dto.Id, userId)) return Forbid();
+            if (!await service.ValidUpdatePostUser(dto.Id, userId))
+                return Forbid();
             try
             {
                 await service.UpdatePostAsync(dto);
@@ -63,7 +65,8 @@ namespace blog.Controllers
         public async Task<ActionResult> DeletePostAsync(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!await service.ValidUpdatePostUser(id, userId)) return Forbid();
+            if (!await service.ValidUpdatePostUser(id, userId))
+                return Forbid();
 
             await service.DeletePostAsync(id);
             await blogCacheService.InvalidatePostAsync(id);

@@ -13,16 +13,27 @@ using Microsoft.EntityFrameworkCore;
 
 namespace blog.Services
 {
-    public class PostService(IMapper mapper, BlogContext context, PostRepository repository, OllamaHelper ollamaHelper)
+    public class PostService(
+        IMapper mapper,
+        BlogContext context,
+        PostRepository repository,
+        OllamaHelper ollamaHelper
+    )
     {
         public async Task<PageResponseDto<PostDto>> GetPostAsync(PostRequestDto requestDto)
         {
-            return await repository.GetPost(requestDto).ProjectTo<PostDto>(mapper.ConfigurationProvider).ToPageResponseDto(requestDto.PageIndex, requestDto.PageSize);
+            return await repository
+                .GetPost(requestDto)
+                .ProjectTo<PostDto>(mapper.ConfigurationProvider)
+                .ToPageResponseDto(requestDto.PageIndex, requestDto.PageSize);
         }
 
         public async Task<PostDetailDto> GetPostDetailAsync(int id)
         {
-            return await repository.GetPostDetail().ProjectTo<PostDetailDto>(mapper.ConfigurationProvider).FirstOrDefaultAsync(x => x.Id == id)
+            return await repository
+                    .GetPostDetail()
+                    .ProjectTo<PostDetailDto>(mapper.ConfigurationProvider)
+                    .FirstOrDefaultAsync(x => x.Id == id)
                 ?? throw new Exception("找不到對應的文章");
         }
 
@@ -59,9 +70,17 @@ namespace blog.Services
             using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
-                var entity = await repository.GetPostTag().FirstAsync(x => x.Id == updatePostDto.Id);
-                var changeRecord = await GetChangeRecords(entity.Title, updatePostDto.Title, entity.Content, updatePostDto.Content,
-                    string.Join(",", entity.PostsTagsMapping.Select(x => x.PostsTag.Tag) ?? []), string.Join(",", updatePostDto.Tags ?? []));
+                var entity = await repository
+                    .GetPostTag()
+                    .FirstAsync(x => x.Id == updatePostDto.Id);
+                var changeRecord = await GetChangeRecords(
+                    entity.Title,
+                    updatePostDto.Title,
+                    entity.Content,
+                    updatePostDto.Content,
+                    string.Join(",", entity.PostsTagsMapping.Select(x => x.PostsTag.Tag) ?? []),
+                    string.Join(",", updatePostDto.Tags ?? [])
+                );
                 var changeRecordEntity = new PostsChangeRecord
                 {
                     ChangeRecord = changeRecord,
@@ -110,7 +129,8 @@ namespace blog.Services
 
         public async Task UpdatePostsViewAsync(int id)
         {
-            var entity = await repository.GetPostNoIncludeAny().FirstOrDefaultAsync(x => x.Id == id)
+            var entity =
+                await repository.GetPostNoIncludeAny().FirstOrDefaultAsync(x => x.Id == id)
                 ?? throw new Exception("找不到對應的文章");
             entity.View += 1;
             await context.SaveChangesAsync();
@@ -118,12 +138,17 @@ namespace blog.Services
 
         public async Task<string> GetPostAISummary(int id)
         {
-            var content = await repository.GetPostNoIncludeAny().Where(x => x.Id == id).Select(x => x.Content).FirstOrDefaultAsync()
+            var content =
+                await repository
+                    .GetPostNoIncludeAny()
+                    .Where(x => x.Id == id)
+                    .Select(x => x.Content)
+                    .FirstOrDefaultAsync()
                 ?? throw new Exception("找不到對應文章");
 
             var dto = new AiDtoRequest
             {
-                Prompt = $"用繁體中文輸出詳細的摘要，只輸出摘要：\n{content}"
+                Prompt = $"用繁體中文輸出詳細的摘要，只輸出摘要：\n{content}",
             };
 
             return await ollamaHelper.GetOllamaResponse(dto);
@@ -137,8 +162,10 @@ namespace blog.Services
         public async Task<bool> ValidUpdatePostUser(int id, string? userId)
         {
             var postEntity = await context.Posts.FirstOrDefaultAsync(x => x.Id == id);
-            if (postEntity is null || userId is null) return false;
-            if (postEntity.CreateUserId.ToString() != userId) return false;
+            if (postEntity is null || userId is null)
+                return false;
+            if (postEntity.CreateUserId.ToString() != userId)
+                return false;
             return true;
         }
 
@@ -147,10 +174,7 @@ namespace blog.Services
             var tagsEntity = new List<PostsTag>();
             foreach (var tag in tags)
             {
-                tagsEntity.Add(new PostsTag
-                {
-                    Tag = tag
-                });
+                tagsEntity.Add(new PostsTag { Tag = tag });
             }
             return tagsEntity;
         }
@@ -160,20 +184,24 @@ namespace blog.Services
             var postsTagMapping = new List<PostsTagMapping>();
             foreach (var tag in tagsIds)
             {
-                postsTagMapping.Add(new PostsTagMapping
-                {
-                    FK_PostsId = postId,
-                    FK_TagId = tag
-                });
+                postsTagMapping.Add(new PostsTagMapping { FK_PostsId = postId, FK_TagId = tag });
             }
             return postsTagMapping;
         }
 
-        private async Task<string> GetChangeRecords(string oldTitle, string newTitle, string oldContent, string newContent, string? oldTags, string? newTags)
+        private async Task<string> GetChangeRecords(
+            string oldTitle,
+            string newTitle,
+            string oldContent,
+            string newContent,
+            string? oldTags,
+            string? newTags
+        )
         {
             var dto = new AiDtoRequest
             {
-                Prompt = $"這是舊文章標題：{oldTitle}，這是修改過後的文章標題：{newTitle}，這是舊文章內容：{oldContent}，這是修改過後的文章內容：{newContent}，這是舊文章標籤：{oldTags}，這是修改過後的文章標籤：{newTags}，請比較後回傳文章的異動說明，請勿添加任何的表情符號，明確表示修改了什麼以及新增異動了什麼"
+                Prompt =
+                    $"這是舊文章標題：{oldTitle}，這是修改過後的文章標題：{newTitle}，這是舊文章內容：{oldContent}，這是修改過後的文章內容：{newContent}，這是舊文章標籤：{oldTags}，這是修改過後的文章標籤：{newTags}，請比較後回傳文章的異動說明，請勿添加任何的表情符號，明確表示修改了什麼以及新增異動了什麼",
             };
 
             return await ollamaHelper.GetOllamaResponse(dto);

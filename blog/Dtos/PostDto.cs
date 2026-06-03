@@ -19,7 +19,7 @@ namespace blog.Dtos
     }
 
     public class ChangeRecords
-    { 
+    {
         public DateOnly CreateDate { get; set; }
         public required string ChangeRecord { get; set; }
     }

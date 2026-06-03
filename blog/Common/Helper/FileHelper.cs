@@ -5,6 +5,7 @@ namespace blog.Common.Helper
     public class FileHelper(BlogContext context, IConfiguration configuration)
     {
         private readonly string _filePath = configuration["File:BasePath"]!;
+
         public async Task<int> SaveFileAsync(IFormFile file)
         {
             var ext = Path.GetExtension(file.FileName);
@@ -19,11 +20,7 @@ namespace blog.Common.Helper
                 await file.CopyToAsync(fileStream);
             }
 
-            var fileEntity = new Files
-            {
-                Path = $"/files/{fileName}",
-                FileName = fileName,
-            };
+            var fileEntity = new Files { Path = $"/files/{fileName}", FileName = fileName };
 
             context.Files.Add(fileEntity);
 
@@ -37,7 +34,8 @@ namespace blog.Common.Helper
 
             // 刪除檔案
             var filePath = Path.Combine(_filePath, file.FileName);
-            if (File.Exists(filePath)) File.Delete(filePath);
+            if (File.Exists(filePath))
+                File.Delete(filePath);
 
             context.Files.Remove(file);
         }

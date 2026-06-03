@@ -7,6 +7,7 @@ namespace blog.Entities.Recipes
     {
         public int Id { get; set; }
         public required string IngredientsName { get; set; }
+
         /// <summary>
         /// 需要多少量
         /// </summary>

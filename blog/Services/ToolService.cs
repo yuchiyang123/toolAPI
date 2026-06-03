@@ -1,7 +1,7 @@
-﻿using blog.Dtos;
+﻿using System.Linq.Dynamic.Core;
+using blog.Dtos;
 using blog.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Dynamic.Core;
 
 namespace blog.Services
 {

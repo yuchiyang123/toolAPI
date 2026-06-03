@@ -7,7 +7,11 @@ using StackExchange.Redis;
 
 namespace blog.Common.Helper
 {
-    public class CacheHelper(IConnectionMultiplexer multiplexer, IDistributedCache cache, IMapper mapper)
+    public class CacheHelper(
+        IConnectionMultiplexer multiplexer,
+        IDistributedCache cache,
+        IMapper mapper
+    )
     {
         public async Task<bool> AcquireLock(string lockKey, TimeSpan expiry)
         {
@@ -21,14 +25,22 @@ namespace blog.Common.Helper
             return await db.KeyDeleteAsync(lockKey);
         }
 
-        public async Task<T?> SaveCacheAsync<T>(string key, Func<IQueryable> saveData, Expression<Func<T, bool>> predicate, CancellationToken ct) where T : class
+        public async Task<T?> SaveCacheAsync<T>(
+            string key,
+            Func<IQueryable> saveData,
+            Expression<Func<T, bool>> predicate,
+            CancellationToken ct
+        )
+            where T : class
         {
             var lockKey = CacheKeys.LockKey(key);
             if (await AcquireLock(lockKey, TimeSpan.FromMinutes(10)))
             {
                 try
                 {
-                    var data = await saveData().ProjectTo<T>(mapper.ConfigurationProvider).FirstOrDefaultAsync(predicate, ct);
+                    var data = await saveData()
+                        .ProjectTo<T>(mapper.ConfigurationProvider)
+                        .FirstOrDefaultAsync(predicate, ct);
                     if (data is null)
                     {
                         await cache.SaveRedisForNullAsync(key, ct);
@@ -51,7 +63,11 @@ namespace blog.Common.Helper
             }
         }
 
-        public async Task<string?> SaveCacheAsync(string key, Func<Task<string?>> factory, CancellationToken ct)
+        public async Task<string?> SaveCacheAsync(
+            string key,
+            Func<Task<string?>> factory,
+            CancellationToken ct
+        )
         {
             var lockKey = CacheKeys.LockKey(key);
             if (await AcquireLock(lockKey, TimeSpan.FromMinutes(10)))

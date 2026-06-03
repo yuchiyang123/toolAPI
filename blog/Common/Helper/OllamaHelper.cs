@@ -1,5 +1,5 @@
-﻿using blog.Dtos.AI;
-using System.Net.Http;
+﻿using System.Net.Http;
+using blog.Dtos.AI;
 
 namespace blog.Common.Helper
 {
@@ -26,7 +26,7 @@ namespace blog.Common.Helper
         {
             return new AiDtoRequest
             {
-                Prompt = $"用繁體中文輸出詳細的摘要，只輸出摘要：\n{content}"
+                Prompt = $"用繁體中文輸出詳細的摘要，只輸出摘要：\n{content}",
             };
         }
     }

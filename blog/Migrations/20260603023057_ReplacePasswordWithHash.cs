@@ -12,28 +12,33 @@ namespace blog.Migrations
         {
             migrationBuilder.DropIndex(
                 name: "IX_RecipeFileMapping_FileId",
-                table: "RecipeFileMapping");
+                table: "RecipeFileMapping"
+            );
 
             migrationBuilder.DropIndex(
                 name: "IX_RecipeFileMapping_RecipeId",
-                table: "RecipeFileMapping");
+                table: "RecipeFileMapping"
+            );
 
             migrationBuilder.RenameColumn(
                 name: "Password",
                 table: "Users",
-                newName: "PasswordHash");
+                newName: "PasswordHash"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_RecipeFileMapping_FileId",
                 table: "RecipeFileMapping",
                 column: "FileId",
-                unique: true);
+                unique: true
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_RecipeFileMapping_RecipeId",
                 table: "RecipeFileMapping",
                 column: "RecipeId",
-                unique: true);
+                unique: true
+            );
         }
 
         /// <inheritdoc />
@@ -41,26 +46,31 @@ namespace blog.Migrations
         {
             migrationBuilder.DropIndex(
                 name: "IX_RecipeFileMapping_FileId",
-                table: "RecipeFileMapping");
+                table: "RecipeFileMapping"
+            );
 
             migrationBuilder.DropIndex(
                 name: "IX_RecipeFileMapping_RecipeId",
-                table: "RecipeFileMapping");
+                table: "RecipeFileMapping"
+            );
 
             migrationBuilder.RenameColumn(
                 name: "PasswordHash",
                 table: "Users",
-                newName: "Password");
+                newName: "Password"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_RecipeFileMapping_FileId",
                 table: "RecipeFileMapping",
-                column: "FileId");
+                column: "FileId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_RecipeFileMapping_RecipeId",
                 table: "RecipeFileMapping",
-                column: "RecipeId");
+                column: "RecipeId"
+            );
         }
     }
 }

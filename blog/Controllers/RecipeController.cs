@@ -9,14 +9,17 @@ namespace blog.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RecipeController(RecipeService service, RecipeCacheService recipeCacheService) : ControllerBase
+    public class RecipeController(RecipeService service, RecipeCacheService recipeCacheService)
+        : ControllerBase
     {
         /// <summary>
         /// 取得食譜列表
         /// </summary>
         /// <returns></returns>
         [HttpGet()]
-        public async Task<PageResponseDto<RecipeResponse>> GetRecipe([FromQuery] RecipeQueryDto queryDto)
+        public async Task<PageResponseDto<RecipeResponse>> GetRecipe(
+            [FromQuery] RecipeQueryDto queryDto
+        )
         {
             return await service.GetRecipe(queryDto);
         }

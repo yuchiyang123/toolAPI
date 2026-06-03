@@ -5,7 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace blog.Services
 {
-    public class JwtService (IConfiguration configuration)
+    public class JwtService(IConfiguration configuration)
     {
         public readonly IConfiguration _configuration = configuration;
 
@@ -18,7 +18,7 @@ namespace blog.Services
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, userId),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
 
             var token = new JwtSecurityToken(
