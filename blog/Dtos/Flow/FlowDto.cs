@@ -1,0 +1,77 @@
+﻿namespace blog.Dtos.Flow
+{
+    public class ConditionGroup
+    {
+        public required string Operator { get; set; }
+        public List<ConditionLeaf>? Leaves { get; set; }
+        public List<ConditionGroup>? Groups { get; set; }
+    }
+
+    public class ConditionLeaf
+    {
+        public required string Field { get; set; }
+        public required string Op { get; set; }
+        public required string Value { get; set; }
+    }
+
+    public class Action
+    {
+        public required int Type { get; set; }
+        public required int TargetUser { get; set; }
+        public string? Message { get; set; }
+    }
+
+    public class FlowList
+    {
+        public int Id { get; set; }
+        public required string FlowName { get; set; }
+        public required string Description { get; set; }
+        public string? FlowVersion { get; set; }
+        public bool IsActive { get; set; }
+        public DateTime UpdateDate { get; set; }
+        public DateTime CreateDate { get; set; }
+        public required UserDto UpdateUserData { get; set; }
+        public required UserDto CreateUserData { get; set; }
+    }
+
+    public class FlowDetails
+    {
+        public int Id { get; set; }
+        public required string FlowName { get; set; }
+        public string? Description { get; set; }
+        public required string FlowVersion { get; set; }
+        public bool IsActive { get; set; }
+        public DateTime UpdateDate { get; set; }
+        public DateTime CreateDate { get; set; }
+        public required UserDto UpdateUserData { get; set; }
+        public required UserDto CreateUserData { get; set; }
+        public List<FlowNodeDto> Nodes { get; set; } = [];
+        public List<FlowEdgeDto> Edges { get; set; } = [];
+    }
+
+    public class FlowNodeDto
+    {
+        public int Id { get; set; }
+        public required string StageName { get; set; }
+        public int Type { get; set; }
+        public int PositionX { get; set; }
+        public int PositionY { get; set; }
+        public List<FlowRuleDto> Rules { get; set; } = [];
+    }
+
+    public class FlowEdgeDto
+    {
+        public int Id { get; set; }
+        public int SourceNodeId { get; set; }
+        public int TargetNodeId { get; set; }
+        public string? DataJson { get; set; }
+    }
+
+    public class FlowRuleDto
+    {
+        public int Id { get; set; }
+        public int Sort { get; set; }
+        public ConditionGroup? Condition { get; set; }
+        public Action? Action { get; set; }
+    }
+}
