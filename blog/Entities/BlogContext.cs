@@ -36,7 +36,7 @@ namespace blog.Entities
                 entity.HasKey(x => x.Id);
 
                 entity.Property(x => x.UserName).HasMaxLength(100).IsRequired();
-                entity.Property(x => x.PasswordHash).HasMaxLength(60).IsRequired();
+                entity.Property(x => x.PasswordHash).HasMaxLength(256).IsRequired();
                 entity.Property(x => x.LogInDate).HasDefaultValueSql("GETDATE()");
                 entity.Property(x => x.CreateDate).HasDefaultValueSql("GETDATE()");
             });
