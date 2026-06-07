@@ -28,15 +28,6 @@ namespace blog.Services
                 .ToPageResponseDto(requestDto.PageIndex, requestDto.PageSize);
         }
 
-        public async Task<PostDetailDto> GetPostDetailAsync(int id)
-        {
-            return await repository
-                    .GetPostDetail()
-                    .ProjectTo<PostDetailDto>(mapper.ConfigurationProvider)
-                    .FirstOrDefaultAsync(x => x.Id == id)
-                ?? throw new Exception("找不到對應的文章");
-        }
-
         public async Task CreatePostAsync(CreatePostDto postDto)
         {
             using var transaction = await context.Database.BeginTransactionAsync();

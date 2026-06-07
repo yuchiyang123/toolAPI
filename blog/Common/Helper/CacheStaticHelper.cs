@@ -27,8 +27,7 @@ namespace blog.Common.Helper
             this IDistributedCache cache,
             string key,
             T saveData,
-            CancellationToken ct,
-            TimeSpan? time = null
+            CancellationToken ct
         )
             where T : class
         {

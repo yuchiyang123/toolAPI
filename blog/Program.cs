@@ -62,6 +62,9 @@ builder.Services.AddScoped<PostRepository>();
 builder.Services.AddScoped<BlogCacheService>();
 builder.Services.AddScoped<RecipeCacheService>();
 builder.Services.AddScoped<CacheHelper>();
+builder.Services.AddScoped<FlowService>();
+builder.Services.AddScoped<FlowRepository>();
+builder.Services.AddScoped<JwtInfoHelper>();
 
 builder.Services.AddAutoMapper(
     (IMapperConfigurationExpression cfg) => { },

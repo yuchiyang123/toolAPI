@@ -15,7 +15,6 @@ namespace blog.Entities.Flows
         public required DateTime CreateDate { get; set; }
         public required int CreateUser { get; set; }
         public FlowVersion FlowVersion { get; set; }
-        public ICollection<FlowEdge> FlowEdges { get; set; }
         public ICollection<FlowRule> FlowRules { get; set; }
         public Users UpdateUsers { get; set; }
         public Users CreateUsers { get; set; }

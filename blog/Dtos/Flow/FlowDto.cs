@@ -26,7 +26,18 @@
         public int Id { get; set; }
         public required string FlowName { get; set; }
         public required string Description { get; set; }
-        public string? FlowVersion { get; set; }
+        public string? FlowActionVersion { get; set; }
+        public DateTime UpdateDate { get; set; }
+        public DateTime CreateDate { get; set; }
+        public required UserDto UpdateUserData { get; set; }
+        public required UserDto CreateUserData { get; set; }
+        public List<FlowVersionList> FlowVersionList { get; set; } = [];
+    }
+
+    public class FlowVersionList
+    {
+        public int VersionId { get; set; }
+        public required string FlowVersion { get; set; }
         public bool IsActive { get; set; }
         public DateTime UpdateDate { get; set; }
         public DateTime CreateDate { get; set; }
@@ -51,7 +62,7 @@
 
     public class FlowNodeDto
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public required string StageName { get; set; }
         public int Type { get; set; }
         public int PositionX { get; set; }
@@ -73,5 +84,10 @@
         public int Sort { get; set; }
         public ConditionGroup? Condition { get; set; }
         public Action? Action { get; set; }
+    }
+
+    public class FlowListQueryDto
+    {
+        public string? FlowName { get; set; }
     }
 }

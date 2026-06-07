@@ -306,13 +306,13 @@ namespace blog.Entities
                     .WithMany()
                     .HasForeignKey(e => e.UpdateUser)
                     .HasPrincipalKey(e => e.Id)
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .OnDelete(DeleteBehavior.NoAction);
                 entity
                     .HasOne(e => e.CreateUsers)
                     .WithMany()
                     .HasForeignKey(e => e.CreateUser)
                     .HasPrincipalKey(e => e.Id)
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .OnDelete(DeleteBehavior.NoAction);
             });
 
             builder.Entity<FlowVersion>(entity =>
@@ -331,13 +331,13 @@ namespace blog.Entities
                     .WithMany()
                     .HasForeignKey(e => e.UpdateUser)
                     .HasPrincipalKey(e => e.Id)
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .OnDelete(DeleteBehavior.NoAction);
                 entity
                     .HasOne(e => e.CreateUsers)
                     .WithMany()
                     .HasForeignKey(e => e.CreateUser)
                     .HasPrincipalKey(e => e.Id)
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .OnDelete(DeleteBehavior.NoAction);
             });
 
             builder.Entity<FlowNode>(entity =>
@@ -353,13 +353,13 @@ namespace blog.Entities
                     .WithMany()
                     .HasForeignKey(e => e.UpdateUser)
                     .HasPrincipalKey(e => e.Id)
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .OnDelete(DeleteBehavior.NoAction);
                 entity
                     .HasOne(e => e.CreateUsers)
                     .WithMany()
                     .HasForeignKey(e => e.CreateUser)
                     .HasPrincipalKey(e => e.Id)
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .OnDelete(DeleteBehavior.NoAction);
             });
 
             builder.Entity<FlowRule>(entity =>
@@ -385,13 +385,13 @@ namespace blog.Entities
                     .WithMany()
                     .HasForeignKey(e => e.UpdateUser)
                     .HasPrincipalKey(e => e.Id)
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .OnDelete(DeleteBehavior.NoAction);
                 entity
                     .HasOne(e => e.CreateUsers)
                     .WithMany()
                     .HasForeignKey(e => e.CreateUser)
                     .HasPrincipalKey(e => e.Id)
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .OnDelete(DeleteBehavior.NoAction);
             });
             #endregion
         }

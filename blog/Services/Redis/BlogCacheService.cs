@@ -11,7 +11,6 @@ namespace blog.Services.Redis
 {
     public class BlogCacheService(
         IDistributedCache cache,
-        IMapper mapper,
         CacheHelper cacheHelper,
         PostRepository repository,
         OllamaHelper ollamaHelper
