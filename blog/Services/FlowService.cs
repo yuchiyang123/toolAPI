@@ -36,14 +36,14 @@ namespace blog.Services
                 ?? throw new KeyNotFoundException();
         }
 
-        public async Task AddFlowAsync(CreateFlowDto createFlow)
+        public async Task AddFlowAsync(CreateFlowDto createFlow, CancellationToken ct = default)
         {
             var userId = await jwtInfoHelper.GetUserIdForJwt();
             var entity = mapper.Map<Flow>(createFlow);
             entity.UpdateUser = userId;
             entity.CreateUser = userId;
             context.Flows.Add(entity);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(ct);
         }
 
         public async Task AddFlowDetailAsync(
@@ -120,6 +120,16 @@ namespace blog.Services
                 await transaction.RollbackAsync(ct);
                 throw;
             }
+        }
+
+        public async Task DeleteFlow(int id, CancellationToken ct = default)
+        {
+            await context.Flows.Where(x => x.Id == id).ExecuteDeleteAsync(ct);
+        }
+
+        public async Task DeleteFlowVerions(int versionId, CancellationToken ct = default)
+        {
+            await context.FlowVersions.Where(x => x.Id == versionId).ExecuteDeleteAsync(ct);
         }
     }
 }

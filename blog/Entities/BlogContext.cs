@@ -313,6 +313,8 @@ namespace blog.Entities
                     .HasForeignKey(e => e.CreateUser)
                     .HasPrincipalKey(e => e.Id)
                     .OnDelete(DeleteBehavior.NoAction);
+                entity.Property(x => x.CreateDate).HasDefaultValueSql("GETDATE()");
+                entity.Property(x => x.UpdateDate).HasDefaultValueSql("GETDATE()");
             });
 
             builder.Entity<FlowVersion>(entity =>
@@ -338,6 +340,8 @@ namespace blog.Entities
                     .HasForeignKey(e => e.CreateUser)
                     .HasPrincipalKey(e => e.Id)
                     .OnDelete(DeleteBehavior.NoAction);
+                entity.Property(x => x.CreateDate).HasDefaultValueSql("GETDATE()");
+                entity.Property(x => x.UpdateDate).HasDefaultValueSql("GETDATE()");
             });
 
             builder.Entity<FlowNode>(entity =>
@@ -360,6 +364,8 @@ namespace blog.Entities
                     .HasForeignKey(e => e.CreateUser)
                     .HasPrincipalKey(e => e.Id)
                     .OnDelete(DeleteBehavior.NoAction);
+                entity.Property(x => x.CreateDate).HasDefaultValueSql("GETDATE()");
+                entity.Property(x => x.UpdateDate).HasDefaultValueSql("GETDATE()");
             });
 
             builder.Entity<FlowRule>(entity =>
@@ -392,6 +398,8 @@ namespace blog.Entities
                     .HasForeignKey(e => e.CreateUser)
                     .HasPrincipalKey(e => e.Id)
                     .OnDelete(DeleteBehavior.NoAction);
+                entity.Property(x => x.CreateDate).HasDefaultValueSql("GETDATE()");
+                entity.Property(x => x.UpdateDate).HasDefaultValueSql("GETDATE()");
             });
             #endregion
         }

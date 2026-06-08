@@ -40,5 +40,21 @@ namespace blog.Controllers
             await flowService.AddFlowDetailAsync(dto);
             return Ok();
         }
+
+        [HttpDelete("{id}")]
+        [Authorize]
+        public async Task<IActionResult> DeleteFlow(int id)
+        {
+            await flowService.DeleteFlow(id);
+            return Ok();
+        }
+
+        [HttpDelete("detail/{verionsId}")]
+        [Authorize]
+        public async Task<IActionResult> DeleteFlowVerions(int verionsId)
+        {
+            await flowService.DeleteFlowVerions(verionsId);
+            return Ok();
+        }
     }
 }
