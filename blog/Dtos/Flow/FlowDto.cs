@@ -102,7 +102,7 @@ namespace blog.Dtos.Flow
 
     public class CreateFlowDto
     {
-        public int FlowName { get; set; }
+        public required string FlowName { get; set; }
         public string? Description { get; set; }
     }
 }
