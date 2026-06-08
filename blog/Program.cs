@@ -46,6 +46,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddDbContext<BlogContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
@@ -65,6 +67,7 @@ builder.Services.AddScoped<CacheHelper>();
 builder.Services.AddScoped<FlowService>();
 builder.Services.AddScoped<FlowRepository>();
 builder.Services.AddScoped<JwtInfoHelper>();
+
 
 builder.Services.AddAutoMapper(
     (IMapperConfigurationExpression cfg) => { },
