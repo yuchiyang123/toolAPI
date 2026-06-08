@@ -33,5 +33,13 @@ namespace blog.Services
             var result = hasher.VerifyHashedPassword(users, users.PasswordHash, password);
             return result != PasswordVerificationResult.Failed;
         }
+
+        public async Task<int> GetIdByUserName(string userName)
+        {
+            return await context
+                .Users.Where(x => x.UserName == userName)
+                .Select(x => x.Id)
+                .FirstOrDefaultAsync();
+        }
     }
 }
