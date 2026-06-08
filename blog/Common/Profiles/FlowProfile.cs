@@ -63,6 +63,9 @@ namespace blog.Common.Profiles
                             : JsonSerializer.Deserialize<ConditionGroup>(src.DataJson);
                     }
                 );
+
+            CreateMap<CreateFlowDto, Flow>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.FlowName));
         }
     }
 }

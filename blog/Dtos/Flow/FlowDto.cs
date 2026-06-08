@@ -99,4 +99,10 @@ namespace blog.Dtos.Flow
     {
         public string? FlowName { get; set; }
     }
+
+    public class CreateFlowDto
+    {
+        public int FlowName { get; set; }
+        public string? Description { get; set; }
+    }
 }

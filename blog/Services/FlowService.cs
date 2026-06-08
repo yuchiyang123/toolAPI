@@ -36,7 +36,17 @@ namespace blog.Services
                 ?? throw new KeyNotFoundException();
         }
 
-        public async Task AddFlowAsync(
+        public async Task AddFlowAsync(CreateFlowDto createFlow)
+        {
+            var userId = await jwtInfoHelper.GetUserIdForJwt();
+            var entity = mapper.Map<Flow>(createFlow);
+            entity.UpdateUser = userId;
+            entity.CreateUser = userId;
+            context.Flows.Add(entity);
+            await context.SaveChangesAsync();
+        }
+
+        public async Task AddFlowDetailAsync(
             FlowDetailsRequestDto responseDto,
             CancellationToken ct = default
         )

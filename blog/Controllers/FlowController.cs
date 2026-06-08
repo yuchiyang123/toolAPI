@@ -27,9 +27,17 @@ namespace blog.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> PostFlowAsync([FromBody] FlowDetailsRequestDto dto)
+        public async Task<IActionResult> AddFlowAsync([FromBody] CreateFlowDto dto)
         {
             await flowService.AddFlowAsync(dto);
+            return Ok();
+        }
+
+        [HttpPost("detail")]
+        [Authorize]
+        public async Task<IActionResult> PostFlowAsync([FromBody] FlowDetailsRequestDto dto)
+        {
+            await flowService.AddFlowDetailAsync(dto);
             return Ok();
         }
     }
