@@ -14,7 +14,11 @@ namespace blog.Repository
 
         public IQueryable<Flow> GetFlowListAsQueryable(string? stageName)
         {
-            var query = context.Flows.Include(x => x.FlowVersion).Include(x => x.CreateUsers).Include(x => x.UpdateUsers).AsQueryable();
+            var query = context
+                .Flows.Include(x => x.FlowVersion)
+                .Include(x => x.CreateUsers)
+                .Include(x => x.UpdateUsers)
+                .AsQueryable();
             if (!string.IsNullOrEmpty(stageName))
             {
                 query = query.Where(x => x.Name == stageName);
@@ -24,7 +28,13 @@ namespace blog.Repository
 
         public IQueryable<FlowVersion> GetFlowDetailAsQueryable()
         {
-            return context.FlowVersions.Include(x => x.FlowNodes).ThenInclude(x => x.FlowRules).Include(x => x.FlowEdges).Include(x => x.UpdateUsers).Include(x => x.CreateUsers).AsQueryable();
+            return context
+                .FlowVersions.Include(x => x.FlowNodes)
+                    .ThenInclude(x => x.FlowRules)
+                .Include(x => x.FlowEdges)
+                .Include(x => x.UpdateUsers)
+                .Include(x => x.CreateUsers)
+                .AsQueryable();
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace blog.Dtos.Flow
+﻿using blog.Dtos.Page;
+
+namespace blog.Dtos.Flow
 {
     public class ConditionGroup
     {
@@ -45,11 +47,18 @@
         public required UserDto CreateUserData { get; set; }
     }
 
-    public class FlowDetails
+    public class FlowDetailsRequestDto : FlowDetailBaseDto
     {
-        public int Id { get; set; }
-        public required string FlowName { get; set; }
-        public string? Description { get; set; }
+        public int FlowId { get; set; }
+    }
+
+    public class FlowDetailResponseDto : FlowDetailsRequestDto
+    {
+        public int VersionId { get; set; }
+    }
+
+    public class FlowDetailBaseDto
+    {
         public required string FlowVersion { get; set; }
         public bool IsActive { get; set; }
         public DateTime UpdateDate { get; set; }
@@ -86,7 +95,7 @@
         public Action? Action { get; set; }
     }
 
-    public class FlowListQueryDto
+    public class FlowListQueryDto : PageDto
     {
         public string? FlowName { get; set; }
     }
