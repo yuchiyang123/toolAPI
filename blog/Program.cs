@@ -68,7 +68,6 @@ builder.Services.AddScoped<FlowService>();
 builder.Services.AddScoped<FlowRepository>();
 builder.Services.AddScoped<JwtInfoHelper>();
 
-
 builder.Services.AddAutoMapper(
     (IMapperConfigurationExpression cfg) => { },
     AppDomain.CurrentDomain.GetAssemblies()
