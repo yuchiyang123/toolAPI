@@ -29,12 +29,13 @@ namespace blog.Services
 
         public async Task<FlowDetailResponseDto> GetFlowDetailAsync(int id)
         {
-            return await repository
+            var flowData =
+                await repository
                     .GetFlowDetailAsQueryable()
                     .Where(x => x.Id == id)
-                    .ProjectTo<FlowDetailResponseDto>(mapper.ConfigurationProvider)
                     .FirstOrDefaultAsync()
                 ?? throw new KeyNotFoundException();
+            return mapper.Map<FlowDetailResponseDto>(flowData);
         }
 
         public async Task AddFlowAsync(CreateFlowDto createFlow, CancellationToken ct = default)
