@@ -68,6 +68,7 @@ namespace blog.Services
 
                 var flowVersion = new FlowVersion
                 {
+                    FlowId = responseDto.FlowId,
                     Version = responseDto.FlowVersion,
                     IsActive = true,
                     UpdateDate = currentTime,
@@ -104,6 +105,7 @@ namespace blog.Services
 
                 var flowEdges = responseDto.Edges.Select(x => new FlowEdge
                 {
+                    FlowVersionId = flowVersion.Id,
                     SourceNodeId = x.SourceNodeId,
                     TargetNodeId = x.TargetNodeId,
                     DataJson = JsonSerializer.Serialize(x.Condition),
