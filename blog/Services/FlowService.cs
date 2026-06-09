@@ -66,56 +66,56 @@ namespace blog.Services
                     .FlowVersions.Where(x => x.FlowId == responseDto.FlowId && x.IsActive)
                     .ExecuteUpdateAsync(y => y.SetProperty(x => x.IsActive, false), ct);
 
-                entity.FlowVersion.Add(
-                    new FlowVersion
-                    {
-                        Version = responseDto.FlowVersion,
-                        IsActive = true,
-                        UpdateDate = currentTime,
-                        CreateDate = currentTime,
-                        UpdateUser = userId,
-                        CreateUser = userId,
-                        FlowNodes =
-                        [
-                            .. responseDto.Nodes.Select(x => new FlowNode
-                            {
-                                Id = x.Id,
-                                StageName = x.StageName,
-                                Type = x.Type,
-                                PositionX = x.PositionX,
-                                PositionY = x.PositionY,
-                                UpdateDate = currentTime,
-                                CreateDate = currentTime,
-                                UpdateUser = userId,
-                                CreateUser = userId,
-                                FlowRules =
-                                [
-                                    .. x.Rules.Select(rule => new FlowRule
-                                    {
-                                        ConditionJson = JsonSerializer.Serialize(rule.Condition),
-                                        ActionJson = JsonSerializer.Serialize(rule.Action),
-                                        Sort = rule.Sort,
-                                    }),
-                                ],
-                            }),
-                        ],
-                        FlowEdges =
-                        [
-                            .. responseDto.Edges.Select(x => new FlowEdge
-                            {
-                                SourceNodeId = x.SourceNodeId,
-                                TargetNodeId = x.TargetNodeId,
-                                DataJson = JsonSerializer.Serialize(x.Condition),
-                                UpdateDate = currentTime,
-                                CreateDate = currentTime,
-                                UpdateUser = userId,
-                                CreateUser = userId,
-                            }),
-                        ],
-                    }
-                );
-
+                var flowVersion = new FlowVersion
+                {
+                    Version = responseDto.FlowVersion,
+                    IsActive = true,
+                    UpdateDate = currentTime,
+                    CreateDate = currentTime,
+                    UpdateUser = userId,
+                    CreateUser = userId,
+                    FlowNodes =
+                    [
+                        .. responseDto.Nodes.Select(x => new FlowNode
+                        {
+                            Id = x.Id,
+                            StageName = x.StageName,
+                            Type = x.Type,
+                            PositionX = x.PositionX,
+                            PositionY = x.PositionY,
+                            UpdateDate = currentTime,
+                            CreateDate = currentTime,
+                            UpdateUser = userId,
+                            CreateUser = userId,
+                            FlowRules =
+                            [
+                                .. x.Rules.Select(rule => new FlowRule
+                                {
+                                    ConditionJson = JsonSerializer.Serialize(rule.Condition),
+                                    ActionJson = JsonSerializer.Serialize(rule.Action),
+                                    Sort = rule.Sort,
+                                }),
+                            ],
+                        }),
+                    ],
+                };
+                context.FlowVersions.Add(flowVersion);
                 await context.SaveChangesAsync(ct);
+
+                var flowEdges = responseDto.Edges.Select(x => new FlowEdge
+                {
+                    SourceNodeId = x.SourceNodeId,
+                    TargetNodeId = x.TargetNodeId,
+                    DataJson = JsonSerializer.Serialize(x.Condition),
+                    UpdateDate = currentTime,
+                    CreateDate = currentTime,
+                    UpdateUser = userId,
+                    CreateUser = userId,
+                });
+
+                context.FlowEdges.AddRange(flowEdges);
+                await context.SaveChangesAsync(ct);
+
                 await transaction.CommitAsync(ct);
             }
             catch
