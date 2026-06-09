@@ -16,14 +16,14 @@ namespace blog.Common.Profiles
                 .ForMember(dest => dest.CreateUserData, opt => opt.MapFrom(src => src.CreateUsers))
                 .ForMember(dest => dest.FlowVersionList, opt => opt.MapFrom(src => src.FlowVersion))
                 .ForMember(dest => dest.FlowName, opt => opt.MapFrom(src => src.Name))
-                .AfterMap(
-                    (src, dest) =>
-                    {
-                        dest.FlowActionVersion = src
-                            .FlowVersion?.Where(x => x.IsActive)
-                            .Select(y => y.Version)
-                            .First();
-                    }
+                .ForMember(
+                    dest => dest.FlowActionVersion,
+                    opt =>
+                        opt.MapFrom(src =>
+                            src.FlowVersion.Where(x => x.IsActive)
+                                .Select(x => x.Version)
+                                .FirstOrDefault()
+                        )
                 );
             CreateMap<Users, UserDto>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.UserName));
