@@ -10,7 +10,6 @@ namespace blog.Controllers
     public class UsersController(UserService service) : ControllerBase
     {
         [HttpGet("dropdown")]
-        [Authorize]
         public async Task<ActionResult<List<DropDownListDto>>> GetUserDropDownListAsync()
         {
             var dtos = await service.GetUserDropDownAsync();
