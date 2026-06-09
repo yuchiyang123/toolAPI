@@ -1,4 +1,5 @@
-﻿using blog.Dtos.Flow;
+﻿using blog.Dtos;
+using blog.Dtos.Flow;
 using blog.Dtos.Page;
 using blog.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -22,7 +23,8 @@ namespace blog.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<FlowDetailResponseDto>> GetFlowDetailAsync(int id)
         {
-            return Ok(await flowService.GetFlowDetailAsync(id));
+            var dto = await flowService.GetFlowDetailAsync(id);
+            return Ok(dto);
         }
 
         [HttpPost]
@@ -55,6 +57,13 @@ namespace blog.Controllers
         {
             await flowService.DeleteFlowVerions(verionsId);
             return Ok();
+        }
+
+        [HttpGet("list/dropdown")]
+        public async Task<ActionResult<List<DropDownListDto>>> GetMainFlowDropDownInfoAsync()
+        {
+            var dtos = await flowService.GetMainFlowDropDownInfoAsync();
+            return Ok(dtos);
         }
     }
 }

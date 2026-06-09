@@ -21,7 +21,7 @@ namespace blog.Controllers
             return BadRequest();
         }
 
-        [HttpPost("Create")]
+        [HttpPost("create")]
         [Authorize]
         public async Task<ActionResult> Create(CreateUserDto userDto)
         {
@@ -30,6 +30,14 @@ namespace blog.Controllers
                 return BadRequest();
             await service.CreateUserAsync(userDto);
             return Ok();
+        }
+
+        [HttpGet("dropdown")]
+        [Authorize]
+        public async Task<ActionResult<List<DropDownListDto>>> GetUserDropDownListAsync()
+        {
+            var dtos = await service.GetUserDropDownAsync();
+            return Ok(dtos);
         }
     }
 }

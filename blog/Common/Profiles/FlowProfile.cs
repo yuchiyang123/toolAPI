@@ -66,6 +66,10 @@ namespace blog.Common.Profiles
 
             CreateMap<CreateFlowDto, Flow>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.FlowName));
+
+            CreateMap<Flow, DropDownListDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.ToString()))
+                .ForMember(dest => dest.Label, opt => opt.MapFrom(src => src.Name));
         }
     }
 }

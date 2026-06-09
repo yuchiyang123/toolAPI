@@ -2,6 +2,7 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using blog.Common.Helper;
+using blog.Dtos;
 using blog.Dtos.Flow;
 using blog.Dtos.Page;
 using blog.Entities;
@@ -130,6 +131,12 @@ namespace blog.Services
         public async Task DeleteFlowVerions(int versionId, CancellationToken ct = default)
         {
             await context.FlowVersions.Where(x => x.Id == versionId).ExecuteDeleteAsync(ct);
+        }
+
+        public async Task<List<DropDownListDto>> GetMainFlowDropDownInfoAsync()
+        {
+            var entity = await context.Flows.ToListAsync();
+            return mapper.Map<List<DropDownListDto>>(entity);
         }
     }
 }

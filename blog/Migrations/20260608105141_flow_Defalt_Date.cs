@@ -13,15 +13,12 @@ namespace blog.Migrations
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_FlowEdges_FlowNodes_FlowNodeId",
-                table: "FlowEdges");
+                table: "FlowEdges"
+            );
 
-            migrationBuilder.DropIndex(
-                name: "IX_FlowEdges_FlowNodeId",
-                table: "FlowEdges");
+            migrationBuilder.DropIndex(name: "IX_FlowEdges_FlowNodeId", table: "FlowEdges");
 
-            migrationBuilder.DropColumn(
-                name: "FlowNodeId",
-                table: "FlowEdges");
+            migrationBuilder.DropColumn(name: "FlowNodeId", table: "FlowEdges");
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "UpdateDate",
@@ -30,7 +27,8 @@ namespace blog.Migrations
                 nullable: false,
                 defaultValueSql: "GETDATE()",
                 oldClrType: typeof(DateTime),
-                oldType: "datetime2");
+                oldType: "datetime2"
+            );
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "CreateDate",
@@ -39,7 +37,8 @@ namespace blog.Migrations
                 nullable: false,
                 defaultValueSql: "GETDATE()",
                 oldClrType: typeof(DateTime),
-                oldType: "datetime2");
+                oldType: "datetime2"
+            );
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "UpdateDate",
@@ -48,7 +47,8 @@ namespace blog.Migrations
                 nullable: false,
                 defaultValueSql: "GETDATE()",
                 oldClrType: typeof(DateTime),
-                oldType: "datetime2");
+                oldType: "datetime2"
+            );
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "CreateDate",
@@ -57,7 +57,8 @@ namespace blog.Migrations
                 nullable: false,
                 defaultValueSql: "GETDATE()",
                 oldClrType: typeof(DateTime),
-                oldType: "datetime2");
+                oldType: "datetime2"
+            );
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "UpdateDate",
@@ -66,7 +67,8 @@ namespace blog.Migrations
                 nullable: false,
                 defaultValueSql: "GETDATE()",
                 oldClrType: typeof(DateTime),
-                oldType: "datetime2");
+                oldType: "datetime2"
+            );
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "CreateDate",
@@ -75,7 +77,8 @@ namespace blog.Migrations
                 nullable: false,
                 defaultValueSql: "GETDATE()",
                 oldClrType: typeof(DateTime),
-                oldType: "datetime2");
+                oldType: "datetime2"
+            );
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "UpdateDate",
@@ -84,7 +87,8 @@ namespace blog.Migrations
                 nullable: false,
                 defaultValueSql: "GETDATE()",
                 oldClrType: typeof(DateTime),
-                oldType: "datetime2");
+                oldType: "datetime2"
+            );
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "CreateDate",
@@ -93,7 +97,8 @@ namespace blog.Migrations
                 nullable: false,
                 defaultValueSql: "GETDATE()",
                 oldClrType: typeof(DateTime),
-                oldType: "datetime2");
+                oldType: "datetime2"
+            );
         }
 
         /// <inheritdoc />
@@ -106,7 +111,8 @@ namespace blog.Migrations
                 nullable: false,
                 oldClrType: typeof(DateTime),
                 oldType: "datetime2",
-                oldDefaultValueSql: "GETDATE()");
+                oldDefaultValueSql: "GETDATE()"
+            );
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "CreateDate",
@@ -115,7 +121,8 @@ namespace blog.Migrations
                 nullable: false,
                 oldClrType: typeof(DateTime),
                 oldType: "datetime2",
-                oldDefaultValueSql: "GETDATE()");
+                oldDefaultValueSql: "GETDATE()"
+            );
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "UpdateDate",
@@ -124,7 +131,8 @@ namespace blog.Migrations
                 nullable: false,
                 oldClrType: typeof(DateTime),
                 oldType: "datetime2",
-                oldDefaultValueSql: "GETDATE()");
+                oldDefaultValueSql: "GETDATE()"
+            );
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "CreateDate",
@@ -133,7 +141,8 @@ namespace blog.Migrations
                 nullable: false,
                 oldClrType: typeof(DateTime),
                 oldType: "datetime2",
-                oldDefaultValueSql: "GETDATE()");
+                oldDefaultValueSql: "GETDATE()"
+            );
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "UpdateDate",
@@ -142,7 +151,8 @@ namespace blog.Migrations
                 nullable: false,
                 oldClrType: typeof(DateTime),
                 oldType: "datetime2",
-                oldDefaultValueSql: "GETDATE()");
+                oldDefaultValueSql: "GETDATE()"
+            );
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "CreateDate",
@@ -151,7 +161,8 @@ namespace blog.Migrations
                 nullable: false,
                 oldClrType: typeof(DateTime),
                 oldType: "datetime2",
-                oldDefaultValueSql: "GETDATE()");
+                oldDefaultValueSql: "GETDATE()"
+            );
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "UpdateDate",
@@ -160,7 +171,8 @@ namespace blog.Migrations
                 nullable: false,
                 oldClrType: typeof(DateTime),
                 oldType: "datetime2",
-                oldDefaultValueSql: "GETDATE()");
+                oldDefaultValueSql: "GETDATE()"
+            );
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "CreateDate",
@@ -169,25 +181,29 @@ namespace blog.Migrations
                 nullable: false,
                 oldClrType: typeof(DateTime),
                 oldType: "datetime2",
-                oldDefaultValueSql: "GETDATE()");
+                oldDefaultValueSql: "GETDATE()"
+            );
 
             migrationBuilder.AddColumn<Guid>(
                 name: "FlowNodeId",
                 table: "FlowEdges",
                 type: "uniqueidentifier",
-                nullable: true);
+                nullable: true
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_FlowEdges_FlowNodeId",
                 table: "FlowEdges",
-                column: "FlowNodeId");
+                column: "FlowNodeId"
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_FlowEdges_FlowNodes_FlowNodeId",
                 table: "FlowEdges",
                 column: "FlowNodeId",
                 principalTable: "FlowNodes",
-                principalColumn: "Id");
+                principalColumn: "Id"
+            );
         }
     }
 }

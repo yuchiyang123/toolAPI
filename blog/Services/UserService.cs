@@ -41,5 +41,11 @@ namespace blog.Services
                 .Select(x => x.Id)
                 .FirstOrDefaultAsync();
         }
+
+        public async Task<List<DropDownListDto>> GetUserDropDownAsync()
+        {
+            var userInfo = await context.Users.ToListAsync();
+            return mapper.Map<List<DropDownListDto>>(userInfo);
+        }
     }
 }

@@ -9,6 +9,10 @@ namespace blog.Common.Profiles
         public UserProfile()
         {
             CreateMap<CreateUserDto, Users>();
+
+            CreateMap<Users, DropDownListDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.ToString()))
+                .ForMember(dest => dest.Label, opt => opt.MapFrom(src => src.UserName));
         }
     }
 }
