@@ -31,13 +31,5 @@ namespace blog.Controllers
             await service.CreateUserAsync(userDto);
             return Ok();
         }
-
-        [HttpGet("dropdown")]
-        [Authorize]
-        public async Task<ActionResult<List<DropDownListDto>>> GetUserDropDownListAsync()
-        {
-            var dtos = await service.GetUserDropDownAsync();
-            return Ok(dtos);
-        }
     }
 }
