@@ -55,6 +55,8 @@ namespace blog.Dtos.Flow
     public class FlowDetailResponseDto : FlowDetailsRequestDto
     {
         public int VersionId { get; set; }
+        public required UserDto UpdateUserData { get; set; }
+        public required UserDto CreateUserData { get; set; }
     }
 
     public class FlowDetailBaseDto
@@ -63,8 +65,6 @@ namespace blog.Dtos.Flow
         public bool IsActive { get; set; }
         public DateTime UpdateDate { get; set; }
         public DateTime CreateDate { get; set; }
-        public required UserDto UpdateUserData { get; set; }
-        public required UserDto CreateUserData { get; set; }
         public List<FlowNodeDto> Nodes { get; set; } = [];
         public List<FlowEdgeDto> Edges { get; set; } = [];
     }
@@ -81,7 +81,6 @@ namespace blog.Dtos.Flow
 
     public class FlowEdgeDto
     {
-        public Guid Id { get; set; }
         public Guid SourceNodeId { get; set; }
         public Guid TargetNodeId { get; set; }
         public ConditionGroup? Condition { get; set; }
@@ -89,7 +88,6 @@ namespace blog.Dtos.Flow
 
     public class FlowRuleDto
     {
-        public int Id { get; set; }
         public int Sort { get; set; }
         public ConditionGroup? Condition { get; set; }
         public Action? Action { get; set; }
