@@ -54,7 +54,9 @@ namespace blog.Services
         {
             var currentTime = DateTime.UtcNow;
             var entity =
-                await context.Flows.FirstOrDefaultAsync(x => x.Id == responseDto.FlowId, ct)
+                await context
+                    .Flows.Include(x => x.FlowVersion)
+                    .FirstOrDefaultAsync(x => x.Id == responseDto.FlowId, ct)
                 ?? throw new KeyNotFoundException("找不到對應的流程主檔");
             var userId = await jwtInfoHelper.GetUserIdForJwt();
             using var transaction = await context.Database.BeginTransactionAsync(ct);
