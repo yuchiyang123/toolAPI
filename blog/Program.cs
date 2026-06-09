@@ -67,6 +67,7 @@ builder.Services.AddScoped<CacheHelper>();
 builder.Services.AddScoped<FlowService>();
 builder.Services.AddScoped<FlowRepository>();
 builder.Services.AddScoped<JwtInfoHelper>();
+builder.Services.AddScoped<FlowCacheService>();
 
 builder.Services.AddAutoMapper(
     (IMapperConfigurationExpression cfg) => { },

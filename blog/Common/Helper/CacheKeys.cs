@@ -9,5 +9,7 @@
         public static string PostSummary(int id) => $"PostSummary:{id}";
 
         public static string Recipe(int id) => $"Recipe:{id}";
+
+        public static string FlowDetail(int id) => $"FlowDetail:{id}";
     }
 }

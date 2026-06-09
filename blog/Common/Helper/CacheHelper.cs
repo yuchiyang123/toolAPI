@@ -63,6 +63,41 @@ namespace blog.Common.Helper
             }
         }
 
+        public async Task<T?> SaveCacheAsync<T>(
+            string key,
+            Func<Task<T?>> factory,
+            CancellationToken ct
+        )
+            where T : class
+        {
+            var lockKey = CacheKeys.LockKey(key);
+            if (await AcquireLock(lockKey, TimeSpan.FromMinutes(10)))
+            {
+                try
+                {
+                    var saveData = await factory();
+                    if (saveData is null)
+                    {
+                        await cache.SaveRedisForNullAsync(key, ct);
+                        return null;
+                    }
+
+                    await cache.SaveReditForObjectAsync<T>(key, saveData, ct);
+
+                    return saveData;
+                }
+                finally
+                {
+                    await ReleaseLock(lockKey);
+                }
+            }
+            else
+            {
+                await Task.Delay(50, ct);
+                return await SaveCacheAsync(key, factory, ct);
+            }
+        }
+
         public async Task<string?> SaveCacheAsync(
             string key,
             Func<Task<string?>> factory,

@@ -2,6 +2,7 @@
 using blog.Dtos.Flow;
 using blog.Dtos.Page;
 using blog.Services;
+using blog.Services.Redis;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,7 +10,8 @@ namespace blog.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class FlowController(FlowService flowService) : ControllerBase
+    public class FlowController(FlowService flowService, FlowCacheService cacheService)
+        : ControllerBase
     {
         [HttpGet("list")]
         public async Task<ActionResult<PageResponseDto<FlowList>>> GetFlowListAsync(
@@ -23,7 +25,7 @@ namespace blog.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<FlowDetailResponseDto>> GetFlowDetailAsync(int id)
         {
-            var dto = await flowService.GetFlowDetailAsync(id);
+            var dto = await cacheService.GetFlowDetail(id);
             return Ok(dto);
         }
 
@@ -56,6 +58,7 @@ namespace blog.Controllers
         public async Task<IActionResult> DeleteFlowVerions(int verionsId)
         {
             await flowService.DeleteFlowVerions(verionsId);
+            await cacheService.InvalidateFlowDetailAsync(verionsId);
             return Ok();
         }
 
