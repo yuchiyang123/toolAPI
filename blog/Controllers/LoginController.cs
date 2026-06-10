@@ -31,5 +31,13 @@ namespace blog.Controllers
             await service.CreateUserAsync(userDto);
             return Ok();
         }
+
+        [HttpGet("valid/token")]
+        [Authorize]
+        public async Task<ActionResult<bool>> ValidToken()
+        {
+            var isValid = await service.ValidUserToken();
+            return isValid ? Ok(isValid) : Unauthorized(isValid);
+        }
     }
 }

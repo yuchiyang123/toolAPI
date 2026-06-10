@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using blog.Common.Helper;
 using blog.Dtos;
 using blog.Entities;
 using blog.Entities.User;
@@ -7,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace blog.Services
 {
-    public class UserService(BlogContext context, IMapper mapper)
+    public class UserService(BlogContext context, JwtInfoHelper helper, IMapper mapper)
     {
         public async Task CreateUserAsync(CreateUserDto userDto)
         {
@@ -46,6 +47,11 @@ namespace blog.Services
         {
             var userInfo = await context.Users.ToListAsync();
             return mapper.Map<List<DropDownListDto>>(userInfo);
+        }
+
+        public async Task<bool> ValidUserToken()
+        {
+            return await helper.HasUserIdAsync();
         }
     }
 }
