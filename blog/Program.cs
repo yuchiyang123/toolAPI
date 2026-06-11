@@ -68,6 +68,8 @@ builder.Services.AddScoped<FlowService>();
 builder.Services.AddScoped<FlowRepository>();
 builder.Services.AddScoped<JwtInfoHelper>();
 builder.Services.AddScoped<FlowCacheService>();
+builder.Services.AddScoped<_8BitRepository>();
+builder.Services.AddScoped<_8BitService>();
 
 builder.Services.AddAutoMapper(
     (IMapperConfigurationExpression cfg) => { },
@@ -90,7 +92,6 @@ builder.Services.AddStackExchangeRedisCache(option =>
     option.InstanceName = "Blog";
 });
 
-// ��singleton �O�]�� redis tcp�s�u �p�G�s�W�@�ӹ�� �N�|�ݭn���s�@�� �o�O��ͳ]�p�����D
 builder.Services.AddSingleton<IConnectionMultiplexer>(
     ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis")!)
 );

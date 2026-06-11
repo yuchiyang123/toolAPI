@@ -1,4 +1,5 @@
-﻿using blog.Entities.Blog;
+﻿using blog.Entities._8bit;
+using blog.Entities.Blog;
 using blog.Entities.Flows;
 using blog.Entities.Recipes;
 using blog.Entities.User;
@@ -36,6 +37,12 @@ namespace blog.Entities
         public DbSet<FlowNode> FlowNodes { get; set; }
         public DbSet<FlowEdge> FlowEdges { get; set; }
         public DbSet<FlowRule> FlowRules { get; set; }
+        #endregion
+
+        #region 8bit
+        public DbSet<Sequencer> Sequencers { get; set; }
+        public DbSet<Track> Tracks { get; set; }
+        public DbSet<Step> Steps { get; set; }
         #endregion
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -400,6 +407,51 @@ namespace blog.Entities
                     .OnDelete(DeleteBehavior.NoAction);
                 entity.Property(x => x.CreateDate).HasDefaultValueSql("GETDATE()");
                 entity.Property(x => x.UpdateDate).HasDefaultValueSql("GETDATE()");
+            });
+            #endregion
+
+            #region 8Bit
+            builder.Entity<Sequencer>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.Name).HasMaxLength(20).IsRequired();
+                entity.Property(x => x.Bpm).HasMaxLength(3).IsRequired();
+                entity.Property(x => x.CreateDate).HasDefaultValueSql("GETDATE()");
+                entity.Property(x => x.UpdateDate).HasDefaultValueSql("GETDATE()");
+
+                entity
+                    .HasOne(e => e.UpdateUsers)
+                    .WithMany()
+                    .HasForeignKey(e => e.UpdateUser)
+                    .HasPrincipalKey(e => e.Id)
+                    .OnDelete(DeleteBehavior.NoAction);
+                entity
+                    .HasOne(e => e.CreateUsers)
+                    .WithMany()
+                    .HasForeignKey(e => e.CreateUser)
+                    .HasPrincipalKey(e => e.Id)
+                    .OnDelete(DeleteBehavior.NoAction);
+            });
+
+            builder.Entity<Track>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.TrackSeq).HasMaxLength(1).IsRequired();
+
+                entity.HasOne(e => e.Sequencer).WithMany(e => e.Tracks).HasPrincipalKey(e => e.Id).HasForeignKey(e => e.SequencerId).OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<Step>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.StepSeq).HasMaxLength(1).IsRequired();
+                entity.Property(x => x.IsOn).HasDefaultValue(false).IsRequired();
+                entity.Property(x => x.Hz).HasColumnType("decimal(5,2)").IsRequired(false);
+
+                entity.HasOne(e => e.Track).WithMany(e => e.Step).HasPrincipalKey(e => e.Id).HasForeignKey(e => e.TrackId).OnDelete(DeleteBehavior.Cascade);
             });
             #endregion
         }
