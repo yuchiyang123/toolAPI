@@ -34,6 +34,8 @@ namespace blog.Common.Profiles
 
             CreateMap<Sequencer, SequencerResponseDto>()
                 .ForMember(dest => dest.Tracks, opt => opt.MapFrom(src => src.Tracks))
+                .ForMember(dest => dest.CreateUser, opt => opt.MapFrom(src => src.CreateUsers))
+                .ForMember(dest => dest.UpdateUser, opt => opt.MapFrom(src => src.UpdateUsers))
                 .IncludeBase<Sequencer, BaseSequencer>();
             CreateMap<Track, TrackResponseDto>()
                 .ForMember(dest => dest.Steps, opt => opt.MapFrom(src => src.Step))
