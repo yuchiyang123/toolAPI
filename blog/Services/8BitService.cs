@@ -11,11 +11,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace blog.Services
 {
-    public class _8BitService(IMapper mapper, BlogContext context, _8BitRepository repository)
+    public class _8BitService(
+        IMapper mapper,
+        BlogContext context,
+        _8BitRepository repository,
+        JwtInfoHelper jwtInfoHelper
+    )
     {
         public async Task<PageResponseDto<SequencerListRequestDto>> Get8BitListAsync(
             PageDto queryDto,
-            JwtInfoHelper jwtInfoHelper,
             CancellationToken ct = default
         )
         {
