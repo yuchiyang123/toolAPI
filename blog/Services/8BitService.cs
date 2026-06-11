@@ -15,11 +15,14 @@ namespace blog.Services
     {
         public async Task<PageResponseDto<SequencerListRequestDto>> Get8BitListAsync(
             PageDto queryDto,
+            JwtInfoHelper jwtInfoHelper,
             CancellationToken ct = default
         )
         {
+            var userId = await jwtInfoHelper.GetUserIdForJwt();
             var entity = await repository
                 .GetSequencerNoInclude()
+                .Where(x => x.CreateUser == userId)
                 .Page(queryDto.PageIndex, queryDto.PageSize)
                 .ToListAsync(ct);
             var dto = mapper.Map<List<SequencerListRequestDto>>(entity);
