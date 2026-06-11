@@ -23,10 +23,8 @@ namespace blog.Services
             CancellationToken ct = default
         )
         {
-            var userId = await jwtInfoHelper.GetUserIdForJwt();
             var entity = await repository
                 .GetSequencerNoInclude()
-                .Where(x => x.CreateUser == userId)
                 .Page(queryDto.PageIndex, queryDto.PageSize)
                 .ToListAsync(ct);
             var dto = mapper.Map<List<SequencerListRequestDto>>(entity);
