@@ -52,6 +52,9 @@
 
     public class StepRequestDto : BaseStep { }
 
-    public class SequencerListRequestDto : BaseSequencer { }
+    public class SequencerListRequestDto : BaseSequencer
+    {
+        public int Id { get; set; }
+    }
     #endregion
 }
