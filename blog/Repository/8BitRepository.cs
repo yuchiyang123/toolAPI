@@ -9,7 +9,12 @@ namespace blog.Repository
     {
         public IQueryable<Sequencer> GetSequencer()
         {
-            return context.Sequencers.Include(x => x.Tracks).ThenInclude(x => x.Step).Include(x => x.UpdateUser).Include(x => x.CreateUser).AsQueryable();
+            return context
+                .Sequencers.Include(x => x.Tracks)
+                    .ThenInclude(x => x.Step)
+                .Include(x => x.UpdateUser)
+                .Include(x => x.CreateUser)
+                .AsQueryable();
         }
 
         public IQueryable<Sequencer> GetSequencerNoInclude()

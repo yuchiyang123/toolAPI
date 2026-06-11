@@ -11,7 +11,9 @@ namespace blog.Controllers
     public class BitController(_8BitService service) : ControllerBase
     {
         [HttpGet("list")]
-        public async Task<ActionResult<PageResponseDto<SequencerListRequestDto>>> Get8BitListAsync([FromQuery] PageDto queryDto)
+        public async Task<ActionResult<PageResponseDto<SequencerListRequestDto>>> Get8BitListAsync(
+            [FromQuery] PageDto queryDto
+        )
         {
             var pageDto = await service.Get8BitListAsync(queryDto);
             return Ok(pageDto);

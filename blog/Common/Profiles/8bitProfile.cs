@@ -12,9 +12,11 @@ namespace blog.Common.Profiles
             #region Base
             CreateMap<Sequencer, BaseSequencer>().ReverseMap();
             CreateMap<Track, BaseTrack>()
-                .ForMember(dest => dest.Seq, opt => opt.MapFrom(src => src.TrackSeq)).ReverseMap();
+                .ForMember(dest => dest.Seq, opt => opt.MapFrom(src => src.TrackSeq))
+                .ReverseMap();
             CreateMap<Step, BaseStep>()
-                .ForMember(dest => dest.Seq, opt => opt.MapFrom(src => src.StepSeq)).ReverseMap();
+                .ForMember(dest => dest.Seq, opt => opt.MapFrom(src => src.StepSeq))
+                .ReverseMap();
             #endregion
 
             #region Request
@@ -24,13 +26,11 @@ namespace blog.Common.Profiles
             CreateMap<TrackRequestDto, Track>()
                 .ForMember(dest => dest.Step, opt => opt.MapFrom(src => src.Steps))
                 .IncludeBase<BaseTrack, Track>();
-            CreateMap<StepRequestDto, Step>()
-                .IncludeBase<BaseStep, Step>();
+            CreateMap<StepRequestDto, Step>().IncludeBase<BaseStep, Step>();
             #endregion
 
             #region Response
-            CreateMap<Sequencer, SequencerListRequestDto>()
-                .IncludeBase<Sequencer, BaseSequencer>();
+            CreateMap<Sequencer, SequencerListRequestDto>().IncludeBase<Sequencer, BaseSequencer>();
 
             CreateMap<Sequencer, SequencerResponseDto>()
                 .ForMember(dest => dest.Tracks, opt => opt.MapFrom(src => src.Tracks))
@@ -38,8 +38,7 @@ namespace blog.Common.Profiles
             CreateMap<Track, TrackResponseDto>()
                 .ForMember(dest => dest.Steps, opt => opt.MapFrom(src => src.Step))
                 .IncludeBase<Track, BaseTrack>();
-            CreateMap<Step, StepResponseDto>()
-                .IncludeBase<Step, BaseStep>();
+            CreateMap<Step, StepResponseDto>().IncludeBase<Step, BaseStep>();
             #endregion
         }
     }

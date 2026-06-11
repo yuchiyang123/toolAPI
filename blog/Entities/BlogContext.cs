@@ -440,7 +440,12 @@ namespace blog.Entities
 
                 entity.Property(x => x.TrackSeq).HasMaxLength(1).IsRequired();
 
-                entity.HasOne(e => e.Sequencer).WithMany(e => e.Tracks).HasPrincipalKey(e => e.Id).HasForeignKey(e => e.SequencerId).OnDelete(DeleteBehavior.Cascade);
+                entity
+                    .HasOne(e => e.Sequencer)
+                    .WithMany(e => e.Tracks)
+                    .HasPrincipalKey(e => e.Id)
+                    .HasForeignKey(e => e.SequencerId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             builder.Entity<Step>(entity =>
@@ -451,7 +456,12 @@ namespace blog.Entities
                 entity.Property(x => x.IsOn).HasDefaultValue(false).IsRequired();
                 entity.Property(x => x.Hz).HasColumnType("decimal(5,2)").IsRequired(false);
 
-                entity.HasOne(e => e.Track).WithMany(e => e.Step).HasPrincipalKey(e => e.Id).HasForeignKey(e => e.TrackId).OnDelete(DeleteBehavior.Cascade);
+                entity
+                    .HasOne(e => e.Track)
+                    .WithMany(e => e.Step)
+                    .HasPrincipalKey(e => e.Id)
+                    .HasForeignKey(e => e.TrackId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
             #endregion
         }
