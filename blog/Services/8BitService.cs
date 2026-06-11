@@ -47,7 +47,10 @@ namespace blog.Services
 
         public async Task Add8BitAsync(SequencerRequestDto dto, CancellationToken ct = default)
         {
+            var userId = await jwtInfoHelper.GetUserIdForJwt();
             var entity = mapper.Map<Sequencer>(dto);
+            entity.CreateUser = userId;
+            entity.UpdateUser = userId;
             context.Add(entity);
             await context.SaveChangesAsync(ct);
         }
