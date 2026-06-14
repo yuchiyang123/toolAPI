@@ -28,7 +28,7 @@ namespace blog.Services
                 .Page(queryDto.PageIndex, queryDto.PageSize)
                 .ToListAsync(ct);
             var dto = mapper.Map<List<SequencerListRequestDto>>(entity);
-            return dto.ToPageResponseDtoNoToPage(queryDto.PageIndex, queryDto.PageSize);
+            return dto.ToPageResponseDto(queryDto.PageIndex, queryDto.PageSize);
         }
 
         public async Task<SequencerResponseDto> Get8BitDetailAsync(

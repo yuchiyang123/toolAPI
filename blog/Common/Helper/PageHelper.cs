@@ -5,11 +5,6 @@ namespace blog.Common.Helper
 {
     public static class PageHelper
     {
-        //public static IQueryable<T> Page<T>(this IQueryable<T> query, int pageIndex, int pageSize)
-        //{
-        //    return query.Skip((pageIndex - 1) * pageSize).Take(pageSize);
-        //}
-
         public static async Task<PageResponseDto<T>> ToPageResponseDto<T>(
             this IQueryable<T> query,
             int pageIndex,
@@ -17,14 +12,9 @@ namespace blog.Common.Helper
         )
         {
             var total = query.Count();
+            var item = await query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
 
-            return new PageResponseDto<T>
-            {
-                PageIndex = pageIndex,
-                PageTotal = (int)Math.Ceiling(total / (double)pageSize),
-                HasNextPage = total > pageIndex * pageSize,
-                Items = await query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync(),
-            };
+            return GetPageResponseDto(item, pageIndex, pageSize, total);
         }
 
         /// <summary>
@@ -35,7 +25,7 @@ namespace blog.Common.Helper
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
-        public static PageResponseDto<T> ToPageResponseDtoNoToPage<T>(
+        public static PageResponseDto<T> ToPageResponseDto<T>(
             this List<T> dto,
             int pageIndex,
             int pageSize
@@ -43,10 +33,17 @@ namespace blog.Common.Helper
         {
             var total = dto.Count;
 
+            return GetPageResponseDto(dto, pageIndex, pageSize, total);
+        }
+
+        private static PageResponseDto<T> GetPageResponseDto<T>(List<T> dto, int pageIndex, int pageSize, int total)
+        {
             return new PageResponseDto<T>
             {
                 PageIndex = pageIndex,
                 PageTotal = (int)Math.Ceiling(total / (double)pageSize),
+                PageSize = pageSize,
+                TotalSize = total,
                 HasNextPage = total > pageIndex * pageSize,
                 Items = dto,
             };
