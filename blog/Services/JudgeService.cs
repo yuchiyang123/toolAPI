@@ -13,7 +13,7 @@ namespace blog.Services
         public async Task<JudgeResult> RunAsync(string code)
         {
             var jobId = Guid.NewGuid().ToString();
-            var tempDir = Path.Combine(Path.GetTempPath(), jobId);
+            var tempDir = Path.Combine(@"C:\PushAPI\judgeTemp", jobId);
             Directory.CreateDirectory(tempDir);
             await File.WriteAllTextAsync(Path.Combine(tempDir, "main.py"), code);
 
