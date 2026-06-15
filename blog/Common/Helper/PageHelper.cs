@@ -36,7 +36,12 @@ namespace blog.Common.Helper
             return GetPageResponseDto(dto, pageIndex, pageSize, total);
         }
 
-        private static PageResponseDto<T> GetPageResponseDto<T>(List<T> dto, int pageIndex, int pageSize, int total)
+        private static PageResponseDto<T> GetPageResponseDto<T>(
+            List<T> dto,
+            int pageIndex,
+            int pageSize,
+            int total
+        )
         {
             return new PageResponseDto<T>
             {
