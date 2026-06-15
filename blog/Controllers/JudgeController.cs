@@ -11,7 +11,7 @@ namespace blog.Controllers
         [HttpPost]
         public async Task<ActionResult<JudgeResult>> GetRunAsync([FromBody] JudgeDto judge)
         {
-            var dto = await service.RunAsync(judge.Code);
+            var dto = await service.RunAsync(judge);
             return Ok(dto);
         }
     }
