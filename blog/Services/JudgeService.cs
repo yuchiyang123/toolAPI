@@ -1,4 +1,5 @@
-﻿using blog.Dtos.Judge;
+﻿using System.ComponentModel;
+using blog.Dtos.Judge;
 using Docker.DotNet;
 using Docker.DotNet.Models;
 
@@ -42,7 +43,17 @@ namespace blog.Services
                 );
 
                 await _docker.Containers.StartContainerAsync(container.ID, null);
-                await _docker.Containers.WaitContainerAsync(container.ID);
+
+                try
+                {
+                    using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                    await _docker.Containers.WaitContainerAsync(container.ID);
+                }
+                catch (OperationCanceledException)
+                {
+                    await _docker.Containers.RemoveContainerAsync(container.ID, new ContainerRemoveParameters { Force = true });
+                    return new JudgeResult { Stdout = "", Stderr = "Time Limit Exceeded" };
+                }
 
                 var logs = await _docker.Containers.GetContainerLogsAsync(
                     container.ID,
