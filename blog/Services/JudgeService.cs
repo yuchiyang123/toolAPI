@@ -19,6 +19,12 @@ namespace blog.Services
 
             try
             {
+                await _docker.Images.CreateImageAsync(
+                    new ImagesCreateParameters { FromImage = "python", Tag = "3.12-alpine" },
+                    null,
+                    new Progress<JSONMessage>()
+                );
+
                 var container = await _docker.Containers.CreateContainerAsync(
                     new CreateContainerParameters
                     {
