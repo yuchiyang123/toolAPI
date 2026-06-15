@@ -47,7 +47,7 @@ namespace blog.Services
                 try
                 {
                     using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-                    await _docker.Containers.WaitContainerAsync(container.ID);
+                    await _docker.Containers.WaitContainerAsync(container.ID, cts.Token);
                 }
                 catch (OperationCanceledException)
                 {
