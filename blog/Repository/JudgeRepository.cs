@@ -1,4 +1,5 @@
-﻿using blog.Entities;
+﻿using System.Threading.Tasks;
+using blog.Entities;
 using blog.Entities.Judge;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,6 +27,11 @@ namespace blog.Repository
         public IQueryable<Problem> GetProblemList()
         {
             return context.Problems.Include(x => x.Submissions).AsQueryable();
+        }
+
+        public IQueryable<Problem> GetProblemsFeature()
+        {
+            return context.Problems.Include(x => x.Functions).AsQueryable();
         }
     }
 }

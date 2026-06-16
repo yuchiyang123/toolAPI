@@ -74,6 +74,7 @@ builder.Services.AddScoped<_8BitService>();
 builder.Services.AddScoped<JudgeService>();
 builder.Services.AddScoped<JudgaCacheService>();
 builder.Services.AddScoped<JudgeRepository>();
+builder.Services.AddScoped<JuageHelper>();
 
 builder.Services.AddAutoMapper(
     (IMapperConfigurationExpression cfg) => { },

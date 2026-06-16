@@ -1,7 +1,6 @@
 ﻿using blog.Entities;
 using blog.Entities._8bit;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace blog.Repository
 {

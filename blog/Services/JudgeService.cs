@@ -12,11 +12,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace blog.Services
 {
-    public class JudgeService(IMapper mapper, JudgeRepository repository)
+    public class JudgeService(IMapper mapper, JudgeRepository repository, JuageHelper helper)
     {
         private readonly DockerClient _docker = new DockerClientConfiguration(
             new Uri("npipe://./pipe/docker_engine")
         ).CreateClient();
+
+        private async Task<JudgeResult> RunAsync(
+            JudgeLanguageEnum languageEnum,
+            string code,
+            CancellationToken ct = default
+        )
+        {
+            return await RunAsync(new JudgeDto { Code = code, Language = languageEnum }, ct);
+        }
 
         public async Task<JudgeResult> RunAsync(JudgeDto dto, CancellationToken ct = default)
         {
@@ -148,6 +157,30 @@ namespace blog.Services
                     .ProjectTo<ProblemDetail>(mapper.ConfigurationProvider)
                     .FirstOrDefaultAsync(x => x.Id == id)
                 ?? throw new KeyNotFoundException();
+        }
+
+        public async Task<JudgeResultReponse?> GetJudgeResultById(
+            JudgeRequestDto dto,
+            CancellationToken ct = default
+        )
+        {
+            var entity =
+                await repository.GetProblemsFeature().FirstOrDefaultAsync(x => x.Id == dto.Id, ct)
+                ?? throw new KeyNotFoundException();
+
+            var testCode = entity.Functions.ToDictionary(x => x.Id, x => x.Input);
+            var splicingCode = helper.SplicingTestAndCode(dto.Language, dto.Code, testCode);
+            var resultDto = await RunAsync(dto.Language, splicingCode, ct);
+            var results = resultDto.Stdout?.Split(JuageHelper.SplitSpecialSymbols);
+
+            /// 會遇到幾種請
+            /// 1. 數量不同 (測試數量和結果數量不同)
+            /// 2. 空值
+            /// 3. 拋error
+            if (results == null)
+                return null;
+
+            return null;
         }
     }
 }

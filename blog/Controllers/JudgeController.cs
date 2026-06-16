@@ -33,5 +33,7 @@ namespace blog.Controllers
             var dto = await cacheService.GetProblemsDetail(id);
             return Ok(dto);
         }
+
+        public async Task<ActionResult<>>
     }
 }
