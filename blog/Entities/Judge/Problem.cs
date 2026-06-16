@@ -9,5 +9,6 @@
         public DateTime CreateDate { get; set; }
         public ICollection<Function> Functions { get; set; }
         public ICollection<Submission> Submissions { get; set; }
+        public ICollection<ProblemSignature> ProblemSignatures { get; set; }
     }
 }

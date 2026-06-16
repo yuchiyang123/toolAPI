@@ -17,9 +17,14 @@ namespace blog.Seed
             {
                 ProblemName = "兩數之和",
                 Description =
-                    "給定一個整數陣列 nums 和一個目標值 target，找出陣列中兩個數字的索引，使它們相加等於 target。每個輸入只有一組答案，且不能使用同一個元素兩次。\n\n函式簽名：\ndef two_sum(nums, target):",
+                    "給定一個整數陣列 nums 和一個目標值 target，找出陣列中兩個數字的索引，使它們相加等於 target。每個輸入只有一組答案，且不能使用同一個元素兩次。",
                 CreateDate = now,
                 UpdateDate = now,
+                ProblemSignatures =
+                [
+                    new() { Language = JudgeLanguageEnum.python, FunctionName = "two_sum" },
+                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "TwoSum" },
+                ],
                 Functions =
                 [
                     new()
@@ -64,7 +69,6 @@ namespace blog.Seed
                         Input = "{\"nums\": [1000000,999999], \"target\": 1999999}",
                         Expected = "[0, 1]",
                     },
-                    // CSharp
                     new()
                     {
                         Language = JudgeLanguageEnum.csharp,
@@ -114,11 +118,16 @@ namespace blog.Seed
             {
                 ProblemName = "爬樓梯",
                 Description =
-                    "你正在爬樓梯，需要 n 步才能到達頂部。每次可以爬 1 或 2 步，有多少種不同的方法可以爬到頂部？\n\n函式簽名：\ndef climb_stairs(n):",
+                    "你正在爬樓梯，需要 n 步才能到達頂部。每次可以爬 1 或 2 步，有多少種不同的方法可以爬到頂部？",
                 CreateDate = now,
                 UpdateDate = now,
-                Functions = new List<Function>
-                {
+                ProblemSignatures =
+                [
+                    new() { Language = JudgeLanguageEnum.python, FunctionName = "climb_stairs" },
+                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "ClimbStairs" },
+                ],
+                Functions =
+                [
                     new()
                     {
                         Language = JudgeLanguageEnum.python,
@@ -203,18 +212,22 @@ namespace blog.Seed
                         Input = "{\"n\": 45}",
                         Expected = "1836311903",
                     },
-                },
+                ],
             };
 
             var reverseString = new Problem
             {
                 ProblemName = "反轉字串",
-                Description =
-                    "給定一個字串 s，回傳反轉後的字串。\n\n函式簽名：\ndef reverse_string(s):",
+                Description = "給定一個字串 s，回傳反轉後的字串。",
                 CreateDate = now,
                 UpdateDate = now,
-                Functions = new List<Function>
-                {
+                ProblemSignatures =
+                [
+                    new() { Language = JudgeLanguageEnum.python, FunctionName = "reverse_string" },
+                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "ReverseString" },
+                ],
+                Functions =
+                [
                     new()
                     {
                         Language = JudgeLanguageEnum.python,
@@ -275,7 +288,7 @@ namespace blog.Seed
                         Input = "{\"s\": \"abcde\"}",
                         Expected = "\"edcba\"",
                     },
-                },
+                ],
             };
 
             context.Problems.AddRange(twoSum, climbStairs, reverseString);
