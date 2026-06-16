@@ -14,11 +14,16 @@ namespace blog.Migrations
                 name: "ProblemSignatures",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table
+                        .Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ProblemId = table.Column<int>(type: "int", nullable: false),
                     Language = table.Column<int>(type: "int", nullable: false),
-                    FunctionName = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false)
+                    FunctionName = table.Column<string>(
+                        type: "nvarchar(300)",
+                        maxLength: 300,
+                        nullable: false
+                    ),
                 },
                 constraints: table =>
                 {
@@ -28,20 +33,22 @@ namespace blog.Migrations
                         column: x => x.ProblemId,
                         principalTable: "Problems",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProblemSignatures_ProblemId",
                 table: "ProblemSignatures",
-                column: "ProblemId");
+                column: "ProblemId"
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "ProblemSignatures");
+            migrationBuilder.DropTable(name: "ProblemSignatures");
         }
     }
 }
