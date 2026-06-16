@@ -12,11 +12,11 @@ namespace blog.Common.Profiles
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.ProblemName))
                 .ForMember(
                     dest => dest.PassCount,
-                    opt => opt.MapFrom(src => src.Submissions.Select(x => x.PassedCount))
+                    opt => opt.MapFrom(src => src.Submissions.Sum(x => x.PassedCount))
                 )
                 .ForMember(
                     dest => dest.TotalCount,
-                    opt => opt.MapFrom(src => src.Submissions.Select(x => x.TotalCount))
+                    opt => opt.MapFrom(src => src.Submissions.Sum(x => x.TotalCount))
                 );
 
             CreateMap<Problem, ProblemsList>().IncludeBase<Problem, BaseProblem>();
