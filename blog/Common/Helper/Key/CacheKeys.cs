@@ -11,5 +11,7 @@
         public static string Recipe(int id) => $"Recipe:{id}";
 
         public static string FlowDetail(int id) => $"FlowDetail:{id}";
+
+        public static string Problems(int id) => $"Problems:{id}";
     }
 }

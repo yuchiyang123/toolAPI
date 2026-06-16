@@ -8,7 +8,7 @@ public class JudgeServiceTests
 {
     private readonly JudgeService _service = new();
 
-    [Fact]
+    [SkippableFact]
     public async Task Python_HelloWorld_ReturnsStdout()
     {
         var result = await _service.RunAsync(new JudgeDto
@@ -21,7 +21,7 @@ public class JudgeServiceTests
         Assert.Equal("", result.Stderr);
     }
 
-    [Fact]
+    [SkippableFact]
     public async Task Python_DivisionByZero_ReturnsStderr()
     {
         var result = await _service.RunAsync(new JudgeDto
@@ -34,7 +34,7 @@ public class JudgeServiceTests
         Assert.Contains("ZeroDivisionError", result.Stderr);
     }
 
-    [Fact]
+    [SkippableFact]
     public async Task Python_InfiniteLoop_ReturnsTimeLimitExceeded()
     {
         var result = await _service.RunAsync(new JudgeDto
@@ -47,7 +47,7 @@ public class JudgeServiceTests
         Assert.Equal("Time Limit Exceeded", result.Stderr);
     }
 
-    [Fact]
+    [SkippableFact]
     public async Task Python_ForkBomb_IsContained()
     {
         var result = await _service.RunAsync(new JudgeDto
@@ -60,7 +60,7 @@ public class JudgeServiceTests
         Assert.NotEqual("Time Limit Exceeded", result.Stderr);
     }
 
-    [Fact]
+    [SkippableFact]
     public async Task CSharp_HelloWorld_ReturnsStdout()
     {
         var result = await _service.RunAsync(new JudgeDto
@@ -73,7 +73,7 @@ public class JudgeServiceTests
         Assert.Equal("", result.Stderr);
     }
 
-    [Fact]
+    [SkippableFact]
     public async Task CSharp_DivisionByZero_ReturnsStderr()
     {
         var result = await _service.RunAsync(new JudgeDto
@@ -86,7 +86,7 @@ public class JudgeServiceTests
         Assert.Contains("DivideByZeroException", result.Stderr);
     }
 
-    [Fact]
+    [SkippableFact]
     public async Task CSharp_InfiniteLoop_ReturnsTimeLimitExceeded()
     {
         var result = await _service.RunAsync(new JudgeDto
@@ -99,7 +99,7 @@ public class JudgeServiceTests
         Assert.Equal("Time Limit Exceeded", result.Stderr);
     }
 
-    [Fact]
+    [SkippableFact]
     public async Task CSharp_NetworkAccess_IsBlocked()
     {
         var result = await _service.RunAsync(new JudgeDto
@@ -112,7 +112,7 @@ public class JudgeServiceTests
         Assert.NotEmpty(result.Stderr);
     }
 
-    [Theory]
+    [SkippableFact]
     [InlineData(JudgeLanguageEnum.python, "print('hello')", "hello\n")]
     [InlineData(JudgeLanguageEnum.python, "print(1+1)", "2\n")]
     public async Task Python_BasicExpressions_ReturnCorrectOutput(JudgeLanguageEnum language, string code, string expected)

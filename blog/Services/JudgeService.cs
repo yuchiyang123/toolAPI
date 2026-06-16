@@ -1,25 +1,31 @@
-﻿using blog.Common.Enum;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using blog.Common.Enum;
+using blog.Common.Helper;
 using blog.Common.Helper.Key;
 using blog.Dtos.Judge;
+using blog.Dtos.Page;
+using blog.Repository;
 using Docker.DotNet;
 using Docker.DotNet.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace blog.Services
 {
-    public class JudgeService
+    public class JudgeService(IMapper mapper, JudgeRepository repository)
     {
         private readonly DockerClient _docker = new DockerClientConfiguration(
             new Uri("npipe://./pipe/docker_engine")
         ).CreateClient();
 
-        public async Task<JudgeResult> RunAsync(JudgeDto dto)
+        public async Task<JudgeResult> RunAsync(JudgeDto dto, CancellationToken ct = default)
         {
             var (image, fileName, cmd) = JudgeConfig.Config[dto.Language];
 
             var jobId = Guid.NewGuid().ToString();
             var tempDir = Path.Combine(@"C:\PushAPI\judgeTemp", jobId);
             Directory.CreateDirectory(tempDir);
-            await File.WriteAllTextAsync(Path.Combine(tempDir, fileName), dto.Code);
+            await File.WriteAllTextAsync(Path.Combine(tempDir, fileName), dto.Code, ct);
 
             try
             {
@@ -33,7 +39,8 @@ namespace blog.Services
                     await _docker.Images.CreateImageAsync(
                         new ImagesCreateParameters { FromImage = fromImage, Tag = tag },
                         null,
-                        new Progress<JSONMessage>()
+                        new Progress<JSONMessage>(),
+                        ct
                     );
                 }
 
@@ -59,7 +66,7 @@ namespace blog.Services
                     }
                 );
 
-                await _docker.Containers.StartContainerAsync(container.ID, null);
+                await _docker.Containers.StartContainerAsync(container.ID, null, ct);
 
                 var waitTimeout = dto.Language switch
                 {
@@ -81,7 +88,8 @@ namespace blog.Services
                 {
                     await _docker.Containers.RemoveContainerAsync(
                         container.ID,
-                        new ContainerRemoveParameters { Force = true }
+                        new ContainerRemoveParameters { Force = true },
+                        ct
                     );
                     return new JudgeResult
                     {
@@ -93,14 +101,16 @@ namespace blog.Services
                 var logs = await _docker.Containers.GetContainerLogsAsync(
                     container.ID,
                     false,
-                    new ContainerLogsParameters { ShowStdout = true, ShowStderr = true }
+                    new ContainerLogsParameters { ShowStdout = true, ShowStderr = true },
+                    ct
                 );
 
                 var (stdout, stderr) = await logs.ReadOutputToEndAsync(default);
 
                 await _docker.Containers.RemoveContainerAsync(
                     container.ID,
-                    new ContainerRemoveParameters { Force = true }
+                    new ContainerRemoveParameters { Force = true },
+                    ct
                 );
 
                 if (waitResult.StatusCode == (int)JudgeStatusCodeEnum.Timeout)
@@ -118,6 +128,26 @@ namespace blog.Services
             {
                 Directory.Delete(tempDir, true);
             }
+        }
+
+        public async Task<PageResponseDto<ProblemsList>> GetProblemListAsync(
+            ProblemsListQuery query
+        )
+        {
+            var entity = repository.GetProblemList();
+            return await entity
+                .ProjectTo<ProblemsList>(mapper.ConfigurationProvider)
+                .ToPageResponseDto(query.PageIndex, query.PageSize);
+        }
+
+        public async Task<ProblemDetail> GetProblemDetailAsync(int id)
+        {
+            return await repository
+                    .GetProblemDetail()
+                    .Where(x => x.Id == id)
+                    .ProjectTo<ProblemDetail>(mapper.ConfigurationProvider)
+                    .FirstOrDefaultAsync(x => x.Id == id)
+                ?? throw new KeyNotFoundException();
         }
     }
 }

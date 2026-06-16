@@ -42,5 +42,6 @@
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.1.5" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.1.5" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.7.2" />
+    <PackageReference Include="Xunit.SkippableFact" Version="1.5.61" />
   </ItemGroup>
 </Project>
