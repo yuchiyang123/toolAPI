@@ -4,6 +4,7 @@ using blog.Common.Helper;
 using blog.Entities;
 using blog.Middleware;
 using blog.Repository;
+using blog.Seed;
 using blog.Services;
 using blog.Services.Redis;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -122,6 +123,12 @@ app.UseAuthorization();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<BlogContext>();
+    await SeedJudge.SeedJudgeAsync(context);
+}
 
 //app.UseMiddleware<InternalSecretMiddleware>();
 

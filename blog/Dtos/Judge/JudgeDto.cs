@@ -1,8 +1,12 @@
-﻿namespace blog.Dtos.Judge
+﻿using System.Text.Json.Serialization;
+using blog.Common.Enum;
+
+namespace blog.Dtos.Judge
 {
     public class JudgeDto
     {
-        public required string Language { get; set; }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public required JudgeLanguageEnum Language { get; set; }
         public required string Code { get; set; }
     }
 

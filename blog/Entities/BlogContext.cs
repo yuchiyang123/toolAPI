@@ -1,6 +1,7 @@
 ﻿using blog.Entities._8bit;
 using blog.Entities.Blog;
 using blog.Entities.Flows;
+using blog.Entities.Judge;
 using blog.Entities.Recipes;
 using blog.Entities.User;
 using Microsoft.EntityFrameworkCore;
@@ -43,6 +44,13 @@ namespace blog.Entities
         public DbSet<Sequencer> Sequencers { get; set; }
         public DbSet<Track> Tracks { get; set; }
         public DbSet<Step> Steps { get; set; }
+        #endregion
+
+        #region Judge
+        public DbSet<Submission> Submissions { get; set; }
+        public DbSet<SubmissionResult> SubmissionResults { get; set; }
+        public DbSet<Function> Functions { get; set; }
+        public DbSet<Problem> Problems { get; set; }
         #endregion
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -461,6 +469,64 @@ namespace blog.Entities
                     .WithMany(e => e.Step)
                     .HasPrincipalKey(e => e.Id)
                     .HasForeignKey(e => e.TrackId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+            #endregion
+
+            #region Judge
+            builder.Entity<Problem>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.ProblemName).HasMaxLength(100).IsRequired();
+                entity.Property(x => x.Description).IsRequired();
+
+                entity.Property(x => x.CreateDate).HasDefaultValueSql("GETDATE()");
+                entity.Property(x => x.UpdateDate).HasDefaultValueSql("GETDATE()");
+            });
+
+            builder.Entity<Function>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.Input).IsRequired();
+                entity.Property(x => x.Expected).IsRequired();
+
+                entity
+                    .HasOne(e => e.Problem)
+                    .WithMany(e => e.Functions)
+                    .HasForeignKey(e => e.ProblemId)
+                    .HasPrincipalKey(e => e.Id)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<Submission>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.Code).IsRequired();
+                entity.Property(x => x.SubmittedAt).HasDefaultValueSql("GETDATE()");
+                entity
+                    .HasOne(e => e.Users)
+                    .WithMany(e => e.Submissions)
+                    .HasForeignKey(e => e.UserId)
+                    .HasPrincipalKey(e => e.Id)
+                    .OnDelete(DeleteBehavior.NoAction);
+                entity
+                    .HasOne(e => e.Problem)
+                    .WithMany(e => e.Submissions)
+                    .HasForeignKey(e => e.ProblemId)
+                    .HasPrincipalKey(e => e.Id)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<SubmissionResult>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.ActualOutput).IsRequired();
+
+                entity
+                    .HasOne(e => e.Submission)
+                    .WithMany(e => e.SubmissionResults)
+                    .HasForeignKey(e => e.SubmissionId)
+                    .HasPrincipalKey(e => e.Id)
                     .OnDelete(DeleteBehavior.Cascade);
             });
             #endregion

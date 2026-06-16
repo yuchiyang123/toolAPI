@@ -1,4 +1,4 @@
-﻿namespace blog.Common.Helper
+﻿namespace blog.Common.Helper.Key
 {
     public static class CacheKeys
     {

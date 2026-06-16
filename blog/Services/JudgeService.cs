@@ -1,8 +1,8 @@
-﻿using System.ComponentModel;
+﻿using blog.Common.Enum;
+using blog.Common.Helper.Key;
 using blog.Dtos.Judge;
 using Docker.DotNet;
 using Docker.DotNet.Models;
-using Microsoft.CodeAnalysis.Emit;
 
 namespace blog.Services
 {
@@ -14,12 +14,7 @@ namespace blog.Services
 
         public async Task<JudgeResult> RunAsync(JudgeDto dto)
         {
-            var (image, fileName, cmd) = dto.Language switch
-            {
-                "python" => ("python:3.12-alpine", "main.py", "timeout 10 python /code/main.py"),
-                "csharp" => ("judge-csharp:latest", "main.cs", "timeout 60 sh -c 'cp /template/template.csproj /code/ && cp /code/main.cs /code/Program.cs && rm /code/main.cs && cd /code && dotnet restore --source /root/.nuget/packages -v q 2>/dev/null && dotnet run --no-restore -v q'"),
-                _ => throw new ArgumentException("Unsupported language")
-            };
+            var (image, fileName, cmd) = JudgeConfig.Config[dto.Language];
 
             var jobId = Guid.NewGuid().ToString();
             var tempDir = Path.Combine(@"C:\PushAPI\judgeTemp", jobId);
@@ -28,11 +23,13 @@ namespace blog.Services
 
             try
             {
-                var localImages = new HashSet<string> { "judge-csharp:latest" };
+                var localImages = JudgeConfig.LocalImages;
 
                 if (!localImages.Contains(image))
                 {
-                    var (fromImage, tag) = image.Split(':') is [var f, var t] ? (f, t) : (image, "latest");
+                    var (fromImage, tag) = image.Split(':') is [var f, var t]
+                        ? (f, t)
+                        : (image, "latest");
                     await _docker.Images.CreateImageAsync(
                         new ImagesCreateParameters { FromImage = fromImage, Tag = tag },
                         null,
@@ -42,8 +39,8 @@ namespace blog.Services
 
                 var pidsLimit = dto.Language switch
                 {
-                    "csharp" => 200L,
-                    _ => 50L
+                    JudgeLanguageEnum.csharp => 200L,
+                    _ => 50L,
                 };
 
                 var container = await _docker.Containers.CreateContainerAsync(
@@ -66,20 +63,31 @@ namespace blog.Services
 
                 var waitTimeout = dto.Language switch
                 {
-                    "csharp" => TimeSpan.FromSeconds(75),
-                    _ => TimeSpan.FromSeconds(15)
+                    JudgeLanguageEnum.csharp => TimeSpan.FromSeconds(15),
+                    JudgeLanguageEnum.python => TimeSpan.FromSeconds(15),
+                    _ => TimeSpan.FromSeconds(15),
                 };
 
                 ContainerWaitResponse? waitResult = null;
                 try
                 {
                     using var cts = new CancellationTokenSource(waitTimeout);
-                    waitResult  = await _docker.Containers.WaitContainerAsync(container.ID, cts.Token);
+                    waitResult = await _docker.Containers.WaitContainerAsync(
+                        container.ID,
+                        cts.Token
+                    );
                 }
                 catch (OperationCanceledException)
                 {
-                    await _docker.Containers.RemoveContainerAsync(container.ID, new ContainerRemoveParameters { Force = true });
-                    return new JudgeResult { Stdout = "", Stderr = "Time Limit Exceeded" };
+                    await _docker.Containers.RemoveContainerAsync(
+                        container.ID,
+                        new ContainerRemoveParameters { Force = true }
+                    );
+                    return new JudgeResult
+                    {
+                        Stdout = string.Empty,
+                        Stderr = JudgeErrorMsg.Time_Limit_Exceeded.ToString(),
+                    };
                 }
 
                 var logs = await _docker.Containers.GetContainerLogsAsync(
@@ -95,9 +103,13 @@ namespace blog.Services
                     new ContainerRemoveParameters { Force = true }
                 );
 
-                if (waitResult.StatusCode == 124)
+                if (waitResult.StatusCode == (int)JudgeStatusCodeEnum.Timeout)
                 {
-                    return new JudgeResult { Stdout = "", Stderr = "Time Limit Exceeded" };
+                    return new JudgeResult
+                    {
+                        Stdout = string.Empty,
+                        Stderr = JudgeErrorMsg.Time_Limit_Exceeded.ToString(),
+                    };
                 }
 
                 return new JudgeResult { Stdout = stdout, Stderr = stderr };

@@ -1,4 +1,4 @@
-﻿using blog.Common.Helper;
+﻿using blog.Common.Helper.Key;
 
 namespace blog.Tests;
 

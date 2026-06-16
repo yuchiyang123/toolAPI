@@ -1,5 +1,6 @@
 ﻿using blog.Services;
 using blog.Dtos.Judge;
+using blog.Common.Enum;
 
 namespace blog.Tests;
 
@@ -12,7 +13,7 @@ public class JudgeServiceTests
     {
         var result = await _service.RunAsync(new JudgeDto
         {
-            Language = "python",
+            Language = JudgeLanguageEnum.python,
             Code = "print('hello world')"
         });
 
@@ -25,7 +26,7 @@ public class JudgeServiceTests
     {
         var result = await _service.RunAsync(new JudgeDto
         {
-            Language = "python",
+            Language = JudgeLanguageEnum.python,
             Code = "print(1/0)"
         });
 
@@ -38,7 +39,7 @@ public class JudgeServiceTests
     {
         var result = await _service.RunAsync(new JudgeDto
         {
-            Language = "python",
+            Language = JudgeLanguageEnum.python,
             Code = "while True: pass"
         });
 
@@ -51,7 +52,7 @@ public class JudgeServiceTests
     {
         var result = await _service.RunAsync(new JudgeDto
         {
-            Language = "python",
+            Language = JudgeLanguageEnum.python,
             Code = "import os\nwhile True:\n    os.fork()"
         });
 
@@ -64,7 +65,7 @@ public class JudgeServiceTests
     {
         var result = await _service.RunAsync(new JudgeDto
         {
-            Language = "csharp",
+            Language = JudgeLanguageEnum.csharp,
             Code = "Console.WriteLine(\"Hello from C#\");"
         });
 
@@ -77,7 +78,7 @@ public class JudgeServiceTests
     {
         var result = await _service.RunAsync(new JudgeDto
         {
-            Language = "csharp",
+            Language = JudgeLanguageEnum.csharp,
             Code = "int a = 10;\nint b = 0;\nConsole.WriteLine(a / b);"
         });
 
@@ -90,7 +91,7 @@ public class JudgeServiceTests
     {
         var result = await _service.RunAsync(new JudgeDto
         {
-            Language = "csharp",
+            Language = JudgeLanguageEnum.csharp,
             Code = "while(true) {}"
         });
 
@@ -103,7 +104,7 @@ public class JudgeServiceTests
     {
         var result = await _service.RunAsync(new JudgeDto
         {
-            Language = "csharp",
+            Language = JudgeLanguageEnum.csharp,
             Code = "using System.Net.Http;\nvar client = new HttpClient();\nvar res = await client.GetStringAsync(\"https://google.com\");\nConsole.WriteLine(res);"
         });
 
@@ -112,22 +113,11 @@ public class JudgeServiceTests
     }
 
     [Theory]
-    [InlineData("python", "print('hello')", "hello\n")]
-    [InlineData("python", "print(1+1)", "2\n")]
-    public async Task Python_BasicExpressions_ReturnCorrectOutput(string language, string code, string expected)
+    [InlineData(JudgeLanguageEnum.python, "print('hello')", "hello\n")]
+    [InlineData(JudgeLanguageEnum.python, "print(1+1)", "2\n")]
+    public async Task Python_BasicExpressions_ReturnCorrectOutput(JudgeLanguageEnum language, string code, string expected)
     {
         var result = await _service.RunAsync(new JudgeDto { Language = language, Code = code });
         Assert.Equal(expected, result.Stdout);
-    }
-
-    [Fact]
-    public async Task UnsupportedLanguage_ThrowsArgumentException()
-    {
-        await Assert.ThrowsAsync<ArgumentException>(() =>
-            _service.RunAsync(new JudgeDto
-            {
-                Language = "ruby",
-                Code = "puts 'hello'"
-            }));
-    }
+    }   
 }

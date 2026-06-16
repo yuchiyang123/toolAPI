@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using blog.Entities.Blog;
+using blog.Entities.Judge;
 
 namespace blog.Entities.User
 {
@@ -13,5 +14,6 @@ namespace blog.Entities.User
         public DateTime CreateDate { get; set; }
         public ICollection<Posts> Posts { get; set; }
         public ICollection<PostsChangeRecord> PostsChangeRecords { get; set; }
+        public ICollection<Submission> Submissions { get; set; }
     }
 }
