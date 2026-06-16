@@ -26,7 +26,7 @@ namespace blog.Dtos.Judge
         public double PassRate => TotalCount == 0 ? 0 : (double)PassCount / TotalCount;
     }
 
-    public class ProblemsListQuery : PageDto { }
+    public class ProblemsListQuery : PageQueryDto { }
 
     public class ProblemsList : BaseProblem { }
 
