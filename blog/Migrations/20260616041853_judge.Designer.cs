@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using blog.Entities;
 
@@ -11,9 +12,11 @@ using blog.Entities;
 namespace blog.Migrations
 {
     [DbContext(typeof(BlogContext))]
-    partial class BlogContextModelSnapshot : ModelSnapshot
+    [Migration("20260616041853_judge")]
+    partial class judge
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -434,32 +437,6 @@ namespace blog.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Problems");
-                });
-
-            modelBuilder.Entity("blog.Entities.Judge.ProblemSignature", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("FunctionName")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
-                    b.Property<int>("Language")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProblemId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProblemId");
-
-                    b.ToTable("ProblemSignatures");
                 });
 
             modelBuilder.Entity("blog.Entities.Judge.Submission", b =>
@@ -1143,17 +1120,6 @@ namespace blog.Migrations
                     b.Navigation("Problem");
                 });
 
-            modelBuilder.Entity("blog.Entities.Judge.ProblemSignature", b =>
-                {
-                    b.HasOne("blog.Entities.Judge.Problem", "Problem")
-                        .WithMany("ProblemSignatures")
-                        .HasForeignKey("ProblemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Problem");
-                });
-
             modelBuilder.Entity("blog.Entities.Judge.Submission", b =>
                 {
                     b.HasOne("blog.Entities.Judge.Problem", "Problem")
@@ -1388,8 +1354,6 @@ namespace blog.Migrations
             modelBuilder.Entity("blog.Entities.Judge.Problem", b =>
                 {
                     b.Navigation("Functions");
-
-                    b.Navigation("ProblemSignatures");
 
                     b.Navigation("Submissions");
                 });
