@@ -32,7 +32,7 @@ namespace blog.Repository
 
         public IQueryable<Problem> GetProblemsFeature(JudgeLanguageEnum language)
         {
-            return context.Problems.Include(x => x.Functions.Where(x => x.Language == language)).Include(x => x.Submissions.Where(x => x.Language == language)).AsQueryable();
+            return context.Problems.Include(x => x.Functions.Where(x => x.Language == language)).Include(x => x.ProblemSignatures.Where(x => x.Language == language)).AsQueryable();
         }
     }
 }
