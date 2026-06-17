@@ -20,8 +20,7 @@ namespace blog.Services
         IMapper mapper,
         JudgeRepository repository,
         JuageHelper helper,
-        BlogContext context,
-        JwtInfoHelper jwtInfoHelper
+        BlogContext context
     )
     {
         private readonly DockerClient _docker = new DockerClientConfiguration(
@@ -174,8 +173,6 @@ namespace blog.Services
             CancellationToken ct = default
         )
         {
-            int userId = await jwtInfoHelper.GetUserIdForJwt();
-
             var entity =
                 await repository
                     .GetProblemsFeature(dto.Language)
