@@ -205,7 +205,7 @@ namespace blog.Services
                     testResultCase.Add(new JudgeResultReponse
                     {
                         Id = id,
-                        Output = JsonSerializer.Serialize(testResult),
+                        Output = JsonSerializer.Deserialize<string>(testResult) ?? string.Empty,
                         IsPassed = ComparisonResult(expectedResult, id, testResult, testResultSymbol),
                     });
                 }
