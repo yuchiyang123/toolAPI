@@ -34,6 +34,11 @@ namespace blog.Controllers
             return Ok(dto);
         }
 
-        public async Task<ActionResult<>>
+        [HttpPost("id")]
+        public async Task<ActionResult<JudgeResult>> GetRunById([FromBody] JudgeRequestDto judge)
+        {
+            var dto = await service.GetJudgeResultById(judge);
+            return Ok(dto);
+        }
     }
 }

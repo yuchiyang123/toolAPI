@@ -159,7 +159,7 @@ namespace blog.Services
                 ?? throw new KeyNotFoundException();
         }
 
-        public async Task<JudgeResultReponse?> GetJudgeResultById(
+        public async Task<JudgeResult?> GetJudgeResultById(
             JudgeRequestDto dto,
             CancellationToken ct = default
         )
@@ -173,14 +173,15 @@ namespace blog.Services
             var resultDto = await RunAsync(dto.Language, splicingCode, ct);
             var results = resultDto.Stdout?.Split(JuageHelper.SplitSpecialSymbols);
 
+            return resultDto;
             /// 會遇到幾種請
             /// 1. 數量不同 (測試數量和結果數量不同)
             /// 2. 空值
             /// 3. 拋error
-            if (results == null)
-                return null;
+            //if (results == null)
+            //    return null;
 
-            return null;
+            //return null;
         }
     }
 }
