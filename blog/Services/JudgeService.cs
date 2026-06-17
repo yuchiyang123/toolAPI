@@ -199,8 +199,8 @@ namespace blog.Services
                 var match = Regex.Match(result, pattern);
                 if (match.Success)
                 {
-                    int id = int.Parse(match.Groups[1].Value);
-                    string testResultSymbol = match.Groups[3].Value;
+                    int id = int.Parse(match.Groups[2].Value);
+                    string testResultSymbol = match.Groups[1].Value;
                     string testResult = JsonSerializer.Serialize(match.Groups[3].Value);
                     testResultCase.Add(new JudgeResultReponse
                     {
