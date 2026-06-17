@@ -33,5 +33,13 @@ namespace blog.Controllers
             var dto = await cacheService.GetProblemsDetail(id);
             return Ok(dto);
         }
+
+        [HttpPost("id")]
+        public async Task<ActionResult<JudgeResult>> GetRunById([FromBody] JudgeRequestDto judge)
+        {
+            await cacheService.InvalidateFlowDetailAsync(judge.Id);
+            var dto = await service.GetJudgeResultById(judge);
+            return Ok(dto);
+        }
     }
 }

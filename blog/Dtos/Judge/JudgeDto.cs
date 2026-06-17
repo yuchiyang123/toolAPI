@@ -17,6 +17,11 @@ namespace blog.Dtos.Judge
         public string? Stderr { get; set; }
     }
 
+    public class JudgeRequestDto : JudgeDto
+    {
+        public int Id { get; set; }
+    }
+
     public abstract class BaseProblem
     {
         public int Id { get; set; }
@@ -53,5 +58,13 @@ namespace blog.Dtos.Judge
         public int Id { get; set; }
         public required string Output { get; set; }
         public bool IsPassed { get; set; }
+    }
+
+    public class JudgeResultReponse : Result { }
+
+    public class TestCode
+    {
+        public int Id { get; set; }
+        public required string Input { get; set; }
     }
 }

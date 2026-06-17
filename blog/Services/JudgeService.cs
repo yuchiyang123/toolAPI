@@ -1,10 +1,14 @@
-﻿using AutoMapper;
+﻿using System.Text.Json;
+using System.Text.RegularExpressions;
+using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using blog.Common.Enum;
 using blog.Common.Helper;
 using blog.Common.Helper.Key;
 using blog.Dtos.Judge;
 using blog.Dtos.Page;
+using blog.Entities;
+using blog.Entities.Judge;
 using blog.Repository;
 using Docker.DotNet;
 using Docker.DotNet.Models;
@@ -12,11 +16,25 @@ using Microsoft.EntityFrameworkCore;
 
 namespace blog.Services
 {
-    public class JudgeService(IMapper mapper, JudgeRepository repository)
+    public class JudgeService(
+        IMapper mapper,
+        JudgeRepository repository,
+        JuageHelper helper,
+        BlogContext context
+    )
     {
         private readonly DockerClient _docker = new DockerClientConfiguration(
             new Uri("npipe://./pipe/docker_engine")
         ).CreateClient();
+
+        private async Task<JudgeResult> RunAsync(
+            JudgeLanguageEnum languageEnum,
+            string code,
+            CancellationToken ct = default
+        )
+        {
+            return await RunAsync(new JudgeDto { Code = code, Language = languageEnum }, ct);
+        }
 
         public async Task<JudgeResult> RunAsync(JudgeDto dto, CancellationToken ct = default)
         {
@@ -148,6 +166,144 @@ namespace blog.Services
                     .ProjectTo<ProblemDetail>(mapper.ConfigurationProvider)
                     .FirstOrDefaultAsync(x => x.Id == id)
                 ?? throw new KeyNotFoundException();
+        }
+
+        public async Task<List<JudgeResultReponse>?> GetJudgeResultById(
+            JudgeRequestDto dto,
+            CancellationToken ct = default
+        )
+        {
+            var entity =
+                await repository
+                    .GetProblemsFeature(dto.Language)
+                    .Where(x => x.Id == dto.Id)
+                    .FirstOrDefaultAsync(ct)
+                ?? throw new KeyNotFoundException();
+
+            var functionName = entity.ProblemSignatures.First().FunctionName;
+            var testList = entity
+                .Functions.Select(x => new TestCode { Id = x.Id, Input = x.Input })
+                .ToList();
+            foreach (var code in testList)
+            {
+                var jsonObjcets = Newtonsoft.Json.JsonConvert.DeserializeObject<
+                    Dictionary<string, object>
+                >(code.Input);
+                if (jsonObjcets == null)
+                    continue;
+                var testStr = string.Empty;
+                bool isNeedComma = false;
+                foreach (var json in jsonObjcets)
+                {
+                    testStr += isNeedComma ? "," + json.Value : json.Value;
+                    isNeedComma = true;
+                }
+                code.Input = functionName + "(" + testStr + ")";
+            }
+            var testCode = testList.ToDictionary(x => x.Id, x => x.Input);
+            var expectedResult = entity.Functions.ToDictionary(x => x.Id, x => x.Expected);
+            var splicingCode = helper.SplicingTestAndCode(dto.Language, dto.Code, testCode);
+            var resultDto = await RunAsync(dto.Language, splicingCode, ct);
+            var results = resultDto.Stdout?.Split(JuageHelper.SplitSpecialSymbols);
+            if (results == null)
+            {
+                SubmissionStatus status =
+                    resultDto.Stderr == JudgeErrorMsg.Time_Limit_Exceeded.ToString()
+                        ? SubmissionStatus.TLE
+                        : SubmissionStatus.RE;
+                context.Submissions.Add(CombinationSubmission(dto, status, null));
+                await context.SaveChangesAsync(ct);
+                return
+                [
+                    new()
+                    {
+                        Output = resultDto.Stderr ?? string.Empty,
+                        Id = 0,
+                        IsPassed = false,
+                    },
+                ];
+            }
+            List<JudgeResultReponse> testResultCase = [];
+            string pattern = @"===(.+?)_(.+?)===(.+)";
+            foreach (var result in results)
+            {
+                var match = Regex.Match(result, pattern);
+                if (match.Success)
+                {
+                    int id = int.Parse(match.Groups[2].Value);
+                    string testResultSymbol = match.Groups[1].Value;
+                    string testResult = JsonSerializer.Serialize(match.Groups[3].Value);
+                    testResultCase.Add(
+                        new JudgeResultReponse
+                        {
+                            Id = id,
+                            Output = JsonSerializer.Deserialize<string>(testResult) ?? string.Empty,
+                            IsPassed = ComparisonResult(
+                                expectedResult,
+                                id,
+                                testResult,
+                                testResultSymbol
+                            ),
+                        }
+                    );
+                }
+            }
+
+            SubmissionStatus nobuildErrorStatus = testResultCase.Any(x => !x.IsPassed)
+                ? SubmissionStatus.WA
+                : SubmissionStatus.AC;
+            context.Submissions.Add(CombinationSubmission(dto, nobuildErrorStatus, testResultCase));
+            await context.SaveChangesAsync(ct);
+            return testResultCase;
+        }
+
+        private static bool ComparisonResult(
+            Dictionary<int, string> expectedResult,
+            int id,
+            string testValue,
+            string testSymbol
+        )
+        {
+            if (
+                !expectedResult.TryGetValue(id, out var expected)
+                || testSymbol == TestResultSymbolEnum.ERROR.ToString()
+            )
+                return false;
+            var jsonStrForExpected = JsonSerializer.Serialize(expected);
+            if (jsonStrForExpected.Replace(" ", "") != testValue.Replace(" ", ""))
+                return false;
+            return true;
+        }
+
+        private static Submission CombinationSubmission(
+            JudgeRequestDto dto,
+            SubmissionStatus status,
+            List<JudgeResultReponse>? result,
+            int userId = 2
+        )
+        {
+            return new Submission
+            {
+                ProblemId = dto.Id,
+                Language = dto.Language,
+                Code = dto.Code,
+                Status = status,
+                PassedCount = result?.Count(x => x.IsPassed) ?? 0,
+                TotalCount = result?.Count ?? 0,
+                UserId = userId, // 先寫hard code 之後放上 Auth
+                SubmissionResults =
+                    result == null
+                        ? new List<SubmissionResult>()
+                        :
+                        [
+                            .. result.Select(x => new SubmissionResult
+                            {
+                                FunctionId = x.Id,
+                                ActualOutput = x.Output,
+                                IsPassed = x.IsPassed,
+                            }),
+                        ],
+            };
         }
     }
 }

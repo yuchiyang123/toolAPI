@@ -1,4 +1,6 @@
-﻿using blog.Entities;
+﻿using System.Threading.Tasks;
+using blog.Common.Enum;
+using blog.Entities;
 using blog.Entities.Judge;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,6 +28,14 @@ namespace blog.Repository
         public IQueryable<Problem> GetProblemList()
         {
             return context.Problems.Include(x => x.Submissions).AsQueryable();
+        }
+
+        public IQueryable<Problem> GetProblemsFeature(JudgeLanguageEnum language)
+        {
+            return context
+                .Problems.Include(x => x.Functions.Where(x => x.Language == language))
+                .Include(x => x.ProblemSignatures.Where(x => x.Language == language))
+                .AsQueryable();
         }
     }
 }
