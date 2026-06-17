@@ -270,7 +270,7 @@ namespace blog.Services
             )
                 return false;
             var jsonStrForExpected = JsonSerializer.Serialize(expected);
-            if (jsonStrForExpected.Replace(" ", "") != testValue)
+            if (jsonStrForExpected.Replace(" ", "") != testValue.Replace(" ", ""))
                 return false;
             return true;
         }
