@@ -253,6 +253,7 @@ namespace blog.Services
                 ? SubmissionStatus.WA
                 : SubmissionStatus.AC;
             context.Submissions.Add(CombinationSubmission(dto, nobuildErrorStatus, testResultCase));
+            await context.SaveChangesAsync(ct);
             return testResultCase;
         }
 
