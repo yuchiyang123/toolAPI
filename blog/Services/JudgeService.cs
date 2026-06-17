@@ -168,7 +168,22 @@ namespace blog.Services
                 await repository.GetProblemsFeature(dto.Language).Where(x => x.Id == dto.Id).FirstOrDefaultAsync(ct)
                 ?? throw new KeyNotFoundException();
 
-            var testCode = entity.Functions.ToDictionary(x => x.Id, x => x.Input);
+            var functionName = entity.ProblemSignatures.First().FunctionName;
+            var testList = entity.Functions.Select(x => new TestCode { Id = x.Id, Input = x.Input }).ToList();
+            foreach (var code in testList)
+            {
+                var jsonObjcets = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(code.Input);
+                if (jsonObjcets == null) continue;
+                var testStr = string.Empty;
+                int i = 0;
+                foreach (var json in jsonObjcets)
+                {
+                    testStr += i != 0 ? "," + json : json;
+                    i++;
+                }
+                code.Input = functionName + "(" + testStr + ")";
+            }
+            var testCode = testList.ToDictionary(x => x.Id, x => x.Input);
             var splicingCode = helper.SplicingTestAndCode(dto.Language, dto.Code, testCode);
             var resultDto = await RunAsync(dto.Language, splicingCode, ct);
             var results = resultDto.Stdout?.Split(JuageHelper.SplitSpecialSymbols);

@@ -61,4 +61,10 @@ namespace blog.Dtos.Judge
     }
 
     public class JudgeResultReponse : Result { }
+
+    public class TestCode
+    {
+        public int Id { get; set; }
+        public required string Input { get; set; }
+    }
 }
