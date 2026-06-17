@@ -47,6 +47,7 @@ namespace blog.Common.Helper
                     + after
                     + beforeCatch
                     + "\""
+                    + SplitSpecialSymbols
                     + $"===ERROR_{testCase.Key}===\" +"
                     + afterCatch;
             }

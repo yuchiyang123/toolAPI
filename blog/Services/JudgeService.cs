@@ -175,11 +175,11 @@ namespace blog.Services
                 var jsonObjcets = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(code.Input);
                 if (jsonObjcets == null) continue;
                 var testStr = string.Empty;
-                int i = 0;
+                bool isNeedComma = true;
                 foreach (var json in jsonObjcets)
                 {
-                    testStr += i != 0 ? "," + json.Value : json.Value;
-                    i++;
+                    testStr += isNeedComma ? "," + json.Value : json.Value;
+                    isNeedComma = false;
                 }
                 code.Input = functionName + "(" + testStr + ")";
             }
