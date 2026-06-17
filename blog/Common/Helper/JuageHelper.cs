@@ -13,7 +13,7 @@ namespace blog.Common.Helper
         > PrintWrapper = new()
         {
             [JudgeLanguageEnum.python] = (
-                ":\ntry:\n   print(",
+                "\ntry:\n   print(",
                 "))\n",
                 "except Exception as e:\n   print(",
                 "str(e))",
