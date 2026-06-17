@@ -19,7 +19,7 @@ namespace blog.Common.Helper
                 "str(e))"
             ),
             [JudgeLanguageEnum.csharp] = (
-                "try{Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(",
+                "try{Console.WriteLine(",
                 "))",
                 ";}catch(Exception e){Console.WriteLine(",
                 "e.Message);};"
@@ -38,6 +38,7 @@ namespace blog.Common.Helper
             {
                 code +=
                     before
+                    + "System.Text.Json.JsonSerializer.Serialize("
                     + SplitSpecialSymbols
                     + $"===RESULT_{testCase.Key}==="
                     + testCase.Value
