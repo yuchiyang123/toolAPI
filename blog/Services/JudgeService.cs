@@ -193,7 +193,7 @@ namespace blog.Services
             var results = resultDto.Stdout?.Split(JuageHelper.SplitSpecialSymbols);
             if (results == null) return null;
             List<JudgeResultReponse> testResultCase = [];
-            string pattern = @"===([^_=]+)_([^=]+)===\[?([^\[\]]+)\]?";
+            string pattern = @"===([^_=]+)_([^=]+)===(\[?[^\[\]]+\]?)";
             foreach (var result in results)
             {
                 var match = Regex.Match(result, pattern);
@@ -217,7 +217,8 @@ namespace blog.Services
         private static bool ComparisonResult(Dictionary<int, string> expectedResult, int id, string testValue, string testSymbol)
         {
             if (!expectedResult.TryGetValue(id, out var expected) || testSymbol == TestResultSymbolEnum.ERROR.ToString()) return false;
-            if (JsonSerializer.Serialize(expected) != testValue) return false;
+            var jsonStrForExpected = JsonSerializer.Serialize(expected);
+            if (jsonStrForExpected != testValue) return false;
             return true;
         }
     }
