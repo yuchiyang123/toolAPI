@@ -13,15 +13,15 @@ namespace blog.Common.Helper
         > PrintWrapper = new()
         {
             [JudgeLanguageEnum.python] = (
-                "try:\n   print(",
-                ")\n",
+                ":\ntry:\n   print(",
+                "))\n",
                 "except Exception as e:\n   print(",
                 "str(e))",
-                string.Empty
+                "str("
             ),
             [JudgeLanguageEnum.csharp] = (
                 "try{Console.WriteLine(",
-                ")",
+                "))",
                 ";}catch(Exception e){Console.WriteLine(",
                 "e.Message);};",
                 "System.Text.Json.JsonSerializer.Serialize("
