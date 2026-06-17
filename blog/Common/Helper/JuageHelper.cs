@@ -20,7 +20,7 @@ namespace blog.Common.Helper
             ),
             [JudgeLanguageEnum.csharp] = (
                 "try{Console.WriteLine(",
-                "))",
+                ")",
                 ";}catch(Exception e){Console.WriteLine(",
                 "e.Message);};"
             ),
@@ -47,7 +47,7 @@ namespace blog.Common.Helper
                     + after
                     + beforeCatch
                     + "\""
-                    + $"===ERROR_{testCase.Key}===\""
+                    + $"===ERROR_{testCase.Key}===\" +"
                     + afterCatch;
             }
 
