@@ -37,14 +37,17 @@ namespace blog.Common.Helper
             foreach (var testCase in testCases)
             {
                 code +=
-                    before                    
+                    before
+                    + "\""
                     + SplitSpecialSymbols
-                    + $"===RESULT_{testCase.Key}==="
-                    + "System.Text.Json.JsonSerializer.Serialize("
+                    + $"===RESULT_{testCase.Key}===\""
+                    + " + System.Text.Json.JsonSerializer.Serialize("
                     + testCase.Value
+                    + ")"
                     + after
                     + beforeCatch
-                    + $"===ERROR_{testCase.Key}==="
+                    + "\""
+                    + $"===ERROR_{testCase.Key}===\""
                     + afterCatch;
             }
 
