@@ -9,20 +9,22 @@ namespace blog.Common.Helper
 
         public static readonly Dictionary<
             JudgeLanguageEnum,
-            (string Before, string After, string CatchBefore, string CatchAfter)
+            (string Before, string After, string CatchBefore, string CatchAfter, string sp)
         > PrintWrapper = new()
         {
             [JudgeLanguageEnum.python] = (
                 "try:\n   print(",
                 ")\n",
                 "except Exception as e:\n   print(",
-                "str(e))"
+                "str(e))",
+                string.Empty
             ),
             [JudgeLanguageEnum.csharp] = (
                 "try{Console.WriteLine(",
                 ")",
                 ";}catch(Exception e){Console.WriteLine(",
-                "e.Message);};"
+                "e.Message);};",
+                "System.Text.Json.JsonSerializer.Serialize("
             ),
         };
 
@@ -32,7 +34,7 @@ namespace blog.Common.Helper
             Dictionary<int, string> testCases
         )
         {
-            var (before, after, beforeCatch, afterCatch) = PrintWrapper[languageEnum];
+            var (before, after, beforeCatch, afterCatch, sp) = PrintWrapper[languageEnum];
 
             foreach (var testCase in testCases)
             {
@@ -41,9 +43,9 @@ namespace blog.Common.Helper
                     + "\""
                     + SplitSpecialSymbols
                     + $"===RESULT_{testCase.Key}===\""
-                    + " + System.Text.Json.JsonSerializer.Serialize("
+                    + " + "
+                    + sp
                     + testCase.Value
-                    + ")"
                     + after
                     + beforeCatch
                     + "\""
@@ -54,16 +56,5 @@ namespace blog.Common.Helper
 
             return code;
         }
-
-        //public Dictionary<int, string> CoverntLogResultToDic(List<string> splitTests)
-        //{
-        //    foreach (var test in splitTests)
-        //    {
-        //        if (string.IsNullOrEmpty(test))
-        //            continue;
-        //        Match match = Regex.Match(test, @"===RESULT_(.+?)===");
-        //        string? key = match.Success ? match.Groups[1].Value : null;
-        //    }
-        //}
     }
 }
