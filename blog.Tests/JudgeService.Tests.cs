@@ -4,9 +4,8 @@ using blog.Common.Enum;
 
 namespace blog.Tests;
 
-public class JudgeServiceTests
+public class JudgeServiceTests(JudgeService _service)
 {
-    private readonly JudgeService _service = new();
 
     [SkippableFact]
     public async Task Python_HelloWorld_ReturnsStdout()
