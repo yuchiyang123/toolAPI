@@ -178,7 +178,7 @@ namespace blog.Services
                 int i = 0;
                 foreach (var json in jsonObjcets)
                 {
-                    testStr += i != 0 ? "," + json : json;
+                    testStr += i != 0 ? "," + json.Value : json.Value;
                     i++;
                 }
                 code.Input = functionName + "(" + testStr + ")";
