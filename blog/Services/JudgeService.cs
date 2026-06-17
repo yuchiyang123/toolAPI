@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using System.Text.Json;
+using System.Text.RegularExpressions;
+using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using blog.Common.Enum;
 using blog.Common.Helper;
@@ -9,6 +11,7 @@ using blog.Repository;
 using Docker.DotNet;
 using Docker.DotNet.Models;
 using Microsoft.EntityFrameworkCore;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace blog.Services
 {
@@ -159,7 +162,7 @@ namespace blog.Services
                 ?? throw new KeyNotFoundException();
         }
 
-        public async Task<JudgeResult?> GetJudgeResultById(
+        public async Task<List<JudgeResultReponse>?> GetJudgeResultById(
             JudgeRequestDto dto,
             CancellationToken ct = default
         )
@@ -184,19 +187,38 @@ namespace blog.Services
                 code.Input = functionName + "(" + testStr + ")";
             }
             var testCode = testList.ToDictionary(x => x.Id, x => x.Input);
+            var expectedResult = entity.Functions.ToDictionary(x => x.Id, x => x.Expected);
             var splicingCode = helper.SplicingTestAndCode(dto.Language, dto.Code, testCode);
             var resultDto = await RunAsync(dto.Language, splicingCode, ct);
             var results = resultDto.Stdout?.Split(JuageHelper.SplitSpecialSymbols);
+            if (results == null) return null;
+            List<JudgeResultReponse> testResultCase = [];
+            string pattern = @"===([^_=]+)_([^=]+)===\[?([^\[\]]+)\]?";
+            foreach (var result in results)
+            {
+                var match = Regex.Match(result, pattern);
+                if (match.Success)
+                {
+                    int id = int.Parse(match.Groups[1].Value);
+                    string testResultSymbol = match.Groups[3].Value;
+                    string testResult = JsonSerializer.Serialize(match.Groups[3].Value);
+                    testResultCase.Add(new JudgeResultReponse
+                    {
+                        Id = id,
+                        Output = testResult,
+                        IsPassed = ComparisonResult(expectedResult, id, testResult, testResultSymbol),
+                    });
+                }
+            }
 
-            return resultDto;
-            /// 會遇到幾種請
-            /// 1. 數量不同 (測試數量和結果數量不同)
-            /// 2. 空值
-            /// 3. 拋error
-            //if (results == null)
-            //    return null;
+            return testResultCase;
+        }
 
-            //return null;
+        private static bool ComparisonResult(Dictionary<int, string> expectedResult, int id, string testValue, string testSymbol)
+        {
+            if (!expectedResult.TryGetValue(id, out var expected) || testSymbol == TestResultSymbolEnum.ERROR.ToString()) return false;
+            if (expected != testValue) return false;
+            return true;
         }
     }
 }

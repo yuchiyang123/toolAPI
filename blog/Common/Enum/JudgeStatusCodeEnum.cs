@@ -24,4 +24,10 @@
         TLE,
         RE,
     }
+
+    public enum TestResultSymbolEnum
+    {
+        RESULT,
+        ERROR,
+    }
 }
