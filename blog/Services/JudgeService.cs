@@ -165,7 +165,7 @@ namespace blog.Services
         )
         {
             var entity =
-                await repository.GetProblemsFeature().Where(x => x.Functions.Any(x => x.Language == dto.Language) && x.Id == dto.Id).FirstOrDefaultAsync(ct)
+                await repository.GetProblemsFeature(dto.Language).Where(x => x.Id == dto.Id).FirstOrDefaultAsync(ct)
                 ?? throw new KeyNotFoundException();
 
             var testCode = entity.Functions.ToDictionary(x => x.Id, x => x.Input);
