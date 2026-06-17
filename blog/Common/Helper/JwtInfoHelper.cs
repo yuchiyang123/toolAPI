@@ -1,7 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using blog.Entities;
-using blog.Entities.User;
 using Microsoft.EntityFrameworkCore;
 
 namespace blog.Common.Helper
