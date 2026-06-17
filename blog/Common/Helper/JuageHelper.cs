@@ -50,15 +50,15 @@ namespace blog.Common.Helper
             return code;
         }
 
-        public Dictionary<int, string> CoverntLogResultToDic(List<string> splitTests)
-        {
-            foreach (var test in splitTests)
-            {
-                if (string.IsNullOrEmpty(test))
-                    continue;
-                Match match = Regex.Match(test, @"===RESULT_(.+?)===");
-                string? key = match.Success ? match.Groups[1].Value : null;
-            }
-        }
+        //public Dictionary<int, string> CoverntLogResultToDic(List<string> splitTests)
+        //{
+        //    foreach (var test in splitTests)
+        //    {
+        //        if (string.IsNullOrEmpty(test))
+        //            continue;
+        //        Match match = Regex.Match(test, @"===RESULT_(.+?)===");
+        //        string? key = match.Success ? match.Groups[1].Value : null;
+        //    }
+        //}
     }
 }
