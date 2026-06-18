@@ -23,6 +23,8 @@ namespace blog.Repository
                     .ThenInclude(x => x.SubmissionResults)
                 .Include(x => x.ProblemSignatures)
                     .ThenInclude(x => x.ProblemParameters)
+                .Include(x => x.ProblemSignatures)
+                    .ThenInclude(x => x.ProblemReturnTypes)
                 .Include(x => x.ProblemTags)
                 .AsQueryable();
         }

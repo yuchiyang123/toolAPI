@@ -83,4 +83,29 @@ namespace blog.Dtos.Judge
         public int Id { get; set; }
         public required string Input { get; set; }
     }
+
+    public class ParameterTypeDto
+    {
+        public required JudgeLanguageEnum Language { get; set; }
+        public List<ParameterTypesValue>? ParameterTypes { get; set; }
+        public List<ReturnTypeValue>? ReturnTypes { get; set; }
+    }
+
+    public class ParameterTypesValue
+    {
+        public required string ParameterName { get; set; }
+        public required string ParameterType { get; set; }
+    }
+
+    public class ReturnTypeValue
+    {
+        public required string ReturnName { get; set; }
+        public required string ReturnType { get; set; }
+    }
+
+    public class CombinStartCode
+    {
+        public required JudgeLanguageEnum Language { get; set; }
+        public required string StartCode { get; set; }
+    }
 }

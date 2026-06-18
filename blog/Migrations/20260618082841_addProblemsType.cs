@@ -12,22 +12,33 @@ namespace blog.Migrations
         {
             migrationBuilder.DropIndex(
                 name: "IX_ProblemSignatures_ProblemId",
-                table: "ProblemSignatures");
+                table: "ProblemSignatures"
+            );
 
             migrationBuilder.AddUniqueConstraint(
                 name: "AK_ProblemSignatures_ProblemId",
                 table: "ProblemSignatures",
-                column: "ProblemId");
+                column: "ProblemId"
+            );
 
             migrationBuilder.CreateTable(
                 name: "ProblemParameters",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table
+                        .Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SignatureId = table.Column<int>(type: "int", nullable: false),
-                    ParameterName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                    ParameterName = table.Column<string>(
+                        type: "nvarchar(100)",
+                        maxLength: 100,
+                        nullable: false
+                    ),
+                    Type = table.Column<string>(
+                        type: "nvarchar(50)",
+                        maxLength: 50,
+                        nullable: false
+                    ),
                 },
                 constraints: table =>
                 {
@@ -37,18 +48,29 @@ namespace blog.Migrations
                         column: x => x.SignatureId,
                         principalTable: "ProblemSignatures",
                         principalColumn: "ProblemId",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "ProblemReturnTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table
+                        .Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SignatureId = table.Column<int>(type: "int", nullable: false),
-                    ReturnName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    ReturnType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                    ReturnName = table.Column<string>(
+                        type: "nvarchar(100)",
+                        maxLength: 100,
+                        nullable: false
+                    ),
+                    ReturnType = table.Column<string>(
+                        type: "nvarchar(50)",
+                        maxLength: 50,
+                        nullable: false
+                    ),
                 },
                 constraints: table =>
                 {
@@ -58,37 +80,41 @@ namespace blog.Migrations
                         column: x => x.SignatureId,
                         principalTable: "ProblemSignatures",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProblemParameters_SignatureId",
                 table: "ProblemParameters",
-                column: "SignatureId");
+                column: "SignatureId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProblemReturnTypes_SignatureId",
                 table: "ProblemReturnTypes",
-                column: "SignatureId");
+                column: "SignatureId"
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "ProblemParameters");
+            migrationBuilder.DropTable(name: "ProblemParameters");
 
-            migrationBuilder.DropTable(
-                name: "ProblemReturnTypes");
+            migrationBuilder.DropTable(name: "ProblemReturnTypes");
 
             migrationBuilder.DropUniqueConstraint(
                 name: "AK_ProblemSignatures_ProblemId",
-                table: "ProblemSignatures");
+                table: "ProblemSignatures"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProblemSignatures_ProblemId",
                 table: "ProblemSignatures",
-                column: "ProblemId");
+                column: "ProblemId"
+            );
         }
     }
 }
