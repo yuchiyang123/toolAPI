@@ -68,9 +68,7 @@ namespace blog.Common.Helper
             [JudgeLanguageEnum.csharp] = ("static ", " \n{", "\n}"),
         };
 
-        public List<CombinStartCode> CombinStratCode(
-            List<ParameterTypeDto> parameters
-        )
+        public List<CombinStartCode> CombinStratCode(List<ParameterTypeDto> parameters)
         {
             var startCodeList = new List<CombinStartCode>();
             foreach (var items in parameters)
@@ -150,7 +148,7 @@ namespace blog.Common.Helper
             return judgeLanguage switch
             {
                 JudgeLanguageEnum.csharp => CombinReturnVlaue(parts),
-                _ => string.Empty
+                _ => string.Empty,
             };
         }
 

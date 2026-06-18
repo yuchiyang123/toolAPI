@@ -44,7 +44,10 @@ namespace blog.Repository
 
         public IQueryable<ProblemSignature> GetComieDataAsQueryable()
         {
-            return context.ProblemSignatures.Include(x => x.ProblemParameters).Include(x => x.ProblemReturnTypes).AsQueryable();
+            return context
+                .ProblemSignatures.Include(x => x.ProblemParameters)
+                .Include(x => x.ProblemReturnTypes)
+                .AsQueryable();
         }
     }
 }

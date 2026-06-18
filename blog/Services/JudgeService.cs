@@ -160,9 +160,14 @@ namespace blog.Services
 
         public async Task<ProblemDetail> GetProblemDetailAsync(int id)
         {
-            var needCombleData = await repository.GetComieDataAsQueryable().Where(x => x.ProblemId == id).ProjectTo<ParameterTypeDto>(mapper.ConfigurationProvider).ToListAsync();
+            var needCombleData = await repository
+                .GetComieDataAsQueryable()
+                .Where(x => x.ProblemId == id)
+                .ProjectTo<ParameterTypeDto>(mapper.ConfigurationProvider)
+                .ToListAsync();
             var combinStartCodes = helper.CombinStratCode(needCombleData);
-            var dto = await repository
+            var dto =
+                await repository
                     .GetProblemDetail()
                     .Where(x => x.Id == id)
                     .ProjectTo<ProblemDetail>(mapper.ConfigurationProvider)

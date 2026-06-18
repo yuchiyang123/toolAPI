@@ -46,8 +46,14 @@ namespace blog.Common.Profiles
             CreateMap<ProblemSignature, ParameterTypeDto>()
                 .ForMember(dest => dest.FunctionName, opt => opt.MapFrom(src => src.FunctionName))
                 .ForMember(dest => dest.Language, opt => opt.MapFrom(src => src.Language))
-                .ForMember(dest => dest.ParameterTypes, opt => opt.MapFrom(src => src.ProblemParameters))
-                .ForMember(dest => dest.ReturnTypes, opt => opt.MapFrom(src => src.ProblemReturnTypes));
+                .ForMember(
+                    dest => dest.ParameterTypes,
+                    opt => opt.MapFrom(src => src.ProblemParameters)
+                )
+                .ForMember(
+                    dest => dest.ReturnTypes,
+                    opt => opt.MapFrom(src => src.ProblemReturnTypes)
+                );
             CreateMap<ProblemReturnType, ReturnTypeValue>();
             CreateMap<ProblemParameters, ParameterTypesValue>()
                 .ForMember(dest => dest.ParameterType, opt => opt.MapFrom(src => src.Type));
