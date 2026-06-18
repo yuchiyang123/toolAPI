@@ -4,7 +4,7 @@ using blog.Entities.Judge;
 
 namespace blog.Seed
 {
-    public class SeedJudge
+    public class SeedJudgeTopInterview150
     {
         public static async Task SeedJudgeTopInterview150Async(BlogContext context)
         {
@@ -23,8 +23,35 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "merge" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "Merge" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "merge",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[int]", ParameterName = "nums1" },
+                            new() { Type = "int", ParameterName = "m" },
+                            new() { Type = "List[int]", ParameterName = "nums2" },
+                            new() { Type = "int", ParameterName = "n" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "nums1", ReturnType = "List[int]" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "Merge",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int[]", ParameterName = "nums1" },
+                            new() { Type = "int", ParameterName = "m" },
+                            new() { Type = "int[]", ParameterName = "nums2" },
+                            new() { Type = "int", ParameterName = "n" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "nums1", ReturnType = "int[]" }],
+                    },
                 ],
                 Functions =
                 [
@@ -189,8 +216,36 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "remove_element" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "RemoveElement" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "remove_element",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[int]", ParameterName = "nums" },
+                            new() { Type = "int", ParameterName = "val" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "k", ReturnType = "int" },
+                            new() { ReturnName = "nums", ReturnType = "List[int]" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "RemoveElement",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int[]", ParameterName = "nums" },
+                            new() { Type = "int", ParameterName = "val" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "k", ReturnType = "int" },
+                            new() { ReturnName = "nums", ReturnType = "int[]" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -328,11 +383,27 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "remove_dup" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "remove_dup",
+                        ProblemParameters = [new() { Type = "List[int]", ParameterName = "nums" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "k", ReturnType = "int" },
+                            new() { ReturnName = "nums", ReturnType = "List[int]" },
+                        ],
+                    },
                     new()
                     {
                         Language = JudgeLanguageEnum.csharp,
                         FunctionName = "RemoveDuplicates",
+                        ProblemParameters = [new() { Type = "int[]", ParameterName = "nums" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "k", ReturnType = "int" },
+                            new() { ReturnName = "nums", ReturnType = "int[]" },
+                        ],
                     },
                 ],
                 Functions =
@@ -471,11 +542,27 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "remove_dup2" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "remove_dup2",
+                        ProblemParameters = [new() { Type = "List[int]", ParameterName = "nums" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "k", ReturnType = "int" },
+                            new() { ReturnName = "nums", ReturnType = "List[int]" },
+                        ],
+                    },
                     new()
                     {
                         Language = JudgeLanguageEnum.csharp,
                         FunctionName = "RemoveDuplicatesII",
+                        ProblemParameters = [new() { Type = "int[]", ParameterName = "nums" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "k", ReturnType = "int" },
+                            new() { ReturnName = "nums", ReturnType = "int[]" },
+                        ],
                     },
                 ],
                 Functions =
@@ -614,8 +701,20 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "majority" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "MajorityElement" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "majority",
+                        ProblemParameters = [new() { Type = "List[int]", ParameterName = "nums" }],
+                        ProblemReturnTypes = [new() { ReturnName = "result", ReturnType = "int" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "MajorityElement",
+                        ProblemParameters = [new() { Type = "int[]", ParameterName = "nums" }],
+                        ProblemReturnTypes = [new() { ReturnName = "result", ReturnType = "int" }],
+                    },
                 ],
                 Functions =
                 [
@@ -757,8 +856,31 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "rotate" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "Rotate" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "rotate",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[int]", ParameterName = "nums" },
+                            new() { Type = "int", ParameterName = "k" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "nums", ReturnType = "List[int]" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "Rotate",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int[]", ParameterName = "nums" },
+                            new() { Type = "int", ParameterName = "k" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "nums", ReturnType = "int[]" }],
+                    },
                 ],
                 Functions =
                 [
@@ -901,8 +1023,29 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "max_profit1" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "MaxProfit" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "max_profit1",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[int]", ParameterName = "prices" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "maxProfit", ReturnType = "int" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "MaxProfit",
+                        ProblemParameters = [new() { Type = "int[]", ParameterName = "prices" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "maxProfit", ReturnType = "int" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -1040,8 +1183,29 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "max_profit2" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "MaxProfitII" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "max_profit2",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[int]", ParameterName = "prices" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "maxProfit", ReturnType = "int" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "MaxProfitII",
+                        ProblemParameters = [new() { Type = "int[]", ParameterName = "prices" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "maxProfit", ReturnType = "int" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -1184,8 +1348,26 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "can_jump" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "CanJump" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "can_jump",
+                        ProblemParameters = [new() { Type = "List[int]", ParameterName = "nums" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "canReach", ReturnType = "bool" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "CanJump",
+                        ProblemParameters = [new() { Type = "int[]", ParameterName = "nums" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "canReach", ReturnType = "bool" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -1328,8 +1510,26 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "jump2" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "JumpII" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "jump2",
+                        ProblemParameters = [new() { Type = "List[int]", ParameterName = "nums" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "minJumps", ReturnType = "int" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "JumpII",
+                        ProblemParameters = [new() { Type = "int[]", ParameterName = "nums" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "minJumps", ReturnType = "int" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -1471,8 +1671,23 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "h_index" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "HIndex" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "h_index",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[int]", ParameterName = "citations" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "hIndex", ReturnType = "int" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "HIndex",
+                        ProblemParameters = [new() { Type = "int[]", ParameterName = "citations" }],
+                        ProblemReturnTypes = [new() { ReturnName = "hIndex", ReturnType = "int" }],
+                    },
                 ],
                 Functions =
                 [
@@ -1619,11 +1834,21 @@ namespace blog.Seed
                     {
                         Language = JudgeLanguageEnum.python,
                         FunctionName = "product_except_self",
+                        ProblemParameters = [new() { Type = "List[int]", ParameterName = "nums" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "answer", ReturnType = "List[int]" },
+                        ],
                     },
                     new()
                     {
                         Language = JudgeLanguageEnum.csharp,
                         FunctionName = "ProductExceptSelf",
+                        ProblemParameters = [new() { Type = "int[]", ParameterName = "nums" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "answer", ReturnType = "int[]" },
+                        ],
                     },
                 ],
                 Functions =
@@ -1766,11 +1991,29 @@ namespace blog.Seed
                     {
                         Language = JudgeLanguageEnum.python,
                         FunctionName = "can_complete_circuit",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[int]", ParameterName = "gas" },
+                            new() { Type = "List[int]", ParameterName = "cost" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "startIndex", ReturnType = "int" },
+                        ],
                     },
                     new()
                     {
                         Language = JudgeLanguageEnum.csharp,
                         FunctionName = "CanCompleteCircuit",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int[]", ParameterName = "gas" },
+                            new() { Type = "int[]", ParameterName = "cost" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "startIndex", ReturnType = "int" },
+                        ],
                     },
                 ],
                 Functions =
@@ -1909,8 +2152,29 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "candy" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "Candy" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "candy",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[int]", ParameterName = "ratings" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "minCandies", ReturnType = "int" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "Candy",
+                        ProblemParameters = [new() { Type = "int[]", ParameterName = "ratings" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "minCandies", ReturnType = "int" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -2047,8 +2311,23 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "trap" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "Trap" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "trap",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[int]", ParameterName = "height" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "water", ReturnType = "int" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "Trap",
+                        ProblemParameters = [new() { Type = "int[]", ParameterName = "height" }],
+                        ProblemReturnTypes = [new() { ReturnName = "water", ReturnType = "int" }],
+                    },
                 ],
                 Functions =
                 [
@@ -2191,8 +2470,20 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "roman_to_int" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "RomanToInt" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "roman_to_int",
+                        ProblemParameters = [new() { Type = "str", ParameterName = "s" }],
+                        ProblemReturnTypes = [new() { ReturnName = "result", ReturnType = "int" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "RomanToInt",
+                        ProblemParameters = [new() { Type = "string", ParameterName = "s" }],
+                        ProblemReturnTypes = [new() { ReturnName = "result", ReturnType = "int" }],
+                    },
                 ],
                 Functions =
                 [
@@ -2358,8 +2649,23 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "int_to_roman" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "IntToRoman" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "int_to_roman",
+                        ProblemParameters = [new() { Type = "int", ParameterName = "num" }],
+                        ProblemReturnTypes = [new() { ReturnName = "result", ReturnType = "str" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "IntToRoman",
+                        ProblemParameters = [new() { Type = "int", ParameterName = "num" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "result", ReturnType = "string" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -2529,11 +2835,15 @@ namespace blog.Seed
                     {
                         Language = JudgeLanguageEnum.python,
                         FunctionName = "length_of_last_word",
+                        ProblemParameters = [new() { Type = "str", ParameterName = "s" }],
+                        ProblemReturnTypes = [new() { ReturnName = "length", ReturnType = "int" }],
                     },
                     new()
                     {
                         Language = JudgeLanguageEnum.csharp,
                         FunctionName = "LengthOfLastWord",
+                        ProblemParameters = [new() { Type = "string", ParameterName = "s" }],
+                        ProblemReturnTypes = [new() { ReturnName = "length", ReturnType = "int" }],
                     },
                 ],
                 Functions =
@@ -2676,11 +2986,18 @@ namespace blog.Seed
                     {
                         Language = JudgeLanguageEnum.python,
                         FunctionName = "longest_common_prefix",
+                        ProblemParameters = [new() { Type = "List[str]", ParameterName = "strs" }],
+                        ProblemReturnTypes = [new() { ReturnName = "prefix", ReturnType = "str" }],
                     },
                     new()
                     {
                         Language = JudgeLanguageEnum.csharp,
                         FunctionName = "LongestCommonPrefix",
+                        ProblemParameters = [new() { Type = "string[]", ParameterName = "strs" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "prefix", ReturnType = "string" },
+                        ],
                     },
                 ],
                 Functions =
@@ -2821,8 +3138,23 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "reverse_words" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "ReverseWords" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "reverse_words",
+                        ProblemParameters = [new() { Type = "str", ParameterName = "s" }],
+                        ProblemReturnTypes = [new() { ReturnName = "result", ReturnType = "str" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "ReverseWords",
+                        ProblemParameters = [new() { Type = "string", ParameterName = "s" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "result", ReturnType = "string" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -2960,8 +3292,31 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "convert" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "Convert" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "convert",
+                        ProblemParameters =
+                        [
+                            new() { Type = "str", ParameterName = "s" },
+                            new() { Type = "int", ParameterName = "numRows" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "result", ReturnType = "str" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "Convert",
+                        ProblemParameters =
+                        [
+                            new() { Type = "string", ParameterName = "s" },
+                            new() { Type = "int", ParameterName = "numRows" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "result", ReturnType = "string" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -3099,8 +3454,28 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "str_str" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "StrStr" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "str_str",
+                        ProblemParameters =
+                        [
+                            new() { Type = "str", ParameterName = "haystack" },
+                            new() { Type = "str", ParameterName = "needle" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "index", ReturnType = "int" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "StrStr",
+                        ProblemParameters =
+                        [
+                            new() { Type = "string", ParameterName = "haystack" },
+                            new() { Type = "string", ParameterName = "needle" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "index", ReturnType = "int" }],
+                    },
                 ],
                 Functions =
                 [
@@ -3243,8 +3618,34 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "full_justify" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "FullJustify" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "full_justify",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[str]", ParameterName = "words" },
+                            new() { Type = "int", ParameterName = "maxWidth" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "lines", ReturnType = "List[str]" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "FullJustify",
+                        ProblemParameters =
+                        [
+                            new() { Type = "string[]", ParameterName = "words" },
+                            new() { Type = "int", ParameterName = "maxWidth" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "lines", ReturnType = "List<string>" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -3402,8 +3803,26 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "is_palindrome" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "IsPalindrome" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "is_palindrome",
+                        ProblemParameters = [new() { Type = "str", ParameterName = "s" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "isPalindrome", ReturnType = "bool" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "IsPalindrome",
+                        ProblemParameters = [new() { Type = "string", ParameterName = "s" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "isPalindrome", ReturnType = "bool" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -3540,8 +3959,34 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "is_subsequence" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "IsSubsequence" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "is_subsequence",
+                        ProblemParameters =
+                        [
+                            new() { Type = "str", ParameterName = "s" },
+                            new() { Type = "str", ParameterName = "t" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "isSubsequence", ReturnType = "bool" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "IsSubsequence",
+                        ProblemParameters =
+                        [
+                            new() { Type = "string", ParameterName = "s" },
+                            new() { Type = "string", ParameterName = "t" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "isSubsequence", ReturnType = "bool" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -3683,8 +4128,23 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "max_area" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "MaxArea" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "max_area",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[int]", ParameterName = "height" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "maxArea", ReturnType = "int" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "MaxArea",
+                        ProblemParameters = [new() { Type = "int[]", ParameterName = "height" }],
+                        ProblemReturnTypes = [new() { ReturnName = "maxArea", ReturnType = "int" }],
+                    },
                 ],
                 Functions =
                 [
@@ -3827,8 +4287,34 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "two_sum_ii" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "TwoSumII" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "two_sum_ii",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[int]", ParameterName = "numbers" },
+                            new() { Type = "int", ParameterName = "target" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "indices", ReturnType = "List[int]" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "TwoSumII",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int[]", ParameterName = "numbers" },
+                            new() { Type = "int", ParameterName = "target" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "indices", ReturnType = "int[]" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -3970,8 +4456,26 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "three_sum" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "ThreeSum" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "three_sum",
+                        ProblemParameters = [new() { Type = "List[int]", ParameterName = "nums" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "triplets", ReturnType = "List[List[int]]" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "ThreeSum",
+                        ProblemParameters = [new() { Type = "int[]", ParameterName = "nums" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "triplets", ReturnType = "List<List<int>>" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -4116,8 +4620,26 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "is_happy" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "IsHappy" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "is_happy",
+                        ProblemParameters = [new() { Type = "int", ParameterName = "n" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "isHappy", ReturnType = "bool" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "IsHappy",
+                        ProblemParameters = [new() { Type = "int", ParameterName = "n" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "isHappy", ReturnType = "bool" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -4263,11 +4785,15 @@ namespace blog.Seed
                     {
                         Language = JudgeLanguageEnum.python,
                         FunctionName = "length_of_longest_substring",
+                        ProblemParameters = [new() { Type = "str", ParameterName = "s" }],
+                        ProblemReturnTypes = [new() { ReturnName = "length", ReturnType = "int" }],
                     },
                     new()
                     {
                         Language = JudgeLanguageEnum.csharp,
                         FunctionName = "LengthOfLongestSubstring",
+                        ProblemParameters = [new() { Type = "string", ParameterName = "s" }],
+                        ProblemReturnTypes = [new() { ReturnName = "length", ReturnType = "int" }],
                     },
                 ],
                 Functions =
@@ -4411,8 +4937,31 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "min_window" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "MinWindow" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "min_window",
+                        ProblemParameters =
+                        [
+                            new() { Type = "str", ParameterName = "s" },
+                            new() { Type = "str", ParameterName = "t" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "window", ReturnType = "str" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "MinWindow",
+                        ProblemParameters =
+                        [
+                            new() { Type = "string", ParameterName = "s" },
+                            new() { Type = "string", ParameterName = "t" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "window", ReturnType = "string" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -4555,8 +5104,34 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "find_substring" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "FindSubstring" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "find_substring",
+                        ProblemParameters =
+                        [
+                            new() { Type = "str", ParameterName = "s" },
+                            new() { Type = "List[str]", ParameterName = "words" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "indices", ReturnType = "List[int]" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "FindSubstring",
+                        ProblemParameters =
+                        [
+                            new() { Type = "string", ParameterName = "s" },
+                            new() { Type = "string[]", ParameterName = "words" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "indices", ReturnType = "List<int>" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -4711,8 +5286,24 @@ namespace blog.Seed
                     {
                         Language = JudgeLanguageEnum.python,
                         FunctionName = "min_sub_array_len",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int", ParameterName = "target" },
+                            new() { Type = "List[int]", ParameterName = "nums" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "length", ReturnType = "int" }],
                     },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "MinSubArrayLen" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "MinSubArrayLen",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int", ParameterName = "target" },
+                            new() { Type = "int[]", ParameterName = "nums" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "length", ReturnType = "int" }],
+                    },
                 ],
                 Functions =
                 [
@@ -4856,8 +5447,29 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "is_valid_sudoku" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "IsValidSudoku" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "is_valid_sudoku",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[List[str]]", ParameterName = "board" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "isValid", ReturnType = "bool" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "IsValidSudoku",
+                        ProblemParameters = [new() { Type = "char[][]", ParameterName = "board" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "isValid", ReturnType = "bool" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -5019,8 +5631,29 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "spiral_order" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "SpiralOrder" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "spiral_order",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[List[int]]", ParameterName = "matrix" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "result", ReturnType = "List[int]" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "SpiralOrder",
+                        ProblemParameters = [new() { Type = "int[][]", ParameterName = "matrix" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "result", ReturnType = "List<int>" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -5162,8 +5795,29 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "rotate_image" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "RotateImage" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "rotate_image",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[List[int]]", ParameterName = "matrix" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "matrix", ReturnType = "List[List[int]]" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "RotateImage",
+                        ProblemParameters = [new() { Type = "int[][]", ParameterName = "matrix" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "matrix", ReturnType = "int[][]" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -5314,8 +5968,29 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "set_zeroes" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "SetZeroes" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "set_zeroes",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[List[int]]", ParameterName = "matrix" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "matrix", ReturnType = "List[List[int]]" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "SetZeroes",
+                        ProblemParameters = [new() { Type = "int[][]", ParameterName = "matrix" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "matrix", ReturnType = "int[][]" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -5458,8 +6133,29 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "game_of_life" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "GameOfLife" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "game_of_life",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[List[int]]", ParameterName = "board" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "board", ReturnType = "List[List[int]]" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "GameOfLife",
+                        ProblemParameters = [new() { Type = "int[][]", ParameterName = "board" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "board", ReturnType = "int[][]" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -5604,8 +6300,34 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "can_construct" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "CanConstruct" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "can_construct",
+                        ProblemParameters =
+                        [
+                            new() { Type = "str", ParameterName = "ransomNote" },
+                            new() { Type = "str", ParameterName = "magazine" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "canConstruct", ReturnType = "bool" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "CanConstruct",
+                        ProblemParameters =
+                        [
+                            new() { Type = "string", ParameterName = "ransomNote" },
+                            new() { Type = "string", ParameterName = "magazine" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "canConstruct", ReturnType = "bool" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -5747,8 +6469,34 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "is_isomorphic" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "IsIsomorphic" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "is_isomorphic",
+                        ProblemParameters =
+                        [
+                            new() { Type = "str", ParameterName = "s" },
+                            new() { Type = "str", ParameterName = "t" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "isIsomorphic", ReturnType = "bool" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "IsIsomorphic",
+                        ProblemParameters =
+                        [
+                            new() { Type = "string", ParameterName = "s" },
+                            new() { Type = "string", ParameterName = "t" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "isIsomorphic", ReturnType = "bool" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -5885,8 +6633,34 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "word_pattern" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "WordPattern" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "word_pattern",
+                        ProblemParameters =
+                        [
+                            new() { Type = "str", ParameterName = "pattern" },
+                            new() { Type = "str", ParameterName = "s" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "matches", ReturnType = "bool" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "WordPattern",
+                        ProblemParameters =
+                        [
+                            new() { Type = "string", ParameterName = "pattern" },
+                            new() { Type = "string", ParameterName = "s" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "matches", ReturnType = "bool" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -6023,8 +6797,34 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "is_anagram" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "IsAnagram" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "is_anagram",
+                        ProblemParameters =
+                        [
+                            new() { Type = "str", ParameterName = "s" },
+                            new() { Type = "str", ParameterName = "t" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "isAnagram", ReturnType = "bool" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "IsAnagram",
+                        ProblemParameters =
+                        [
+                            new() { Type = "string", ParameterName = "s" },
+                            new() { Type = "string", ParameterName = "t" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "isAnagram", ReturnType = "bool" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -6166,8 +6966,26 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "group_anagrams" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "GroupAnagrams" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "group_anagrams",
+                        ProblemParameters = [new() { Type = "List[str]", ParameterName = "strs" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "groups", ReturnType = "List[List[str]]" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "GroupAnagrams",
+                        ProblemParameters = [new() { Type = "string[]", ParameterName = "strs" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "groups", ReturnType = "List<List<string>>" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -6320,11 +7138,21 @@ namespace blog.Seed
                     {
                         Language = JudgeLanguageEnum.python,
                         FunctionName = "contains_duplicate",
+                        ProblemParameters = [new() { Type = "List[int]", ParameterName = "nums" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "hasDuplicate", ReturnType = "bool" },
+                        ],
                     },
                     new()
                     {
                         Language = JudgeLanguageEnum.csharp,
                         FunctionName = "ContainsDuplicate",
+                        ProblemParameters = [new() { Type = "int[]", ParameterName = "nums" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "hasDuplicate", ReturnType = "bool" },
+                        ],
                     },
                 ],
                 Functions =
@@ -6472,11 +7300,29 @@ namespace blog.Seed
                     {
                         Language = JudgeLanguageEnum.python,
                         FunctionName = "contains_nearby_duplicate",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[int]", ParameterName = "nums" },
+                            new() { Type = "int", ParameterName = "k" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "hasNearbyDuplicate", ReturnType = "bool" },
+                        ],
                     },
                     new()
                     {
                         Language = JudgeLanguageEnum.csharp,
                         FunctionName = "ContainsNearbyDuplicate",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int[]", ParameterName = "nums" },
+                            new() { Type = "int", ParameterName = "k" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "hasNearbyDuplicate", ReturnType = "bool" },
+                        ],
                     },
                 ],
                 Functions =
@@ -6623,11 +7469,15 @@ namespace blog.Seed
                     {
                         Language = JudgeLanguageEnum.python,
                         FunctionName = "longest_consecutive",
+                        ProblemParameters = [new() { Type = "List[int]", ParameterName = "nums" }],
+                        ProblemReturnTypes = [new() { ReturnName = "length", ReturnType = "int" }],
                     },
                     new()
                     {
                         Language = JudgeLanguageEnum.csharp,
                         FunctionName = "LongestConsecutive",
+                        ProblemParameters = [new() { Type = "int[]", ParameterName = "nums" }],
+                        ProblemReturnTypes = [new() { ReturnName = "length", ReturnType = "int" }],
                     },
                 ],
                 Functions =
@@ -6771,8 +7621,26 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "summary_ranges" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "SummaryRanges" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "summary_ranges",
+                        ProblemParameters = [new() { Type = "List[int]", ParameterName = "nums" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "ranges", ReturnType = "List[str]" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "SummaryRanges",
+                        ProblemParameters = [new() { Type = "int[]", ParameterName = "nums" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "ranges", ReturnType = "List<string>" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -6909,8 +7777,32 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "merge_intervals" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "MergeIntervals" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "merge_intervals",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[List[int]]", ParameterName = "intervals" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "merged", ReturnType = "List[List[int]]" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "MergeIntervals",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int[][]", ParameterName = "intervals" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "merged", ReturnType = "int[][]" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -7048,8 +7940,34 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "insert_interval" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "InsertInterval" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "insert_interval",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[List[int]]", ParameterName = "intervals" },
+                            new() { Type = "List[int]", ParameterName = "newInterval" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "result", ReturnType = "List[List[int]]" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "InsertInterval",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int[][]", ParameterName = "intervals" },
+                            new() { Type = "int[]", ParameterName = "newInterval" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "result", ReturnType = "int[][]" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -7195,11 +8113,24 @@ namespace blog.Seed
                     {
                         Language = JudgeLanguageEnum.python,
                         FunctionName = "find_min_arrow_shots",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[List[int]]", ParameterName = "points" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "minArrows", ReturnType = "int" },
+                        ],
                     },
                     new()
                     {
                         Language = JudgeLanguageEnum.csharp,
                         FunctionName = "FindMinArrowShots",
+                        ProblemParameters = [new() { Type = "int[][]", ParameterName = "points" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "minArrows", ReturnType = "int" },
+                        ],
                     },
                 ],
                 Functions =
@@ -7344,8 +8275,26 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "is_valid_parens" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "IsValid" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "is_valid_parens",
+                        ProblemParameters = [new() { Type = "str", ParameterName = "s" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "isValid", ReturnType = "bool" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "IsValid",
+                        ProblemParameters = [new() { Type = "string", ParameterName = "s" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "isValid", ReturnType = "bool" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -7482,8 +8431,23 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "simplify_path" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "SimplifyPath" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "simplify_path",
+                        ProblemParameters = [new() { Type = "str", ParameterName = "path" }],
+                        ProblemReturnTypes = [new() { ReturnName = "result", ReturnType = "str" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "SimplifyPath",
+                        ProblemParameters = [new() { Type = "string", ParameterName = "path" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "result", ReturnType = "string" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -7620,8 +8584,23 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "eval_rpn" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "EvalRPN" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "eval_rpn",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[str]", ParameterName = "tokens" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "result", ReturnType = "int" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "EvalRPN",
+                        ProblemParameters = [new() { Type = "string[]", ParameterName = "tokens" }],
+                        ProblemReturnTypes = [new() { ReturnName = "result", ReturnType = "int" }],
+                    },
                 ],
                 Functions =
                 [
@@ -7767,8 +8746,20 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "calculate" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "Calculate" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "calculate",
+                        ProblemParameters = [new() { Type = "str", ParameterName = "s" }],
+                        ProblemReturnTypes = [new() { ReturnName = "result", ReturnType = "int" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "Calculate",
+                        ProblemParameters = [new() { Type = "string", ParameterName = "s" }],
+                        ProblemReturnTypes = [new() { ReturnName = "result", ReturnType = "int" }],
+                    },
                 ],
                 Functions =
                 [
@@ -7910,8 +8901,23 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "num_islands" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "NumIslands" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "num_islands",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[List[str]]", ParameterName = "grid" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "count", ReturnType = "int" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "NumIslands",
+                        ProblemParameters = [new() { Type = "char[][]", ParameterName = "grid" }],
+                        ProblemReturnTypes = [new() { ReturnName = "count", ReturnType = "int" }],
+                    },
                 ],
                 Functions =
                 [
@@ -8064,8 +9070,29 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "solve_regions" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "Solve" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "solve_regions",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[List[str]]", ParameterName = "board" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "board", ReturnType = "List[List[str]]" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "Solve",
+                        ProblemParameters = [new() { Type = "char[][]", ParameterName = "board" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "board", ReturnType = "char[][]" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -8226,8 +9253,36 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "calc_equation" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "CalcEquation" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "calc_equation",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[List[str]]", ParameterName = "equations" },
+                            new() { Type = "List[float]", ParameterName = "values" },
+                            new() { Type = "List[List[str]]", ParameterName = "queries" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "results", ReturnType = "List[float]" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "CalcEquation",
+                        ProblemParameters =
+                        [
+                            new() { Type = "string[][]", ParameterName = "equations" },
+                            new() { Type = "double[]", ParameterName = "values" },
+                            new() { Type = "string[][]", ParameterName = "queries" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "results", ReturnType = "double[]" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -8391,8 +9446,34 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "can_finish" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "CanFinish" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "can_finish",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int", ParameterName = "numCourses" },
+                            new() { Type = "List[List[int]]", ParameterName = "prerequisites" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "canFinish", ReturnType = "bool" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "CanFinish",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int", ParameterName = "numCourses" },
+                            new() { Type = "int[][]", ParameterName = "prerequisites" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "canFinish", ReturnType = "bool" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -8542,8 +9623,31 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "find_order" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "FindOrder" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "find_order",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int", ParameterName = "numCourses" },
+                            new() { Type = "List[List[int]]", ParameterName = "prerequisites" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "order", ReturnType = "List[int]" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "FindOrder",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int", ParameterName = "numCourses" },
+                            new() { Type = "int[][]", ParameterName = "prerequisites" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "order", ReturnType = "int[]" }],
+                    },
                 ],
                 Functions =
                 [
@@ -8697,11 +9801,24 @@ namespace blog.Seed
                     {
                         Language = JudgeLanguageEnum.python,
                         FunctionName = "snakes_and_ladders",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[List[int]]", ParameterName = "board" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "minMoves", ReturnType = "int" },
+                        ],
                     },
                     new()
                     {
                         Language = JudgeLanguageEnum.csharp,
                         FunctionName = "SnakesAndLadders",
+                        ProblemParameters = [new() { Type = "int[][]", ParameterName = "board" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "minMoves", ReturnType = "int" },
+                        ],
                     },
                 ],
                 Functions =
@@ -8853,8 +9970,36 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "min_mutation" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "MinMutation" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "min_mutation",
+                        ProblemParameters =
+                        [
+                            new() { Type = "str", ParameterName = "startGene" },
+                            new() { Type = "str", ParameterName = "endGene" },
+                            new() { Type = "List[str]", ParameterName = "bank" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "minMutations", ReturnType = "int" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "MinMutation",
+                        ProblemParameters =
+                        [
+                            new() { Type = "string", ParameterName = "startGene" },
+                            new() { Type = "string", ParameterName = "endGene" },
+                            new() { Type = "string[]", ParameterName = "bank" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "minMutations", ReturnType = "int" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -9017,8 +10162,30 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "ladder_length" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "LadderLength" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "ladder_length",
+                        ProblemParameters =
+                        [
+                            new() { Type = "str", ParameterName = "beginWord" },
+                            new() { Type = "str", ParameterName = "endWord" },
+                            new() { Type = "List[str]", ParameterName = "wordList" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "length", ReturnType = "int" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "LadderLength",
+                        ProblemParameters =
+                        [
+                            new() { Type = "string", ParameterName = "beginWord" },
+                            new() { Type = "string", ParameterName = "endWord" },
+                            new() { Type = "string[]", ParameterName = "wordList" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "length", ReturnType = "int" }],
+                    },
                 ],
                 Functions =
                 [
@@ -9181,8 +10348,34 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "find_words" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "FindWords" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "find_words",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[List[str]]", ParameterName = "board" },
+                            new() { Type = "List[str]", ParameterName = "words" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "found", ReturnType = "List[str]" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "FindWords",
+                        ProblemParameters =
+                        [
+                            new() { Type = "char[][]", ParameterName = "board" },
+                            new() { Type = "string[]", ParameterName = "words" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "found", ReturnType = "List<string>" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -9344,11 +10537,21 @@ namespace blog.Seed
                     {
                         Language = JudgeLanguageEnum.python,
                         FunctionName = "letter_combinations",
+                        ProblemParameters = [new() { Type = "str", ParameterName = "digits" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "combinations", ReturnType = "List[str]" },
+                        ],
                     },
                     new()
                     {
                         Language = JudgeLanguageEnum.csharp,
                         FunctionName = "LetterCombinations",
+                        ProblemParameters = [new() { Type = "string", ParameterName = "digits" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "combinations", ReturnType = "List<string>" },
+                        ],
                     },
                 ],
                 Functions =
@@ -9503,8 +10706,34 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "combine" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "Combine" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "combine",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int", ParameterName = "n" },
+                            new() { Type = "int", ParameterName = "k" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "combinations", ReturnType = "List[List[int]]" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "Combine",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int", ParameterName = "n" },
+                            new() { Type = "int", ParameterName = "k" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "combinations", ReturnType = "List<List<int>>" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -9643,8 +10872,26 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "permute" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "Permute" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "permute",
+                        ProblemParameters = [new() { Type = "List[int]", ParameterName = "nums" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "permutations", ReturnType = "List[List[int]]" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "Permute",
+                        ProblemParameters = [new() { Type = "int[]", ParameterName = "nums" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "permutations", ReturnType = "List<List<int>>" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -9790,8 +11037,34 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "combination_sum" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "CombinationSum" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "combination_sum",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[int]", ParameterName = "candidates" },
+                            new() { Type = "int", ParameterName = "target" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "combinations", ReturnType = "List[List[int]]" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "CombinationSum",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int[]", ParameterName = "candidates" },
+                            new() { Type = "int", ParameterName = "target" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "combinations", ReturnType = "List<List<int>>" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -9928,8 +11201,20 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "total_n_queens" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "TotalNQueens" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "total_n_queens",
+                        ProblemParameters = [new() { Type = "int", ParameterName = "n" }],
+                        ProblemReturnTypes = [new() { ReturnName = "count", ReturnType = "int" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "TotalNQueens",
+                        ProblemParameters = [new() { Type = "int", ParameterName = "n" }],
+                        ProblemReturnTypes = [new() { ReturnName = "count", ReturnType = "int" }],
+                    },
                 ],
                 Functions =
                 [
@@ -10070,11 +11355,21 @@ namespace blog.Seed
                     {
                         Language = JudgeLanguageEnum.python,
                         FunctionName = "generate_parenthesis",
+                        ProblemParameters = [new() { Type = "int", ParameterName = "n" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "combinations", ReturnType = "List[str]" },
+                        ],
                     },
                     new()
                     {
                         Language = JudgeLanguageEnum.csharp,
                         FunctionName = "GenerateParenthesis",
+                        ProblemParameters = [new() { Type = "int", ParameterName = "n" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "combinations", ReturnType = "List<string>" },
+                        ],
                     },
                 ],
                 Functions =
@@ -10223,8 +11518,28 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "exist_word" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "Exist" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "exist_word",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[List[str]]", ParameterName = "board" },
+                            new() { Type = "str", ParameterName = "word" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "exists", ReturnType = "bool" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "Exist",
+                        ProblemParameters =
+                        [
+                            new() { Type = "char[][]", ParameterName = "board" },
+                            new() { Type = "string", ParameterName = "word" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "exists", ReturnType = "bool" }],
+                    },
                 ],
                 Functions =
                 [
@@ -10375,8 +11690,20 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "max_sub_array" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "MaxSubArray" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "max_sub_array",
+                        ProblemParameters = [new() { Type = "List[int]", ParameterName = "nums" }],
+                        ProblemReturnTypes = [new() { ReturnName = "maxSum", ReturnType = "int" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "MaxSubArray",
+                        ProblemParameters = [new() { Type = "int[]", ParameterName = "nums" }],
+                        ProblemReturnTypes = [new() { ReturnName = "maxSum", ReturnType = "int" }],
+                    },
                 ],
                 Functions =
                 [
@@ -10522,11 +11849,15 @@ namespace blog.Seed
                     {
                         Language = JudgeLanguageEnum.python,
                         FunctionName = "max_subarray_sum_circular",
+                        ProblemParameters = [new() { Type = "List[int]", ParameterName = "nums" }],
+                        ProblemReturnTypes = [new() { ReturnName = "maxSum", ReturnType = "int" }],
                     },
                     new()
                     {
                         Language = JudgeLanguageEnum.csharp,
                         FunctionName = "MaxSubarraySumCircular",
+                        ProblemParameters = [new() { Type = "int[]", ParameterName = "nums" }],
+                        ProblemReturnTypes = [new() { ReturnName = "maxSum", ReturnType = "int" }],
                     },
                 ],
                 Functions =
@@ -10670,8 +12001,28 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "search_insert" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "SearchInsert" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "search_insert",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[int]", ParameterName = "nums" },
+                            new() { Type = "int", ParameterName = "target" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "index", ReturnType = "int" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "SearchInsert",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int[]", ParameterName = "nums" },
+                            new() { Type = "int", ParameterName = "target" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "index", ReturnType = "int" }],
+                    },
                 ],
                 Functions =
                 [
@@ -10808,8 +12159,28 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "search_matrix" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "SearchMatrix" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "search_matrix",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[List[int]]", ParameterName = "matrix" },
+                            new() { Type = "int", ParameterName = "target" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "found", ReturnType = "bool" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "SearchMatrix",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int[][]", ParameterName = "matrix" },
+                            new() { Type = "int", ParameterName = "target" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "found", ReturnType = "bool" }],
+                    },
                 ],
                 Functions =
                 [
@@ -10965,8 +12336,22 @@ namespace blog.Seed
                     {
                         Language = JudgeLanguageEnum.python,
                         FunctionName = "find_peak_element",
+                        ProblemParameters = [new() { Type = "List[int]", ParameterName = "nums" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "peakIndex", ReturnType = "int" },
+                        ],
                     },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "FindPeakElement" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "FindPeakElement",
+                        ProblemParameters = [new() { Type = "int[]", ParameterName = "nums" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "peakIndex", ReturnType = "int" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -11104,8 +12489,28 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "search_rotated" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "Search" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "search_rotated",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[int]", ParameterName = "nums" },
+                            new() { Type = "int", ParameterName = "target" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "index", ReturnType = "int" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "Search",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int[]", ParameterName = "nums" },
+                            new() { Type = "int", ParameterName = "target" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "index", ReturnType = "int" }],
+                    },
                 ],
                 Functions =
                 [
@@ -11243,8 +12648,31 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "search_range" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "SearchRange" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "search_range",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[int]", ParameterName = "nums" },
+                            new() { Type = "int", ParameterName = "target" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "range", ReturnType = "List[int]" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "SearchRange",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int[]", ParameterName = "nums" },
+                            new() { Type = "int", ParameterName = "target" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "range", ReturnType = "int[]" }],
+                    },
                 ],
                 Functions =
                 [
@@ -11381,8 +12809,26 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "find_min" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "FindMin" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "find_min",
+                        ProblemParameters = [new() { Type = "List[int]", ParameterName = "nums" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "minValue", ReturnType = "int" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "FindMin",
+                        ProblemParameters = [new() { Type = "int[]", ParameterName = "nums" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "minValue", ReturnType = "int" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -11523,11 +12969,29 @@ namespace blog.Seed
                     {
                         Language = JudgeLanguageEnum.python,
                         FunctionName = "find_median_sorted_arrays",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[int]", ParameterName = "nums1" },
+                            new() { Type = "List[int]", ParameterName = "nums2" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "median", ReturnType = "float" },
+                        ],
                     },
                     new()
                     {
                         Language = JudgeLanguageEnum.csharp,
                         FunctionName = "FindMedianSortedArrays",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int[]", ParameterName = "nums1" },
+                            new() { Type = "int[]", ParameterName = "nums2" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "median", ReturnType = "double" },
+                        ],
                     },
                 ],
                 Functions =
@@ -11674,8 +13138,30 @@ namespace blog.Seed
                     {
                         Language = JudgeLanguageEnum.python,
                         FunctionName = "find_kth_largest",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[int]", ParameterName = "nums" },
+                            new() { Type = "int", ParameterName = "k" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "kthLargest", ReturnType = "int" },
+                        ],
                     },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "FindKthLargest" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "FindKthLargest",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int[]", ParameterName = "nums" },
+                            new() { Type = "int", ParameterName = "k" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "kthLargest", ReturnType = "int" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -11823,11 +13309,33 @@ namespace blog.Seed
                     {
                         Language = JudgeLanguageEnum.python,
                         FunctionName = "find_maximized_capital",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int", ParameterName = "k" },
+                            new() { Type = "int", ParameterName = "w" },
+                            new() { Type = "List[int]", ParameterName = "profits" },
+                            new() { Type = "List[int]", ParameterName = "capital" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "maxCapital", ReturnType = "int" },
+                        ],
                     },
                     new()
                     {
                         Language = JudgeLanguageEnum.csharp,
                         FunctionName = "FindMaximizedCapital",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int", ParameterName = "k" },
+                            new() { Type = "int", ParameterName = "w" },
+                            new() { Type = "int[]", ParameterName = "profits" },
+                            new() { Type = "int[]", ParameterName = "capital" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "maxCapital", ReturnType = "int" },
+                        ],
                     },
                 ],
                 Functions =
@@ -11991,8 +13499,32 @@ namespace blog.Seed
                     {
                         Language = JudgeLanguageEnum.python,
                         FunctionName = "k_smallest_pairs",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[int]", ParameterName = "nums1" },
+                            new() { Type = "List[int]", ParameterName = "nums2" },
+                            new() { Type = "int", ParameterName = "k" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "pairs", ReturnType = "List[List[int]]" },
+                        ],
                     },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "KSmallestPairs" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "KSmallestPairs",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int[]", ParameterName = "nums1" },
+                            new() { Type = "int[]", ParameterName = "nums2" },
+                            new() { Type = "int", ParameterName = "k" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "pairs", ReturnType = "List<List<int>>" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -12131,8 +13663,28 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "add_binary" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "AddBinary" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "add_binary",
+                        ProblemParameters =
+                        [
+                            new() { Type = "str", ParameterName = "a" },
+                            new() { Type = "str", ParameterName = "b" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "sum", ReturnType = "str" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "AddBinary",
+                        ProblemParameters =
+                        [
+                            new() { Type = "string", ParameterName = "a" },
+                            new() { Type = "string", ParameterName = "b" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "sum", ReturnType = "string" }],
+                    },
                 ],
                 Functions =
                 [
@@ -12275,8 +13827,20 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "reverse_bits" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "ReverseBits" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "reverse_bits",
+                        ProblemParameters = [new() { Type = "int", ParameterName = "n" }],
+                        ProblemReturnTypes = [new() { ReturnName = "result", ReturnType = "int" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "ReverseBits",
+                        ProblemParameters = [new() { Type = "uint", ParameterName = "n" }],
+                        ProblemReturnTypes = [new() { ReturnName = "result", ReturnType = "uint" }],
+                    },
                 ],
                 Functions =
                 [
@@ -12417,8 +13981,20 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "hamming_weight" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "HammingWeight" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "hamming_weight",
+                        ProblemParameters = [new() { Type = "int", ParameterName = "n" }],
+                        ProblemReturnTypes = [new() { ReturnName = "count", ReturnType = "int" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "HammingWeight",
+                        ProblemParameters = [new() { Type = "int", ParameterName = "n" }],
+                        ProblemReturnTypes = [new() { ReturnName = "count", ReturnType = "int" }],
+                    },
                 ],
                 Functions =
                 [
@@ -12560,8 +14136,20 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "single_number" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "SingleNumber" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "single_number",
+                        ProblemParameters = [new() { Type = "List[int]", ParameterName = "nums" }],
+                        ProblemReturnTypes = [new() { ReturnName = "result", ReturnType = "int" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "SingleNumber",
+                        ProblemParameters = [new() { Type = "int[]", ParameterName = "nums" }],
+                        ProblemReturnTypes = [new() { ReturnName = "result", ReturnType = "int" }],
+                    },
                 ],
                 Functions =
                 [
@@ -12702,8 +14290,16 @@ namespace blog.Seed
                     {
                         Language = JudgeLanguageEnum.python,
                         FunctionName = "single_number_ii",
+                        ProblemParameters = [new() { Type = "List[int]", ParameterName = "nums" }],
+                        ProblemReturnTypes = [new() { ReturnName = "result", ReturnType = "int" }],
                     },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "SingleNumberII" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "SingleNumberII",
+                        ProblemParameters = [new() { Type = "int[]", ParameterName = "nums" }],
+                        ProblemReturnTypes = [new() { ReturnName = "result", ReturnType = "int" }],
+                    },
                 ],
                 Functions =
                 [
@@ -12845,8 +14441,24 @@ namespace blog.Seed
                     {
                         Language = JudgeLanguageEnum.python,
                         FunctionName = "range_bitwise_and",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int", ParameterName = "left" },
+                            new() { Type = "int", ParameterName = "right" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "result", ReturnType = "int" }],
                     },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "RangeBitwiseAnd" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "RangeBitwiseAnd",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int", ParameterName = "left" },
+                            new() { Type = "int", ParameterName = "right" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "result", ReturnType = "int" }],
+                    },
                 ],
                 Functions =
                 [
@@ -12987,8 +14599,22 @@ namespace blog.Seed
                     {
                         Language = JudgeLanguageEnum.python,
                         FunctionName = "is_palindrome_number",
+                        ProblemParameters = [new() { Type = "int", ParameterName = "x" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "isPalindrome", ReturnType = "bool" },
+                        ],
                     },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "IsPalindrome" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "IsPalindrome",
+                        ProblemParameters = [new() { Type = "int", ParameterName = "x" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "isPalindrome", ReturnType = "bool" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -13125,8 +14751,29 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "plus_one" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "PlusOne" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "plus_one",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[int]", ParameterName = "digits" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "result", ReturnType = "List[int]" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "PlusOne",
+                        ProblemParameters = [new() { Type = "int[]", ParameterName = "digits" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "result", ReturnType = "int[]" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -13263,8 +14910,20 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "trailing_zeroes" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "TrailingZeroes" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "trailing_zeroes",
+                        ProblemParameters = [new() { Type = "int", ParameterName = "n" }],
+                        ProblemReturnTypes = [new() { ReturnName = "count", ReturnType = "int" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "TrailingZeroes",
+                        ProblemParameters = [new() { Type = "int", ParameterName = "n" }],
+                        ProblemReturnTypes = [new() { ReturnName = "count", ReturnType = "int" }],
+                    },
                 ],
                 Functions =
                 [
@@ -13401,8 +15060,20 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "my_sqrt" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "MySqrt" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "my_sqrt",
+                        ProblemParameters = [new() { Type = "int", ParameterName = "x" }],
+                        ProblemReturnTypes = [new() { ReturnName = "result", ReturnType = "int" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "MySqrt",
+                        ProblemParameters = [new() { Type = "int", ParameterName = "x" }],
+                        ProblemReturnTypes = [new() { ReturnName = "result", ReturnType = "int" }],
+                    },
                 ],
                 Functions =
                 [
@@ -13539,8 +15210,34 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "my_pow" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "MyPow" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "my_pow",
+                        ProblemParameters =
+                        [
+                            new() { Type = "float", ParameterName = "x" },
+                            new() { Type = "int", ParameterName = "n" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "result", ReturnType = "float" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "MyPow",
+                        ProblemParameters =
+                        [
+                            new() { Type = "double", ParameterName = "x" },
+                            new() { Type = "int", ParameterName = "n" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "result", ReturnType = "double" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -13681,8 +15378,25 @@ namespace blog.Seed
                     {
                         Language = JudgeLanguageEnum.python,
                         FunctionName = "max_points_on_line",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[List[int]]", ParameterName = "points" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "maxPoints", ReturnType = "int" },
+                        ],
                     },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "MaxPoints" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "MaxPoints",
+                        ProblemParameters = [new() { Type = "int[][]", ParameterName = "points" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "maxPoints", ReturnType = "int" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -13826,8 +15540,26 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "rob" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "Rob" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "rob",
+                        ProblemParameters = [new() { Type = "List[int]", ParameterName = "nums" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "maxAmount", ReturnType = "int" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "Rob",
+                        ProblemParameters = [new() { Type = "int[]", ParameterName = "nums" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "maxAmount", ReturnType = "int" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -13964,8 +15696,34 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "word_break" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "WordBreak" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "word_break",
+                        ProblemParameters =
+                        [
+                            new() { Type = "str", ParameterName = "s" },
+                            new() { Type = "List[str]", ParameterName = "wordDict" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "canBreak", ReturnType = "bool" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "WordBreak",
+                        ProblemParameters =
+                        [
+                            new() { Type = "string", ParameterName = "s" },
+                            new() { Type = "string[]", ParameterName = "wordDict" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "canBreak", ReturnType = "bool" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -14112,8 +15870,34 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "coin_change" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "CoinChange" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "coin_change",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[int]", ParameterName = "coins" },
+                            new() { Type = "int", ParameterName = "amount" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "minCoins", ReturnType = "int" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "CoinChange",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int[]", ParameterName = "coins" },
+                            new() { Type = "int", ParameterName = "amount" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "minCoins", ReturnType = "int" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -14255,8 +16039,20 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "length_of_lis" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "LengthOfLIS" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "length_of_lis",
+                        ProblemParameters = [new() { Type = "List[int]", ParameterName = "nums" }],
+                        ProblemReturnTypes = [new() { ReturnName = "length", ReturnType = "int" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "LengthOfLIS",
+                        ProblemParameters = [new() { Type = "int[]", ParameterName = "nums" }],
+                        ProblemReturnTypes = [new() { ReturnName = "length", ReturnType = "int" }],
+                    },
                 ],
                 Functions =
                 [
@@ -14399,8 +16195,26 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "minimum_total" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "MinimumTotal" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "minimum_total",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[List[int]]", ParameterName = "triangle" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "minSum", ReturnType = "int" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "MinimumTotal",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List<List<int>>", ParameterName = "triangle" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "minSum", ReturnType = "int" }],
+                    },
                 ],
                 Functions =
                 [
@@ -14540,8 +16354,23 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "min_path_sum" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "MinPathSum" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "min_path_sum",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[List[int]]", ParameterName = "grid" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "minSum", ReturnType = "int" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "MinPathSum",
+                        ProblemParameters = [new() { Type = "int[][]", ParameterName = "grid" }],
+                        ProblemReturnTypes = [new() { ReturnName = "minSum", ReturnType = "int" }],
+                    },
                 ],
                 Functions =
                 [
@@ -14687,11 +16516,27 @@ namespace blog.Seed
                     {
                         Language = JudgeLanguageEnum.python,
                         FunctionName = "unique_paths_with_obstacles",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[List[int]]", ParameterName = "obstacleGrid" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "pathCount", ReturnType = "int" },
+                        ],
                     },
                     new()
                     {
                         Language = JudgeLanguageEnum.csharp,
                         FunctionName = "UniquePathsWithObstacles",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int[][]", ParameterName = "obstacleGrid" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "pathCount", ReturnType = "int" },
+                        ],
                     },
                 ],
                 Functions =
@@ -14838,11 +16683,15 @@ namespace blog.Seed
                     {
                         Language = JudgeLanguageEnum.python,
                         FunctionName = "longest_palindrome_length",
+                        ProblemParameters = [new() { Type = "str", ParameterName = "s" }],
+                        ProblemReturnTypes = [new() { ReturnName = "length", ReturnType = "int" }],
                     },
                     new()
                     {
                         Language = JudgeLanguageEnum.csharp,
                         FunctionName = "LongestPalindromeLength",
+                        ProblemParameters = [new() { Type = "string", ParameterName = "s" }],
+                        ProblemReturnTypes = [new() { ReturnName = "length", ReturnType = "int" }],
                     },
                 ],
                 Functions =
@@ -14985,8 +16834,36 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "is_interleave" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "IsInterleave" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "is_interleave",
+                        ProblemParameters =
+                        [
+                            new() { Type = "str", ParameterName = "s1" },
+                            new() { Type = "str", ParameterName = "s2" },
+                            new() { Type = "str", ParameterName = "s3" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "isInterleave", ReturnType = "bool" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "IsInterleave",
+                        ProblemParameters =
+                        [
+                            new() { Type = "string", ParameterName = "s1" },
+                            new() { Type = "string", ParameterName = "s2" },
+                            new() { Type = "string", ParameterName = "s3" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "isInterleave", ReturnType = "bool" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -15124,8 +17001,34 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "min_distance" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "MinDistance" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "min_distance",
+                        ProblemParameters =
+                        [
+                            new() { Type = "str", ParameterName = "word1" },
+                            new() { Type = "str", ParameterName = "word2" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "distance", ReturnType = "int" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "MinDistance",
+                        ProblemParameters =
+                        [
+                            new() { Type = "string", ParameterName = "word1" },
+                            new() { Type = "string", ParameterName = "word2" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "distance", ReturnType = "int" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -15262,8 +17165,29 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "max_profit3" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "MaxProfitIII" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "max_profit3",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[int]", ParameterName = "prices" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "maxProfit", ReturnType = "int" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "MaxProfitIII",
+                        ProblemParameters = [new() { Type = "int[]", ParameterName = "prices" }],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "maxProfit", ReturnType = "int" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -15401,8 +17325,34 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "max_profit4" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "MaxProfitIV" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "max_profit4",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int", ParameterName = "k" },
+                            new() { Type = "List[int]", ParameterName = "prices" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "maxProfit", ReturnType = "int" },
+                        ],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "MaxProfitIV",
+                        ProblemParameters =
+                        [
+                            new() { Type = "int", ParameterName = "k" },
+                            new() { Type = "int[]", ParameterName = "prices" },
+                        ],
+                        ProblemReturnTypes =
+                        [
+                            new() { ReturnName = "maxProfit", ReturnType = "int" },
+                        ],
+                    },
                 ],
                 Functions =
                 [
@@ -15540,8 +17490,23 @@ namespace blog.Seed
                 UpdateDate = now,
                 ProblemSignatures =
                 [
-                    new() { Language = JudgeLanguageEnum.python, FunctionName = "maximal_square" },
-                    new() { Language = JudgeLanguageEnum.csharp, FunctionName = "MaximalSquare" },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.python,
+                        FunctionName = "maximal_square",
+                        ProblemParameters =
+                        [
+                            new() { Type = "List[List[str]]", ParameterName = "matrix" },
+                        ],
+                        ProblemReturnTypes = [new() { ReturnName = "area", ReturnType = "int" }],
+                    },
+                    new()
+                    {
+                        Language = JudgeLanguageEnum.csharp,
+                        FunctionName = "MaximalSquare",
+                        ProblemParameters = [new() { Type = "char[][]", ParameterName = "matrix" }],
+                        ProblemReturnTypes = [new() { ReturnName = "area", ReturnType = "int" }],
+                    },
                 ],
                 Functions =
                 [

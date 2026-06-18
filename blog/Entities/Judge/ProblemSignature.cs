@@ -9,5 +9,7 @@ namespace blog.Entities.Judge
         public JudgeLanguageEnum Language { get; set; }
         public required string FunctionName { get; set; }
         public Problem Problem { get; set; }
+        public ICollection<ProblemParameters> ProblemParameters { get; set; }
+        public ICollection<ProblemReturnType> ProblemReturnTypes { get; set; }
     }
 }

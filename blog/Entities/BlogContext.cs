@@ -53,6 +53,8 @@ namespace blog.Entities
         public DbSet<Problem> Problems { get; set; }
         public DbSet<ProblemSignature> ProblemSignatures { get; set; }
         public DbSet<ProblemTags> ProblemTags { get; set; }
+        public DbSet<ProblemParameters> ProblemParameters { get; set; }
+        public DbSet<ProblemReturnType> ProblemReturnTypes { get; set; }
         #endregion
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -556,6 +558,36 @@ namespace blog.Entities
                     .HasOne(e => e.Problem)
                     .WithMany(e => e.ProblemTags)
                     .HasForeignKey(e => e.ProblemId)
+                    .HasPrincipalKey(e => e.Id)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<ProblemParameters>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.Type).HasMaxLength(50).IsRequired();
+                entity.Property(x => x.ParameterName).HasMaxLength(100).IsRequired();
+
+                entity
+                    .HasOne(e => e.ProblemSignature)
+                    .WithMany(e => e.ProblemParameters)
+                    .HasForeignKey(e => e.SignatureId)
+                    .HasPrincipalKey(e => e.ProblemId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<ProblemReturnType>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.ReturnName).HasMaxLength(100).IsRequired();
+                entity.Property(x => x.ReturnType).HasMaxLength(50).IsRequired();
+
+                entity
+                    .HasOne(e => e.ProblemSignature)
+                    .WithMany(e => e.ProblemReturnTypes)
+                    .HasForeignKey(e => e.SignatureId)
                     .HasPrincipalKey(e => e.Id)
                     .OnDelete(DeleteBehavior.Cascade);
             });
