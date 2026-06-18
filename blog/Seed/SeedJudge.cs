@@ -4,9 +4,9 @@ using blog.Entities.Judge;
 
 namespace blog.Seed
 {
-    public class SeedJudgeTopInterview150
+    public class SeedJudge
     {
-        public static async Task SeedJudgeTopInterview150Async(BlogContext context)
+        public static async Task SeedJudgeAsync(BlogContext context)
         {
             if (context.Problems.Any(p => p.ProblemName == "合併排序陣列"))
                 return;
