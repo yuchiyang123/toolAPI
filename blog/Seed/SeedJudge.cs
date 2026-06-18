@@ -18,6 +18,7 @@ namespace blog.Seed
                 ProblemName = "兩數之和",
                 Description =
                     "給定一個整數陣列 nums 和一個目標值 target，找出陣列中兩個數字的索引，使它們相加等於 target。每個輸入只有一組答案，且不能使用同一個元素兩次。",
+                Difficulty = ProblemDifficultyEnums.Easy,
                 CreateDate = now,
                 UpdateDate = now,
                 ProblemSignatures =
@@ -112,6 +113,7 @@ namespace blog.Seed
                         Expected = "[0, 1]",
                     },
                 ],
+                ProblemTags = [new() { Name = "Array" }, new() { Name = "Hash Table" }],
             };
 
             var climbStairs = new Problem
@@ -119,6 +121,7 @@ namespace blog.Seed
                 ProblemName = "爬樓梯",
                 Description =
                     "你正在爬樓梯，需要 n 步才能到達頂部。每次可以爬 1 或 2 步，有多少種不同的方法可以爬到頂部？",
+                Difficulty = ProblemDifficultyEnums.Easy,
                 CreateDate = now,
                 UpdateDate = now,
                 ProblemSignatures =
@@ -213,12 +216,19 @@ namespace blog.Seed
                         Expected = "1836311903",
                     },
                 ],
+                ProblemTags =
+                [
+                    new() { Name = "Math" },
+                    new() { Name = "Dynamic Programming" },
+                    new() { Name = "Memoization" },
+                ],
             };
 
             var reverseString = new Problem
             {
                 ProblemName = "反轉字串",
                 Description = "給定一個字串 s，回傳反轉後的字串。",
+                Difficulty = ProblemDifficultyEnums.Easy,
                 CreateDate = now,
                 UpdateDate = now,
                 ProblemSignatures =
@@ -288,6 +298,12 @@ namespace blog.Seed
                         Input = "{\"s\": \"abcde\"}",
                         Expected = "\"edcba\"",
                     },
+                ],
+                ProblemTags =
+                [
+                    new() { Name = "Two Pointers" },
+                    new() { Name = "String" },
+                    new() { Name = "Recursion" },
                 ],
             };
 

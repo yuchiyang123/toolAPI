@@ -17,6 +17,10 @@ namespace blog.Common.Profiles
                 .ForMember(
                     dest => dest.TotalCount,
                     opt => opt.MapFrom(src => src.Submissions.Sum(x => x.TotalCount))
+                )
+                .ForMember(
+                    dest => dest.Tags,
+                    opt => opt.MapFrom(src => src.ProblemTags.Select(x => x.Name))
                 );
 
             CreateMap<Problem, ProblemsList>().IncludeBase<Problem, BaseProblem>();

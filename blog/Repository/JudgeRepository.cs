@@ -22,12 +22,16 @@ namespace blog.Repository
                 .Include(x => x.Submissions)
                     .ThenInclude(x => x.SubmissionResults)
                 .Include(x => x.ProblemSignatures)
+                .Include(x => x.ProblemTags)
                 .AsQueryable();
         }
 
         public IQueryable<Problem> GetProblemList()
         {
-            return context.Problems.Include(x => x.Submissions).AsQueryable();
+            return context
+                .Problems.Include(x => x.ProblemTags)
+                .Include(x => x.Submissions)
+                .AsQueryable();
         }
 
         public IQueryable<Problem> GetProblemsFeature(JudgeLanguageEnum language)

@@ -45,4 +45,11 @@
         RESULT,
         ERROR,
     }
+
+    public enum ProblemDifficultyEnums
+    {
+        Easy,
+        Medium,
+        Hard,
+    }
 }

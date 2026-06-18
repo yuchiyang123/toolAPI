@@ -52,6 +52,7 @@ namespace blog.Entities
         public DbSet<Function> Functions { get; set; }
         public DbSet<Problem> Problems { get; set; }
         public DbSet<ProblemSignature> ProblemSignatures { get; set; }
+        public DbSet<ProblemTags> ProblemTags { get; set; }
         #endregion
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -540,6 +541,20 @@ namespace blog.Entities
                 entity
                     .HasOne(e => e.Problem)
                     .WithMany(e => e.ProblemSignatures)
+                    .HasForeignKey(e => e.ProblemId)
+                    .HasPrincipalKey(e => e.Id)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<ProblemTags>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.Name).HasMaxLength(50).IsRequired();
+
+                entity
+                    .HasOne(e => e.Problem)
+                    .WithMany(e => e.ProblemTags)
                     .HasForeignKey(e => e.ProblemId)
                     .HasPrincipalKey(e => e.Id)
                     .OnDelete(DeleteBehavior.Cascade);

@@ -26,9 +26,11 @@ namespace blog.Dtos.Judge
     {
         public int Id { get; set; }
         public required string Name { get; set; }
+        public required ProblemDifficultyEnums Difficulty { get; set; }
         public int PassCount { get; set; }
         public int TotalCount { get; set; }
         public double PassRate => TotalCount == 0 ? 0 : (double)PassCount / TotalCount;
+        public List<string>? Tags { get; set; }
     }
 
     public class ProblemsListQuery : PageQueryDto { }
