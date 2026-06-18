@@ -15,16 +15,22 @@ namespace blog.Migrations
                 table: "Problems",
                 type: "int",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 0
+            );
 
             migrationBuilder.CreateTable(
                 name: "ProblemTags",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table
+                        .Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ProblemId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                    Name = table.Column<string>(
+                        type: "nvarchar(50)",
+                        maxLength: 50,
+                        nullable: false
+                    ),
                 },
                 constraints: table =>
                 {
@@ -34,24 +40,24 @@ namespace blog.Migrations
                         column: x => x.ProblemId,
                         principalTable: "Problems",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProblemTags_ProblemId",
                 table: "ProblemTags",
-                column: "ProblemId");
+                column: "ProblemId"
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "ProblemTags");
+            migrationBuilder.DropTable(name: "ProblemTags");
 
-            migrationBuilder.DropColumn(
-                name: "Difficulty",
-                table: "Problems");
+            migrationBuilder.DropColumn(name: "Difficulty", table: "Problems");
         }
     }
 }
