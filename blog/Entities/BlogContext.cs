@@ -573,7 +573,7 @@ namespace blog.Entities
                     .HasOne(e => e.ProblemSignature)
                     .WithMany(e => e.ProblemParameters)
                     .HasForeignKey(e => e.SignatureId)
-                    .HasPrincipalKey(e => e.ProblemId)
+                    .HasPrincipalKey(e => e.Id)
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
