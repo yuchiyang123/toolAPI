@@ -45,6 +45,7 @@ namespace blog.Dtos.Judge
         public List<SubmissionDto> Submissions { get; set; }
         public List<TestCases>? TestCases { get; set; }
         public required List<LanguageInfo> LanguageInfo { get; set; }
+        public required List<CombinStartCode> StartCodes { get; set; }
     }
 
     public class LanguageInfo
@@ -86,6 +87,7 @@ namespace blog.Dtos.Judge
 
     public class ParameterTypeDto
     {
+        public required string FunctionName { get; set; }
         public required JudgeLanguageEnum Language { get; set; }
         public List<ParameterTypesValue>? ParameterTypes { get; set; }
         public List<ReturnTypeValue>? ReturnTypes { get; set; }

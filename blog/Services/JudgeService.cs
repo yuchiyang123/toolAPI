@@ -160,12 +160,16 @@ namespace blog.Services
 
         public async Task<ProblemDetail> GetProblemDetailAsync(int id)
         {
-            return await repository
+            var needCombleData = await repository.GetComieDataAsQueryable().Where(x => x.ProblemId == id).ProjectTo<ParameterTypeDto>(mapper.ConfigurationProvider).ToListAsync();
+            var combinStartCodes = helper.CombinStratCode(needCombleData);
+            var dto = await repository
                     .GetProblemDetail()
                     .Where(x => x.Id == id)
                     .ProjectTo<ProblemDetail>(mapper.ConfigurationProvider)
                     .FirstOrDefaultAsync(x => x.Id == id)
                 ?? throw new KeyNotFoundException();
+            dto.StartCodes = combinStartCodes;
+            return dto;
         }
 
         public async Task<List<JudgeResultReponse>?> GetJudgeResultById(

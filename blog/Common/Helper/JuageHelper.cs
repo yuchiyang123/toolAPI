@@ -64,12 +64,11 @@ namespace blog.Common.Helper
             (string before, string beforeSy, string afterSy)
         > PrintFunction = new()
         {
-            [JudgeLanguageEnum.python] = ("def", ":\n", ""),
-            [JudgeLanguageEnum.csharp] = ("static", " {", "}"),
+            [JudgeLanguageEnum.python] = ("def ", ":\n", ""),
+            [JudgeLanguageEnum.csharp] = ("static ", " \n{", "\n}"),
         };
 
         public List<CombinStartCode> CombinStratCode(
-            string functionName,
             List<ParameterTypeDto> parameters
         )
         {
@@ -80,7 +79,7 @@ namespace blog.Common.Helper
                 string parameterStr = CombinParameter(items.Language, items.ParameterTypes);
                 string returnStr = CombinReturnType(items.Language, items.ReturnTypes);
                 string startCode =
-                    before + returnStr + functionName + parameterStr + beforeSy + afterSy;
+                    before + returnStr + items.FunctionName + parameterStr + beforeSy + afterSy;
                 startCodeList.Add(
                     new CombinStartCode { Language = items.Language, StartCode = startCode }
                 );
@@ -146,6 +145,15 @@ namespace blog.Common.Helper
             return parameterTypes.ParameterName;
         }
 
+        private static string CombinReturn(JudgeLanguageEnum judgeLanguage, List<string> parts)
+        {
+            return judgeLanguage switch
+            {
+                JudgeLanguageEnum.csharp => CombinReturnVlaue(parts),
+                _ => string.Empty
+            };
+        }
+
         private static string CombinReturnType(
             JudgeLanguageEnum judgeLanguage,
             List<ReturnTypeValue>? returnTypes
@@ -162,6 +170,11 @@ namespace blog.Common.Helper
                 };
             }
             var parts = returnTypes.Select(r => PringReturn(judgeLanguage, r));
+            return CombinReturn(judgeLanguage, [.. parts]);
+        }
+
+        private static string CombinReturnVlaue(List<string> parts)
+        {
             return "(" + string.Join(", ", parts) + ") ";
         }
 

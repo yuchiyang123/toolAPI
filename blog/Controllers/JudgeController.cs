@@ -30,7 +30,7 @@ namespace blog.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ProblemDetail>> GetProblemsDetailAsync(int id)
         {
-            var dto = await cacheService.GetProblemsDetail(id);
+            var dto = await service.GetProblemDetailAsync(id);
             return Ok(dto);
         }
 

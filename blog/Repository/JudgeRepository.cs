@@ -22,9 +22,6 @@ namespace blog.Repository
                 .Include(x => x.Submissions)
                     .ThenInclude(x => x.SubmissionResults)
                 .Include(x => x.ProblemSignatures)
-                    .ThenInclude(x => x.ProblemParameters)
-                .Include(x => x.ProblemSignatures)
-                    .ThenInclude(x => x.ProblemReturnTypes)
                 .Include(x => x.ProblemTags)
                 .AsQueryable();
         }
@@ -43,6 +40,11 @@ namespace blog.Repository
                 .Problems.Include(x => x.Functions.Where(x => x.Language == language))
                 .Include(x => x.ProblemSignatures.Where(x => x.Language == language))
                 .AsQueryable();
+        }
+
+        public IQueryable<ProblemSignature> GetComieDataAsQueryable()
+        {
+            return context.ProblemSignatures.Include(x => x.ProblemParameters).Include(x => x.ProblemReturnTypes).AsQueryable();
         }
     }
 }
