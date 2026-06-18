@@ -44,6 +44,13 @@ namespace blog.Dtos.Judge
         public DateTime CreateDate { get; set; }
         public List<SubmissionDto> Submissions { get; set; }
         public List<TestCases>? TestCases { get; set; }
+        public required List<LanguageInfo> LanguageInfo { get; set; }
+    }
+
+    public class LanguageInfo
+    {
+        public JudgeLanguageEnum Languages { get; set; }
+        public required string FunctionName { get; set; }
     }
 
     public class SubmissionDto

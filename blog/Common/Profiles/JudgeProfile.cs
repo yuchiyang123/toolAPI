@@ -28,10 +28,13 @@ namespace blog.Common.Profiles
             CreateMap<Problem, ProblemDetail>()
                 .IncludeBase<Problem, BaseProblem>()
                 .ForMember(dest => dest.Submissions, opt => opt.MapFrom(src => src.Submissions))
+                .ForMember(dest => dest.TestCases, opt => opt.MapFrom(src => src.Functions.Take(2)))
                 .ForMember(
-                    dest => dest.TestCases,
-                    opt => opt.MapFrom(src => src.Functions.Take(2))
+                    dest => dest.LanguageInfo,
+                    opt => opt.MapFrom(src => src.ProblemSignatures)
                 );
+            CreateMap<ProblemSignature, LanguageInfo>()
+                .ForMember(dest => dest.Languages, opt => opt.MapFrom(src => src.Language));
             CreateMap<Function, TestCases>()
                 .ForMember(dest => dest.Output, opt => opt.MapFrom(src => src.Expected));
             CreateMap<Submission, SubmissionDto>()
