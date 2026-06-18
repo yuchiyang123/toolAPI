@@ -27,7 +27,13 @@ namespace blog.Common.Profiles
 
             CreateMap<Problem, ProblemDetail>()
                 .IncludeBase<Problem, BaseProblem>()
-                .ForMember(dest => dest.Submissions, opt => opt.MapFrom(src => src.Submissions));
+                .ForMember(dest => dest.Submissions, opt => opt.MapFrom(src => src.Submissions))
+                .ForMember(
+                    dest => dest.TestCases,
+                    opt => opt.MapFrom(src => src.Functions.Take(2))
+                );
+            CreateMap<Function, TestCases>()
+                .ForMember(dest => dest.Output, opt => opt.MapFrom(src => src.Expected));
             CreateMap<Submission, SubmissionDto>()
                 .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.Users))
                 .ForMember(dest => dest.Results, opt => opt.MapFrom(src => src.SubmissionResults));

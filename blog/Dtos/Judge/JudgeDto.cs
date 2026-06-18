@@ -43,6 +43,7 @@ namespace blog.Dtos.Judge
         public DateTime UpdateDate { get; set; }
         public DateTime CreateDate { get; set; }
         public List<SubmissionDto> Submissions { get; set; }
+        public List<TestCases>? TestCases { get; set; }
     }
 
     public class SubmissionDto
@@ -63,6 +64,12 @@ namespace blog.Dtos.Judge
     }
 
     public class JudgeResultReponse : Result { }
+
+    public class TestCases
+    {
+        public required string Input { get; set; }
+        public required string Output { get; set; }
+    }
 
     public class TestCode
     {
