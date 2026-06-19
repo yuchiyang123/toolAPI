@@ -49,5 +49,17 @@ namespace blog.Repository
                 .Include(x => x.ProblemReturnTypes)
                 .AsQueryable();
         }
+
+        public IQueryable<Problem> GetTestResultAsQueryable(
+            int submissionsId,
+            JudgeLanguageEnum language
+        )
+        {
+            return context
+                .Problems.Include(x => x.Functions.Where(x => x.Language == language))
+                .Include(x => x.Submissions.Where(x => x.Id == submissionsId))
+                    .ThenInclude(x => x.SubmissionResults)
+                .AsQueryable();
+        }
     }
 }

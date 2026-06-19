@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
@@ -13,6 +14,7 @@ using blog.Repository;
 using Docker.DotNet;
 using Docker.DotNet.Models;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 
 namespace blog.Services
 {
@@ -173,11 +175,56 @@ namespace blog.Services
                     .ProjectTo<ProblemDetail>(mapper.ConfigurationProvider)
                     .FirstOrDefaultAsync(x => x.Id == id)
                 ?? throw new KeyNotFoundException();
+
+            var jsonValueInput = GetJsonValueByCases(dto.TestCases);
             dto.StartCodes = combinStartCodes;
+            dto.TestCases = jsonValueInput;
             return dto;
         }
 
-        public async Task<List<JudgeResultReponse>?> GetJudgeResultById(
+        private static List<TestCases>? GetJsonValueByCases(List<TestCases>? cases)
+        {
+            if (cases == null)
+                return null;
+            foreach (var item in cases)
+            {
+                var jsonObjcets = Newtonsoft.Json.JsonConvert.DeserializeObject<
+                    Dictionary<string, object>
+                >(item.Input);
+                if (jsonObjcets == null)
+                    continue;
+                string inputStr = BuildTestCaseInputArgs(jsonObjcets);
+                item.Input = inputStr;
+            }
+            return cases;
+        }
+
+        private static string BuildTestCaseInputArgs(Dictionary<string, object> jsonObjectDic)
+        {
+            bool isNeedComma = false;
+            var inputStr = string.Empty;
+            foreach (var json in jsonObjectDic)
+            {
+                if (json.Value == null)
+                    continue;
+
+                string valueStr;
+                if (json.Value is Newtonsoft.Json.Linq.JToken token)
+                {
+                    valueStr = token.ToString(Newtonsoft.Json.Formatting.None);
+                }
+                else
+                {
+                    valueStr = json.Value.ToString()!;
+                }
+
+                inputStr += isNeedComma ? "," + valueStr : valueStr;
+                isNeedComma = true;
+            }
+            return inputStr;
+        }
+
+        public async Task<SubmissionResponse> GetJudgeResultById(
             JudgeRequestDto dto,
             CancellationToken ct = default
         )
@@ -204,7 +251,18 @@ namespace blog.Services
                 bool isNeedComma = false;
                 foreach (var json in jsonObjcets)
                 {
-                    testStr += isNeedComma ? "," + json.Value : json.Value;
+                    string valueStr;
+                    var token = json.Value as JToken ?? JToken.FromObject(json.Value);
+
+                    valueStr = token.Type switch
+                    {
+                        JTokenType.String => $"\"{token.Value<string>()}\"",
+                        JTokenType.Array => token.ToString(Newtonsoft.Json.Formatting.None),
+                        JTokenType.Object => token.ToString(Newtonsoft.Json.Formatting.None),
+                        _ => token.ToString(), // int, bool, float 直接輸出
+                    };
+
+                    testStr += isNeedComma ? "," + valueStr : valueStr;
                     isNeedComma = true;
                 }
                 code.Input = functionName + "(" + testStr + ")";
@@ -222,15 +280,9 @@ namespace blog.Services
                         : SubmissionStatus.RE;
                 context.Submissions.Add(CombinationSubmission(dto, status, null));
                 await context.SaveChangesAsync(ct);
-                return
-                [
-                    new()
-                    {
-                        Output = resultDto.Stderr ?? string.Empty,
-                        Id = 0,
-                        IsPassed = false,
-                    },
-                ];
+                var testResultDtoForNull = await GetTestResultDto(dto.Id, dto.Language, ct);
+                testResultDtoForNull.ErrorMessage = resultDto.Stderr;
+                return testResultDtoForNull;
             }
             List<JudgeResultReponse> testResultCase = [];
             string pattern = @"===(.+?)_(.+?)===(.+)";
@@ -261,9 +313,49 @@ namespace blog.Services
             SubmissionStatus nobuildErrorStatus = testResultCase.Any(x => !x.IsPassed)
                 ? SubmissionStatus.WA
                 : SubmissionStatus.AC;
-            context.Submissions.Add(CombinationSubmission(dto, nobuildErrorStatus, testResultCase));
+
+            var addEntity = CombinationSubmission(dto, nobuildErrorStatus, testResultCase);
+            context.Submissions.Add(addEntity);
             await context.SaveChangesAsync(ct);
-            return testResultCase;
+            var testResultDto = await GetTestResultDto(dto.Id, dto.Language, ct);
+            testResultDto.ErrorMessage = resultDto.Stderr;
+            testResultDto.Results = GetJsonValueByResultCases(testResultDto.Results);
+            return testResultDto;
+        }
+
+        private static List<SubmissionResultDto>? GetJsonValueByResultCases(
+            List<SubmissionResultDto>? cases
+        )
+        {
+            if (cases == null)
+                return null;
+            foreach (var item in cases)
+            {
+                if (item.Input == null)
+                    continue;
+                var jsonObjcets = Newtonsoft.Json.JsonConvert.DeserializeObject<
+                    Dictionary<string, object>
+                >(item.Input);
+                if (jsonObjcets == null)
+                    continue;
+                string inputStr = BuildTestCaseInputArgs(jsonObjcets);
+
+                item.Input = inputStr;
+            }
+
+            return cases;
+        }
+
+        private async Task<SubmissionResponse> GetTestResultDto(
+            int id,
+            JudgeLanguageEnum judgeLanguage,
+            CancellationToken ct
+        )
+        {
+            var testResponseEntity = await repository
+                .GetTestResultAsQueryable(id, judgeLanguage)
+                .FirstOrDefaultAsync(x => x.Id == id, ct);
+            return mapper.Map<SubmissionResponse>(testResponseEntity);
         }
 
         private static bool ComparisonResult(

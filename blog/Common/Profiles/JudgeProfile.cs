@@ -57,6 +57,47 @@ namespace blog.Common.Profiles
             CreateMap<ProblemReturnType, ReturnTypeValue>();
             CreateMap<ProblemParameters, ParameterTypesValue>()
                 .ForMember(dest => dest.ParameterType, opt => opt.MapFrom(src => src.Type));
+
+            CreateMap<Problem, SubmissionResponse>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Submissions.First().Id))
+                .ForMember(
+                    dest => dest.Language,
+                    opt => opt.MapFrom(src => src.Functions.First().Language)
+                )
+                .ForMember(
+                    dest => dest.Status,
+                    opt => opt.MapFrom(src => src.Submissions.First().Status)
+                )
+                .ForMember(
+                    dest => dest.PassedCount,
+                    opt => opt.MapFrom(src => src.Submissions.First().PassedCount)
+                )
+                .ForMember(
+                    dest => dest.TotalCount,
+                    opt => opt.MapFrom(src => src.Submissions.First().TotalCount)
+                )
+                .ForMember(dest => dest.ErrorMessage, opt => opt.Ignore())
+                .ForMember(
+                    dest => dest.Results,
+                    opt => opt.MapFrom(src => src.Submissions.First().SubmissionResults)
+                )
+                .AfterMap(
+                    (src, dest) =>
+                    {
+                        if (dest.Results == null)
+                            return;
+                        foreach (var item in dest.Results)
+                        {
+                            item.Input = src.Functions.First(x => x.Id == item.FunctionId).Input;
+                            item.Expected = src
+                                .Functions.First(x => x.Id == item.FunctionId)
+                                .Expected;
+                        }
+                    }
+                );
+            CreateMap<SubmissionResult, SubmissionResultDto>()
+                .ForMember(dest => dest.Input, opt => opt.Ignore())
+                .ForMember(dest => dest.Expected, opt => opt.Ignore());
         }
     }
 }

@@ -30,12 +30,14 @@ namespace blog.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ProblemDetail>> GetProblemsDetailAsync(int id)
         {
-            var dto = await service.GetProblemDetailAsync(id);
+            var dto = await cacheService.GetProblemsDetail(id);
             return Ok(dto);
         }
 
         [HttpPost("id")]
-        public async Task<ActionResult<JudgeResult>> GetRunById([FromBody] JudgeRequestDto judge)
+        public async Task<ActionResult<SubmissionResponse>> GetRunById(
+            [FromBody] JudgeRequestDto judge
+        )
         {
             await cacheService.InvalidateFlowDetailAsync(judge.Id);
             var dto = await service.GetJudgeResultById(judge);

@@ -110,4 +110,25 @@ namespace blog.Dtos.Judge
         public required JudgeLanguageEnum Language { get; set; }
         public required string StartCode { get; set; }
     }
+
+    public class SubmissionResponse
+    {
+        public int Id { get; set; }
+        public required JudgeLanguageEnum Language { get; set; }
+        public required SubmissionStatus Status { get; set; }
+        public int PassedCount { get; set; }
+        public int TotalCount { get; set; }
+        public string? ErrorMessage { get; set; }
+        public List<SubmissionResultDto>? Results { get; set; }
+    }
+
+    public class SubmissionResultDto
+    {
+        public int Id { get; set; }
+        public int FunctionId { get; set; }
+        public string? Input { get; set; }
+        public string? Expected { get; set; }
+        public string? ActualOutput { get; set; }
+        public bool IsPassed { get; set; }
+    }
 }
