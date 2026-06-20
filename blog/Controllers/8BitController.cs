@@ -1,6 +1,7 @@
 ﻿using blog.Dtos._8bit;
 using blog.Dtos.Page;
 using blog.Services;
+using blog.Services.Redis;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,7 +9,8 @@ namespace blog.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BitController(_8BitService service) : ControllerBase
+    public class BitController(_8BitService service, _8bitrCacheService cacheService)
+        : ControllerBase
     {
         [HttpGet("list")]
         public async Task<ActionResult<PageResponseDto<SequencerListRequestDto>>> Get8BitListAsync(
@@ -31,6 +33,7 @@ namespace blog.Controllers
         public async Task<IActionResult> Add8BitAsync([FromBody] SequencerRequestDto dto)
         {
             await service.Add8BitAsync(dto);
+            await cacheService.Invalidate8BitListAsync();
             return Ok();
         }
 
@@ -39,6 +42,8 @@ namespace blog.Controllers
         public async Task<IActionResult> Delete8bitAsync(int id)
         {
             await service.Delete8bitAsync(id);
+            await cacheService.Invalidate8BitListAsync();
+            await cacheService.Invalidate8BitDetailAsync(id);
             return Ok();
         }
     }

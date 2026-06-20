@@ -1,17 +1,22 @@
 ﻿using System.Text.Json;
+using blog.Common.Enum;
 using blog.Common.Helper;
 using blog.Common.Helper.Key;
 using blog.Dtos.Judge;
 using Microsoft.Extensions.Caching.Distributed;
+using StackExchange.Redis;
 
 namespace blog.Services.Redis
 {
     public class JudgaCacheService(
         IDistributedCache cache,
         CacheHelper cacheHelper,
+        IConnectionMultiplexer connectionMultiplexer,
         JudgeService judgeService
     )
     {
+        private readonly IDatabase _database = connectionMultiplexer.GetDatabase();
+
         public async Task<ProblemDetail?> GetProblemsDetail(int id, CancellationToken ct = default)
         {
             var key = CacheKeys.Problems(id);
@@ -30,9 +35,19 @@ namespace blog.Services.Redis
             );
         }
 
-        public async Task InvalidateFlowDetailAsync(int id)
+        public async Task InvalidateProblemsDetailAsync(int id)
         {
             await cache.RemoveAsync(CacheKeys.Problems(id));
+        }
+
+        public async Task InvalidateProblemsListAsync()
+        {
+            var service = connectionMultiplexer.GetServer(
+                connectionMultiplexer.GetEndPoints().First()
+            );
+            var keys = service.KeysAsync(pattern: $"Blog{PageEnums.ProblemsList}:*");
+            await foreach (var key in keys)
+                await _database.KeyDeleteAsync(key);
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace blog.Common.Helper.Key
+﻿using blog.Common.Enum;
+
+namespace blog.Common.Helper.Key
 {
     public static class CacheKeys
     {
@@ -13,5 +15,8 @@
         public static string FlowDetail(int id) => $"FlowDetail:{id}";
 
         public static string Problems(int id) => $"Problems:{id}";
+
+        public static string PageList(PageEnums service, int index, int size, string filterSHA) =>
+            $"{service}:{filterSHA}:pi{index}:ps{size}";
     }
 }

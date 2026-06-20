@@ -10,8 +10,7 @@ namespace blog.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PostController(PostService service, BlogCacheService blogCacheService)
-        : ControllerBase
+    public class PostController(PostService service, BlogCacheService cacheService) : ControllerBase
     {
         [HttpGet()]
         public async Task<PageResponseDto<PostDto>> GetPostAsync([FromQuery] PostRequestDto dto)
@@ -22,7 +21,7 @@ namespace blog.Controllers
         [HttpGet("{id}")]
         public async Task<PostDto?> GetPostDetailAsync(int id)
         {
-            return await blogCacheService.GetPostDetailAsync(id);
+            return await cacheService.GetPostDetailAsync(id);
         }
 
         [HttpPost()]
@@ -32,6 +31,7 @@ namespace blog.Controllers
             try
             {
                 await service.CreatePostAsync(dto);
+                await cacheService.InvalidatePostListAsync();
                 return Ok();
             }
             catch
@@ -50,8 +50,9 @@ namespace blog.Controllers
             try
             {
                 await service.UpdatePostAsync(dto);
-                await blogCacheService.InvalidatePostAsync(dto.Id);
-                await blogCacheService.InvalidataPostSummaryAsync(dto.Id);
+                await cacheService.InvalidatePostAsync(dto.Id);
+                await cacheService.InvalidataPostSummaryAsync(dto.Id);
+                await cacheService.InvalidatePostListAsync();
                 return Ok();
             }
             catch
@@ -69,8 +70,9 @@ namespace blog.Controllers
                 return Forbid();
 
             await service.DeletePostAsync(id);
-            await blogCacheService.InvalidatePostAsync(id);
-            await blogCacheService.InvalidataPostSummaryAsync(id);
+            await cacheService.InvalidatePostAsync(id);
+            await cacheService.InvalidataPostSummaryAsync(id);
+            await cacheService.InvalidatePostListAsync();
             return Ok();
         }
 
@@ -84,7 +86,7 @@ namespace blog.Controllers
         [HttpGet("{id}/summary")]
         public async Task<ActionResult<string>> GetAiSummaryAsync(int id)
         {
-            var content = await blogCacheService.GetPostSummaryAsync(id);
+            var content = await cacheService.GetPostSummaryAsync(id);
             return Ok(content);
         }
 

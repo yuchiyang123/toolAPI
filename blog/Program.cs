@@ -88,6 +88,7 @@ builder.Services.AddScoped<JudgeService>();
 builder.Services.AddScoped<JudgaCacheService>();
 builder.Services.AddScoped<JudgeRepository>();
 builder.Services.AddScoped<JuageHelper>();
+builder.Services.AddScoped<_8bitrCacheService>();
 
 #region RabbitMQ
 builder.Services.AddSingleton<PendingReplyStore>();

@@ -34,6 +34,7 @@ namespace blog.Controllers
         public async Task<IActionResult> AddFlowAsync([FromBody] CreateFlowDto dto)
         {
             await flowService.AddFlowAsync(dto);
+            await cacheService.InvalidateFlowListAsync();
             return Ok();
         }
 
@@ -42,6 +43,7 @@ namespace blog.Controllers
         public async Task<IActionResult> PostFlowAsync([FromBody] FlowDetailsRequestDto dto)
         {
             await flowService.AddFlowDetailAsync(dto);
+            await cacheService.InvalidateFlowListAsync();
             return Ok();
         }
 
@@ -50,6 +52,7 @@ namespace blog.Controllers
         public async Task<IActionResult> DeleteFlow(int id)
         {
             await flowService.DeleteFlow(id);
+            await cacheService.InvalidateFlowListAsync();
             return Ok();
         }
 
@@ -58,6 +61,7 @@ namespace blog.Controllers
         public async Task<IActionResult> DeleteFlowVerions(int verionsId)
         {
             await flowService.DeleteFlowVerions(verionsId);
+            await cacheService.InvalidateFlowListAsync();
             await cacheService.InvalidateFlowDetailAsync(verionsId);
             return Ok();
         }

@@ -2,55 +2,53 @@
 using blog.Common.Enum;
 using blog.Common.Helper;
 using blog.Common.Helper.Key;
-using blog.Dtos;
-using blog.Repository;
+using blog.Dtos._8bit;
 using Microsoft.Extensions.Caching.Distributed;
 using StackExchange.Redis;
 
 namespace blog.Services.Redis
 {
-    public class RecipeCacheService(
+    public class _8bitrCacheService(
         IDistributedCache cache,
         IConnectionMultiplexer connectionMultiplexer,
-        RecipeRepository recipeRepository,
-        CacheHelper cacheHelper
+        CacheHelper cacheHelper,
+        _8BitService service
     )
     {
         private readonly IDatabase _database = connectionMultiplexer.GetDatabase();
 
-        public async Task<RecipeDetailResponse?> GetRecipeDetailAsync(
+        public async Task<SequencerResponseDto?> Get8BitDetail(
             int id,
             CancellationToken ct = default
         )
         {
-            var key = CacheKeys.Recipe(id);
+            var key = CacheKeys.FlowDetail(id);
             var cached = await cache.GetStringAsync(key, ct);
             if (cached is not null)
             {
                 if (cached.IsCachedNull())
                     return null;
-                return JsonSerializer.Deserialize<RecipeDetailResponse?>(cached);
+                return JsonSerializer.Deserialize<SequencerResponseDto?>(cached);
             }
 
-            return await cacheHelper.SaveCacheAsync<RecipeDetailResponse>(
+            return await cacheHelper.SaveCacheAsync(
                 key,
-                () => recipeRepository.GetRecipesNoInclaude(),
-                x => x.Id == id,
+                async () => await service.Get8BitDetailAsync(id),
                 ct
             );
         }
 
-        public async Task InvalidateRecipeAsync(int id)
+        public async Task Invalidate8BitDetailAsync(int id)
         {
-            await cache.RemoveAsync(CacheKeys.Recipe(id));
+            await cache.RemoveAsync(CacheKeys.FlowDetail(id));
         }
 
-        public async Task InvalidateRecipeListAsync()
+        public async Task Invalidate8BitListAsync()
         {
             var service = connectionMultiplexer.GetServer(
                 connectionMultiplexer.GetEndPoints().First()
             );
-            var keys = service.KeysAsync(pattern: $"Blog{PageEnums.RecipeList}:*");
+            var keys = service.KeysAsync(pattern: $"Blog{PageEnums._8BitList}:*");
             await foreach (var key in keys)
                 await _database.KeyDeleteAsync(key);
         }

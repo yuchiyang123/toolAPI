@@ -14,12 +14,14 @@ using blog.Repository;
 using Docker.DotNet;
 using Docker.DotNet.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json.Linq;
 
 namespace blog.Services
 {
     public class JudgeService(
         IMapper mapper,
+        IDistributedCache cache,
         JudgeRepository repository,
         JuageHelper helper,
         BlogContext context
@@ -151,13 +153,22 @@ namespace blog.Services
         }
 
         public async Task<PageResponseDto<ProblemsList>> GetProblemListAsync(
-            ProblemsListQuery query
+            ProblemsListQuery query,
+            CancellationToken ct = default
         )
         {
-            var entity = repository.GetProblemList();
-            return await entity
+            var filterSHA = PageHelper.ComputeFilterHash(query);
+            return await repository
+                .GetProblemList()
                 .ProjectTo<ProblemsList>(mapper.ConfigurationProvider)
-                .ToPageResponseDto(query.PageIndex, query.PageSize);
+                .ToPageResponseDtoWithCache(
+                    query.PageIndex,
+                    query.PageSize,
+                    PageEnums.ProblemsList,
+                    filterSHA,
+                    cache,
+                    ct: ct
+                );
         }
 
         public async Task<ProblemDetail> GetProblemDetailAsync(int id)

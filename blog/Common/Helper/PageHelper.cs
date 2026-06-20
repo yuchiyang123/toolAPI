@@ -1,5 +1,11 @@
-﻿using blog.Dtos.Page;
+﻿using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+using blog.Common.Enum;
+using blog.Common.Helper.Key;
+using blog.Dtos.Page;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace blog.Common.Helper
 {
@@ -36,7 +42,7 @@ namespace blog.Common.Helper
             return GetPageResponseDto(dto, pageIndex, pageSize, total);
         }
 
-        private static PageResponseDto<T> GetPageResponseDto<T>(
+        public static PageResponseDto<T> GetPageResponseDto<T>(
             List<T> dto,
             int pageIndex,
             int pageSize,
@@ -52,6 +58,54 @@ namespace blog.Common.Helper
                 HasNextPage = total > pageIndex * pageSize,
                 Items = dto,
             };
+        }
+
+        public static async Task<PageResponseDto<T>> ToPageResponseDtoWithCache<T>(
+            this IQueryable<T> query,
+            int pageIndex,
+            int pageSize,
+            PageEnums service,
+            string filterSHA,
+            IDistributedCache cache,
+            TimeSpan? ttl = null,
+            CancellationToken ct = default
+        )
+        {
+            var fullKey = CacheKeys.PageList(service, pageIndex, pageSize, filterSHA);
+            var cached = await cache.GetStringAsync(fullKey, ct);
+            if (cached is not null)
+                return JsonSerializer.Deserialize<PageResponseDto<T>>(cached!)!;
+
+            var total = await query.CountAsync(ct);
+            var items = await query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync(ct);
+            var result = GetPageResponseDto(items, pageIndex, pageSize, total);
+
+            await cache.SetStringAsync(
+                fullKey,
+                JsonSerializer.Serialize(result),
+                new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow =
+                        ttl ?? TimeSpan.FromMinutes(30 + Random.Shared.Next(0, 10)),
+                },
+                ct
+            );
+
+            return result;
+        }
+
+        public static string ComputeFilterHash<T>(T filter)
+            where T : class
+        {
+            var sorted = typeof(T)
+                .GetProperties()
+                .OrderBy(p => p.Name)
+                .Select(p => $"{p.Name}={p.GetValue(filter) ?? "null"}")
+                .ToArray();
+
+            var raw = string.Join("&", sorted);
+            var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(raw));
+            return Convert.ToHexString(bytes)[..12].ToLower();
         }
     }
 }

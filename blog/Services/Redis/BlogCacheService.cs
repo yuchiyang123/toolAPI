@@ -1,22 +1,27 @@
 ﻿using System.Text.Json;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using blog.Common.Enum;
 using blog.Common.Helper;
 using blog.Common.Helper.Key;
 using blog.Dtos;
 using blog.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using StackExchange.Redis;
 
 namespace blog.Services.Redis
 {
     public class BlogCacheService(
         IDistributedCache cache,
+        IConnectionMultiplexer connectionMultiplexer,
         CacheHelper cacheHelper,
         PostRepository repository,
         OllamaHelper ollamaHelper
     )
     {
+        private readonly IDatabase _database = connectionMultiplexer.GetDatabase();
+
         #region PostDetail Cache
         public async Task<PostDetailDto?> GetPostDetailAsync(int id, CancellationToken ct = default)
         {
@@ -46,6 +51,18 @@ namespace blog.Services.Redis
         public async Task InvalidatePostAsync(int id)
         {
             await cache.RemoveAsync(CacheKeys.Post(id));
+        }
+        #endregion
+
+        #region PostList
+        public async Task InvalidatePostListAsync()
+        {
+            var server = connectionMultiplexer.GetServer(
+                connectionMultiplexer.GetEndPoints().First()
+            );
+            var keys = server.KeysAsync(pattern: $"Blog{PageEnums.PostList}:*");
+            await foreach (var key in keys)
+                await _database.KeyDeleteAsync(key);
         }
         #endregion
 

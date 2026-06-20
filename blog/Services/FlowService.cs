@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using blog.Common.Enum;
 using blog.Common.Helper;
 using blog.Dtos;
 using blog.Dtos.Flow;
@@ -9,22 +10,36 @@ using blog.Entities;
 using blog.Entities.Flows;
 using blog.Repository;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace blog.Services
 {
     public class FlowService(
         IMapper mapper,
+        IDistributedCache cache,
         BlogContext context,
         FlowRepository repository,
         JwtInfoHelper jwtInfoHelper
     )
     {
-        public async Task<PageResponseDto<FlowList>> GetFlowListAsync(FlowListQueryDto queryDto)
+        public async Task<PageResponseDto<FlowList>> GetFlowListAsync(
+            FlowListQueryDto queryDto,
+            CancellationToken ct = default
+        )
         {
+            var filterSHA = PageHelper.ComputeFilterHash(queryDto);
+
             return await repository
                 .GetFlowListAsQueryable(queryDto.FlowName)
                 .ProjectTo<FlowList>(mapper.ConfigurationProvider)
-                .ToPageResponseDto(queryDto.PageIndex, queryDto.PageSize);
+                .ToPageResponseDtoWithCache(
+                    queryDto.PageIndex,
+                    queryDto.PageSize,
+                    PageEnums.FlowList,
+                    filterSHA,
+                    cache,
+                    ct: ct
+                );
         }
 
         public async Task<FlowDetailResponseDto> GetFlowDetailAsync(int id)

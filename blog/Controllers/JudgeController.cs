@@ -45,7 +45,7 @@ namespace blog.Controllers
             [FromBody] JudgeRequestDto judge
         )
         {
-            await cacheService.InvalidateFlowDetailAsync(judge.Id);
+            await cacheService.InvalidateProblemsDetailAsync(judge.Id);
             var dto = await publisher.SendAsync<JudgeRequestDto, SubmissionResponse>(
                 judge,
                 TimeSpan.FromSeconds(60),

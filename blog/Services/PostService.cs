@@ -2,6 +2,7 @@
 using System.Net.Http;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using blog.Common.Enum;
 using blog.Common.Helper;
 using blog.Dtos;
 using blog.Dtos.AI;
@@ -10,6 +11,7 @@ using blog.Entities;
 using blog.Entities.Blog;
 using blog.Repository;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace blog.Services
 {
@@ -17,15 +19,27 @@ namespace blog.Services
         IMapper mapper,
         BlogContext context,
         PostRepository repository,
-        OllamaHelper ollamaHelper
+        OllamaHelper ollamaHelper,
+        IDistributedCache cache
     )
     {
-        public async Task<PageResponseDto<PostDto>> GetPostAsync(PostRequestDto requestDto)
+        public async Task<PageResponseDto<PostDto>> GetPostAsync(
+            PostRequestDto requestDto,
+            CancellationToken ct = default
+        )
         {
+            var filterSHA = PageHelper.ComputeFilterHash(requestDto);
             return await repository
                 .GetPost(requestDto)
                 .ProjectTo<PostDto>(mapper.ConfigurationProvider)
-                .ToPageResponseDto(requestDto.PageIndex, requestDto.PageSize);
+                .ToPageResponseDtoWithCache(
+                    requestDto.PageIndex,
+                    requestDto.PageSize,
+                    PageEnums.PostList,
+                    filterSHA,
+                    cache,
+                    ct: ct
+                );
         }
 
         public async Task CreatePostAsync(CreatePostDto postDto)

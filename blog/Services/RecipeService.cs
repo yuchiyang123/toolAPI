@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using blog.Common.Enum;
 using blog.Common.Helper;
 using blog.Dtos;
 using blog.Dtos.Page;
@@ -7,24 +8,37 @@ using blog.Entities;
 using blog.Entities.Recipes;
 using blog.Repository;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace blog.Services
 {
     public class RecipeService(
         BlogContext context,
         IMapper mapper,
+        IDistributedCache cache,
         FileHelper fileHelper,
         ILogger<RecipeService> logger,
         RecipeRepository repository
     )
     {
-        public async Task<PageResponseDto<RecipeResponse>> GetRecipe(RecipeQueryDto queryDto)
+        public async Task<PageResponseDto<RecipeResponse>> GetRecipe(
+            RecipeQueryDto queryDto,
+            CancellationToken ct = default
+        )
         {
+            var filterSHA = PageHelper.ComputeFilterHash(queryDto);
             return await context
                 .Recipe.Include(x => x.RecipeFileMappings)
                     .ThenInclude(x => x.Files)
                 .ProjectTo<RecipeResponse>(mapper.ConfigurationProvider)
-                .ToPageResponseDto(queryDto.PageIndex, queryDto.PageSize);
+                .ToPageResponseDtoWithCache(
+                    queryDto.PageIndex,
+                    queryDto.PageSize,
+                    PageEnums.ProblemsList,
+                    filterSHA,
+                    cache,
+                    ct: ct
+                );
         }
 
         public async Task<RecipeDetailResponse> GetRecipeDetail(int id)

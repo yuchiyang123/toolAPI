@@ -9,7 +9,7 @@ namespace blog.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RecipeController(RecipeService service, RecipeCacheService recipeCacheService)
+    public class RecipeController(RecipeService service, RecipeCacheService cacheService)
         : ControllerBase
     {
         /// <summary>
@@ -32,7 +32,7 @@ namespace blog.Controllers
         [HttpGet("{id}")]
         public async Task<RecipeDetailResponse?> GetRecipeDetail(int id)
         {
-            return await recipeCacheService.GetRecipeDetailAsync(id);
+            return await cacheService.GetRecipeDetailAsync(id);
         }
 
         /// <summary>
@@ -46,6 +46,7 @@ namespace blog.Controllers
         public async Task<IActionResult> CreateRecipe([FromForm] RecipeRequest requestDto)
         {
             await service.CreateRecipe(requestDto);
+            await cacheService.InvalidateRecipeListAsync();
             return Ok();
         }
 
@@ -61,7 +62,8 @@ namespace blog.Controllers
         public async Task<IActionResult> UpdateRcipe(int id, [FromForm] RecipeRequest requestDto)
         {
             await service.UpdateRecipe(id, requestDto);
-            await recipeCacheService.InvalidateRecipeAsync(id);
+            await cacheService.InvalidateRecipeAsync(id);
+            await cacheService.InvalidateRecipeListAsync();
             return Ok();
         }
 
@@ -74,7 +76,8 @@ namespace blog.Controllers
         public async Task<IActionResult> DeleteRecipe(int id)
         {
             await service.DeleteRecipe(id);
-            await recipeCacheService.InvalidateRecipeAsync(id);
+            await cacheService.InvalidateRecipeListAsync();
+            await cacheService.InvalidateRecipeAsync(id);
             return Ok();
         }
     }
