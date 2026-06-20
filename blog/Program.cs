@@ -2,7 +2,8 @@ using System.Text;
 using AutoMapper;
 using blog.Common.Helper;
 using blog.Entities;
-using blog.Middleware;
+using blog.Messaging;
+using blog.Messaging.Consumers;
 using blog.Repository;
 using blog.Seed;
 using blog.Services;
@@ -10,6 +11,7 @@ using blog.Services.Redis;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
+using RabbitMQ.Client;
 using Serilog;
 using StackExchange.Redis;
 
@@ -18,6 +20,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 var jwtConfig = builder.Configuration.GetSection("Jwt");
+var rabbitConfig = builder.Configuration.GetSection("rabbitMQ");
 var key = Encoding.UTF8.GetBytes(jwtConfig["Key"]!);
 
 builder
@@ -40,6 +43,16 @@ builder
                 IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(key),
             };
     });
+
+var factory = new ConnectionFactory
+{
+    HostName = rabbitConfig["HostName"]!,
+    UserName = rabbitConfig["UserName"]!,
+    Password = rabbitConfig["Password"]!,
+};
+
+var connection = await factory.CreateConnectionAsync();
+builder.Services.AddSingleton(connection);
 
 builder.Services.AddAuthorization();
 
@@ -75,6 +88,12 @@ builder.Services.AddScoped<JudgeService>();
 builder.Services.AddScoped<JudgaCacheService>();
 builder.Services.AddScoped<JudgeRepository>();
 builder.Services.AddScoped<JuageHelper>();
+
+#region RabbitMQ
+builder.Services.AddSingleton<PendingReplyStore>();
+builder.Services.AddSingleton<Publisher>();
+builder.Services.AddHostedService<JudgeConsumer>();
+#endregion
 
 builder.Services.AddAutoMapper(
     (IMapperConfigurationExpression cfg) => { },
@@ -135,4 +154,4 @@ using (var scope = app.Services.CreateScope())
 
 //app.UseMiddleware<InternalSecretMiddleware>();
 
-app.Run();
+await app.RunAsync();

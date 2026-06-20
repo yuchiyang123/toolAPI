@@ -1,5 +1,8 @@
-﻿using blog.Dtos.Judge;
+﻿using blog.Common.Helper.Key;
+using blog.Dtos.Judge;
 using blog.Dtos.Page;
+using blog.Messaging;
+using blog.Messaging.Consumers;
 using blog.Services;
 using blog.Services.Redis;
 using Microsoft.AspNetCore.Mvc;
@@ -8,8 +11,11 @@ namespace blog.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class JudgeController(JudgeService service, JudgaCacheService cacheService)
-        : ControllerBase
+    public class JudgeController(
+        JudgeService service,
+        JudgaCacheService cacheService,
+        Publisher publisher
+    ) : ControllerBase
     {
         [HttpPost]
         public async Task<ActionResult<JudgeResult>> GetRunAsync([FromBody] JudgeDto judge)
@@ -40,7 +46,13 @@ namespace blog.Controllers
         )
         {
             await cacheService.InvalidateFlowDetailAsync(judge.Id);
-            var dto = await service.GetJudgeResultById(judge);
+            var dto = await publisher.SendAsync<JudgeRequestDto, SubmissionResponse>(
+                judge,
+                TimeSpan.FromSeconds(60),
+                MQNameKey.JudgeQueue,
+                MQNameKey.JudgeReply
+            );
+            //var dto = await service.GetJudgeResultById(judge);
             return Ok(dto);
         }
     }
