@@ -19,8 +19,8 @@ namespace blog.Messaging.Consumers
         )
     {
         protected override string QueueName => MQNameKey.JudgeQueue;
-        protected override string DeadExchange => MQNameKey.JudgeQueue;
-        protected override string DeadRouterKey => MQNameKey.JudgeQueue;
+        protected override string DeadExchange => MQNameKey.JudgeDeadExchange;
+        protected override string DeadRouterKey => MQNameKey.JudgeDeadRouterKey;
 
         protected override async Task<SubmissionResponse> HandleAsync(
             IServiceProvider sp,

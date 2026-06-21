@@ -76,10 +76,7 @@ public abstract class RabbitMQConsumerBase<TRequest, TReply>(
                 var request = JsonSerializer.Deserialize<TRequest>(ea.Body.ToArray())!;
 
                 await using var scope = scopeFactory.CreateAsyncScope();
-
-                // 子類別從 scope 拿自己要的 service
                 var result = await HandleAsync(scope.ServiceProvider, request, stoppingToken);
-
                 reply = result;
 
                 await channel.BasicAckAsync(ea.DeliveryTag, multiple: false);
