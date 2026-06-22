@@ -58,7 +58,7 @@ namespace blog.Controllers
         }
 
         [HttpPost("id/test")]
-        public async Task<IActionResult> GetRun(string connectId, [FromBody] JudgeRequestDto judge)
+        public async Task<IActionResult> GetRun([FromBody] JudgeRequestDto judge)
         {
             await cacheService.InvalidateProblemsDetailAsync(judge.Id);
             await publisher.PublishAsync(judge, MQNameKey.JudgeQueue);
