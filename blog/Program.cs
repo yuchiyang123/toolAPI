@@ -109,10 +109,17 @@ builder.Services.AddCors(options =>
         "AllowAll",
         policy =>
         {
-            policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+            policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
         }
     );
+    options.AddPolicy("SignalR", policy =>
+    policy.WithOrigins("http://localhost:3000", "https://matthewyu.uk")
+          .AllowAnyMethod()
+          .AllowAnyHeader()
+          .AllowCredentials());
 });
+
+
 
 builder.Services.AddStackExchangeRedisCache(option =>
 {
@@ -149,7 +156,7 @@ app.UseAuthorization();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.MapControllers();
-app.MapHub<MqHub>("/mqhub");
+app.MapHub<MqHub>("/mqhub").RequireCors("SignalR");
 
 using (var scope = app.Services.CreateScope())
 {
