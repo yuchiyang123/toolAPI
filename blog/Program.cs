@@ -2,6 +2,7 @@ using System.Text;
 using AutoMapper;
 using blog.Common.Helper;
 using blog.Entities;
+using blog.Hubs;
 using blog.Messaging;
 using blog.Messaging.Consumers;
 using blog.Repository;
@@ -90,6 +91,8 @@ builder.Services.AddScoped<JudgeRepository>();
 builder.Services.AddScoped<JuageHelper>();
 builder.Services.AddScoped<_8bitrCacheService>();
 
+builder.Services.AddSignalR();
+
 #region RabbitMQ
 builder.Services.AddSingleton<PendingReplyStore>();
 builder.Services.AddSingleton<Publisher>();
@@ -146,6 +149,7 @@ app.UseAuthorization();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.MapControllers();
+app.MapHub<MqHub>("/mqhub");
 
 using (var scope = app.Services.CreateScope())
 {

@@ -1,28 +1,19 @@
 ﻿using System.Text.Json;
-using Azure.Core;
 using blog.Common.Helper.Key;
-using blog.Dtos.MQ;
-using blog.Hubs;
 using blog.Messaging;
-using Docker.DotNet.Models;
-using Microsoft.AspNetCore.SignalR;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
-public abstract class RabbitMQConsumerBase<TRequest, TReply>(
+public abstract class RabbitMQConsumerBaseForSignalR<TRequest, TReply>(
     IConnection connection,
-    IHubContext<MqHub> hub,
+    PendingReplyStore store,
     IServiceScopeFactory scopeFactory,
     ILogger logger
 ) : BackgroundService
-    where TRequest : IMQ
 {
     protected abstract string QueueName { get; }
     protected abstract string DeadExchange { get; }
     protected abstract string DeadRouterKey { get; }
-    protected abstract string SignalRRouterKey { get; }
-    protected abstract string SignalRTopic { get; }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken = default)
     {
@@ -79,9 +70,10 @@ public abstract class RabbitMQConsumerBase<TRequest, TReply>(
 
             TReply reply;
 
-            var request = JsonSerializer.Deserialize<TRequest>(ea.Body.ToArray())!;
             try
             {
+                var request = JsonSerializer.Deserialize<TRequest>(ea.Body.ToArray())!;
+
                 await using var scope = scopeFactory.CreateAsyncScope();
                 var result = await HandleAsync(scope.ServiceProvider, request, stoppingToken);
                 reply = result;
@@ -92,15 +84,26 @@ public abstract class RabbitMQConsumerBase<TRequest, TReply>(
             {
                 logger.LogError(ex, "Consumer error. CorrelationId={CorrelationId}", correlationId);
                 await channel.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: false);
+                store.CompleteWithError<TReply>(correlationId, ex);
                 return;
             }
 
-            await hub
-                .Clients.Client(request.ConnectId)
-                .SendAsync(SignalRRouterKey, SignalRTopic, JsonSerializer.Serialize(reply));
+            // 回寫 reply queue
+            using var replyChannel = await connection.CreateChannelAsync();
+            var replyProps = new BasicProperties { CorrelationId = correlationId };
+
+            await replyChannel.BasicPublishAsync(
+                exchange: "",
+                routingKey: replyTo,
+                mandatory: false,
+                basicProperties: replyProps,
+                body: JsonSerializer.SerializeToUtf8Bytes(reply)
+            );
+
+            store.Complete(correlationId, reply);
         };
 
-        await channel.BasicConsumeAsync(QueueName, autoAck: false, consumer, stoppingToken);
+        await channel.BasicConsumeAsync(QueueName, autoAck: false, consumer);
         await Task.Delay(Timeout.Infinite, stoppingToken);
     }
 

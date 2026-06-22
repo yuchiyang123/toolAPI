@@ -2,7 +2,7 @@
 
 namespace blog.Messaging.Infrastructure
 {
-    public class RabbitMQConnection(IConnectionFactory factory) : IDisposable
+    public class RabbitMQConnectionSignalR(IConnectionFactory factory) : IDisposable
     {
         private IConnection? _connection;
         private readonly SemaphoreSlim _lock = new(1, 1);

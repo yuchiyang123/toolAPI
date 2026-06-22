@@ -1,4 +1,5 @@
-﻿using blog.Common.Helper.Key;
+﻿using blog.Common.Enum;
+using blog.Common.Helper.Key;
 using blog.Dtos.Judge;
 using blog.Dtos.Page;
 using blog.Messaging;
@@ -54,6 +55,14 @@ namespace blog.Controllers
             );
             //var dto = await service.GetJudgeResultById(judge);
             return Ok(dto);
+        }
+
+        [HttpPost("id/test")]
+        public async Task<IActionResult> GetRun(string connectId, [FromBody] JudgeRequestDto judge)
+        {
+            await cacheService.InvalidateProblemsDetailAsync(judge.Id);
+            await publisher.PublishAsync(judge, MQNameKey.JudgeQueue);
+            return StatusCode(202);
         }
     }
 }

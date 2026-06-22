@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using blog.Common.Enum;
+using blog.Dtos.MQ;
 using blog.Dtos.Page;
 
 namespace blog.Dtos.Judge
@@ -17,9 +18,10 @@ namespace blog.Dtos.Judge
         public string? Stderr { get; set; }
     }
 
-    public class JudgeRequestDto : JudgeDto
+    public class JudgeRequestDto : JudgeDto, IMQ
     {
         public int Id { get; set; }
+        public required string ConnectId { get; set; }
     }
 
     public abstract class BaseProblem
