@@ -91,7 +91,12 @@ builder.Services.AddScoped<JudgeRepository>();
 builder.Services.AddScoped<JuageHelper>();
 builder.Services.AddScoped<_8bitrCacheService>();
 
-builder.Services.AddSignalR();
+builder.Services.AddSignalR()
+    .AddJsonProtocol(options =>
+    {
+        options.PayloadSerializerOptions.PropertyNamingPolicy =
+            System.Text.Json.JsonNamingPolicy.CamelCase;
+    });
 
 #region RabbitMQ
 builder.Services.AddSingleton<PendingReplyStore>();
