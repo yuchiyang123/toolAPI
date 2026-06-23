@@ -97,7 +97,7 @@ public abstract class RabbitMQConsumerBase<TRequest, TReply>(
 
             await hub
                 .Clients.Client(request.ConnectId)
-                .SendAsync(SignalRRouterKey, SignalRTopic, JsonSerializer.Serialize(reply));
+                .SendAsync(SignalRRouterKey, SignalRTopic, reply);
         };
 
         await channel.BasicConsumeAsync(QueueName, autoAck: false, consumer, stoppingToken);
