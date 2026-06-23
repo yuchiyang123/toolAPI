@@ -95,9 +95,15 @@ public abstract class RabbitMQConsumerBase<TRequest, TReply>(
                 return;
             }
 
+            var options = new System.Text.Json.JsonSerializerOptions
+            {
+                PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
+            };
+            var jsonString = System.Text.Json.JsonSerializer.Serialize(reply, options);
+
             await hub
                 .Clients.Client(request.ConnectId)
-                .SendAsync(SignalRRouterKey, SignalRTopic, reply);
+                .SendAsync(SignalRRouterKey, SignalRTopic, jsonString);
         };
 
         await channel.BasicConsumeAsync(QueueName, autoAck: false, consumer, stoppingToken);
