@@ -4,6 +4,7 @@ using blog.Dtos.Judge;
 using blog.Dtos.Page;
 using blog.Messaging;
 using blog.Messaging.Consumers;
+using blog.Migrations;
 using blog.Services;
 using blog.Services.Redis;
 using Microsoft.AspNetCore.Mvc;
@@ -47,13 +48,13 @@ namespace blog.Controllers
         )
         {
             await cacheService.InvalidateProblemsDetailAsync(judge.Id);
-            var dto = await publisher.SendAsync<JudgeRequestDto, SubmissionResponse>(
-                judge,
-                TimeSpan.FromSeconds(60),
-                MQNameKey.JudgeQueue,
-                MQNameKey.JudgeReply
-            );
-            //var dto = await service.GetJudgeResultById(judge);
+            //var dto = await publisher.SendAsync<JudgeRequestDto, SubmissionResponse>(
+            //    judge,
+            //    TimeSpan.FromSeconds(60),
+            //    MQNameKey.JudgeQueue,
+            //    MQNameKey.JudgeReply
+            //);
+            var dto = await service.GetJudgeResultById(judge);
             return Ok(dto);
         }
 
@@ -62,6 +63,12 @@ namespace blog.Controllers
         {
             await cacheService.InvalidateProblemsDetailAsync(judge.Id);
             await publisher.PublishAsync(judge, MQNameKey.JudgeQueue);
+            return StatusCode(202);
+        }
+
+        public async Task<IActionResult> GetRunTest([FromBody] JudgeTestRequestDto dto)
+        {
+            await publisher.PublishAsync(dto, MQNameKey.JudgeTestQueue);
             return StatusCode(202);
         }
     }

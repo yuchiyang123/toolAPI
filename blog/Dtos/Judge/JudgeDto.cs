@@ -133,4 +133,9 @@ namespace blog.Dtos.Judge
         public string? ActualOutput { get; set; }
         public bool IsPassed { get; set; }
     }
+
+    public class JudgeTestRequestDto : JudgeRequestDto
+    {
+        public required List<TestCode> TestCodes { get; set; }
+    }
 }

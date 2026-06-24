@@ -95,9 +95,9 @@ public abstract class RabbitMQConsumerBase<TRequest, TReply>(
                 return;
             }
 
-            var options = new System.Text.Json.JsonSerializerOptions
+            var options = new JsonSerializerOptions
             {
-                PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
+                PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
             };
             var jsonString = System.Text.Json.JsonSerializer.Serialize(reply, options);
 

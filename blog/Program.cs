@@ -5,6 +5,7 @@ using blog.Entities;
 using blog.Hubs;
 using blog.Messaging;
 using blog.Messaging.Consumers;
+using blog.Options;
 using blog.Repository;
 using blog.Seed;
 using blog.Services;
@@ -67,6 +68,8 @@ builder.Services.AddDbContext<BlogContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
+builder.Services.Configure<JudgeOptions>(builder.Configuration.GetSection("JudgeOptions"));
+
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<PostService>();
 builder.Services.AddScoped<ToolService>();
@@ -91,17 +94,22 @@ builder.Services.AddScoped<JudgeRepository>();
 builder.Services.AddScoped<JuageHelper>();
 builder.Services.AddScoped<_8bitrCacheService>();
 
-builder.Services.AddSignalR()
+builder
+    .Services.AddSignalR()
     .AddJsonProtocol(options =>
     {
-        options.PayloadSerializerOptions.PropertyNamingPolicy =
-            System.Text.Json.JsonNamingPolicy.CamelCase;
+        options.PayloadSerializerOptions.PropertyNamingPolicy = System
+            .Text
+            .Json
+            .JsonNamingPolicy
+            .CamelCase;
     });
 
 #region RabbitMQ
 builder.Services.AddSingleton<PendingReplyStore>();
 builder.Services.AddSingleton<Publisher>();
 builder.Services.AddHostedService<JudgeConsumer>();
+builder.Services.AddHostedService<JudgeTestConsumer>();
 #endregion
 
 builder.Services.AddAutoMapper(
@@ -117,14 +125,16 @@ builder.Services.AddCors(options =>
             policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
         }
     );
-    options.AddPolicy("SignalR", policy =>
-    policy.WithOrigins("http://localhost:3000", "https://matthewyu.uk")
-          .AllowAnyMethod()
-          .AllowAnyHeader()
-          .AllowCredentials());
+    options.AddPolicy(
+        "SignalR",
+        policy =>
+            policy
+                .WithOrigins("http://localhost:3000", "https://matthewyu.uk")
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials()
+    );
 });
-
-
 
 builder.Services.AddStackExchangeRedisCache(option =>
 {

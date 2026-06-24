@@ -10,11 +10,13 @@ using blog.Dtos.Judge;
 using blog.Dtos.Page;
 using blog.Entities;
 using blog.Entities.Judge;
+using blog.Options;
 using blog.Repository;
 using Docker.DotNet;
 using Docker.DotNet.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 
 namespace blog.Services
@@ -24,13 +26,26 @@ namespace blog.Services
         IDistributedCache cache,
         JudgeRepository repository,
         JuageHelper helper,
-        BlogContext context
+        BlogContext context,
+        IOptions<JudgeOptions> options
     )
     {
+        /// <summary>
+        /// 初始化 docker 沙盒容器
+        /// </summary>
         private readonly DockerClient _docker = new DockerClientConfiguration(
             new Uri("npipe://./pipe/docker_engine")
         ).CreateClient();
 
+        /// <summary>
+        /// 執行測試並且回報結果
+        /// </summary>
+        /// <param name="languageEnum">使用哪種程式語言</param>
+        /// <see cref="RunAsync(JudgeDto, CancellationToken)"/> 的便利多載，
+        /// 省略手動建立 <see cref="JudgeDto"/>。
+        /// <param name="code">程式碼</param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
         private async Task<JudgeResult> RunAsync(
             JudgeLanguageEnum languageEnum,
             string code,
@@ -40,6 +55,12 @@ namespace blog.Services
             return await RunAsync(new JudgeDto { Code = code, Language = languageEnum }, ct);
         }
 
+        /// <summary>
+        /// 執行測試並且回報結果
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
         public async Task<JudgeResult> RunAsync(JudgeDto dto, CancellationToken ct = default)
         {
             var (image, fileName, cmd) = JudgeConfig.Config[dto.Language];
@@ -76,25 +97,29 @@ namespace blog.Services
                     new CreateContainerParameters
                     {
                         Image = image,
+                        User = "1000:1000",
                         Cmd = ["sh", "-c", cmd],
                         HostConfig = new HostConfig
                         {
                             Binds = [$"{tempDir}:/code"],
                             NetworkMode = "none",
-                            Memory = 128 * 1024 * 1024,
+                            Memory = options.Value.MemoryLimitBytes,
                             PidsLimit = pidsLimit,
                             AutoRemove = false,
+                            ReadonlyRootfs = true,
+                            Tmpfs = new Dictionary<string, string> { ["/tmp"] = "rw,size=64m" },
                         },
-                    }
+                    },
+                    ct
                 );
 
                 await _docker.Containers.StartContainerAsync(container.ID, null, ct);
 
                 var waitTimeout = dto.Language switch
                 {
-                    JudgeLanguageEnum.csharp => TimeSpan.FromSeconds(15),
-                    JudgeLanguageEnum.python => TimeSpan.FromSeconds(15),
-                    _ => TimeSpan.FromSeconds(15),
+                    JudgeLanguageEnum.csharp => TimeSpan.FromSeconds(options.Value.TimeoutMs),
+                    JudgeLanguageEnum.python => TimeSpan.FromSeconds(options.Value.TimeoutMs),
+                    _ => TimeSpan.FromSeconds(options.Value.TimeoutMs),
                 };
 
                 ContainerWaitResponse? waitResult = null;
@@ -151,7 +176,12 @@ namespace blog.Services
                 Directory.Delete(tempDir, true);
             }
         }
-
+        /// <summary>
+        /// 查詢並列出所有問題列表
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
         public async Task<PageResponseDto<ProblemsList>> GetProblemListAsync(
             ProblemsListQuery query,
             CancellationToken ct = default
@@ -170,7 +200,12 @@ namespace blog.Services
                     ct: ct
                 );
         }
-
+        /// <summary>
+        /// 查詢對應ID的問題詳細資料
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="KeyNotFoundException"></exception>
         public async Task<ProblemDetail> GetProblemDetailAsync(int id)
         {
             var needCombleData = await repository
@@ -178,7 +213,7 @@ namespace blog.Services
                 .Where(x => x.ProblemId == id)
                 .ProjectTo<ParameterTypeDto>(mapper.ConfigurationProvider)
                 .ToListAsync();
-            var combinStartCodes = helper.CombinStratCode(needCombleData);
+            var combinStartCodes = helper.CombinStartCode(needCombleData);
             var dto =
                 await repository
                     .GetProblemDetail()
@@ -192,7 +227,11 @@ namespace blog.Services
             dto.TestCases = jsonValueInput;
             return dto;
         }
-
+        /// <summary>
+        /// 將所有的測試案例輸入轉成string
+        /// </summary>
+        /// <param name="cases"></param>
+        /// <returns></returns>
         private static List<TestCases>? GetJsonValueByCases(List<TestCases>? cases)
         {
             if (cases == null)
@@ -209,7 +248,11 @@ namespace blog.Services
             }
             return cases;
         }
-
+        /// <summary>
+        /// 把對應的輸入值轉成string 
+        /// </summary>
+        /// <param name="jsonObjectDic"></param>
+        /// <returns></returns>
         private static string BuildTestCaseInputArgs(Dictionary<string, object> jsonObjectDic)
         {
             bool isNeedComma = false;
@@ -234,9 +277,106 @@ namespace blog.Services
             }
             return inputStr;
         }
-
+        /// <summary>
+        /// 發送測試並且取回該問題的結果和儲存結果
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
         public async Task<SubmissionResponse> GetJudgeResultById(
             JudgeRequestDto dto,
+            CancellationToken ct = default
+        )
+        {
+            (var resultDto, var expectedResult) = await GetTestResultAsync(dto, ct: ct);
+            var results = resultDto.Stdout?.Split(JuageHelper.SplitSpecialSymbols);
+
+            if (results == null)
+            {
+                SubmissionStatus status =
+                    resultDto.Stderr == JudgeErrorMsg.Time_Limit_Exceeded.ToString()
+                        ? SubmissionStatus.TLE
+                        : SubmissionStatus.RE;
+                context.Submissions.Add(CombinationSubmission(dto, status, null));
+                await context.SaveChangesAsync(ct);
+                var testResultDtoForNull = await GetTestResultDto(dto.Id, dto.Language, ct);
+                testResultDtoForNull.ErrorMessage = resultDto.Stderr;
+                return testResultDtoForNull;
+            }
+
+            var testResultCase = CovertTestResult(results, expectedResult);
+
+            SubmissionStatus nobuildErrorStatus = testResultCase.Any(x => !x.IsPassed)
+                ? SubmissionStatus.WA
+                : SubmissionStatus.AC;
+
+            var addEntity = CombinationSubmission(dto, nobuildErrorStatus, testResultCase);
+            context.Submissions.Add(addEntity);
+            await context.SaveChangesAsync(ct);
+
+            return await CombinTestResult(dto, resultDto, ct);
+        }
+        /// <summary>
+        /// 使用測試案例並且測回傳測試結果
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        public async Task<SubmissionResponse> GetJudgeTestResultById(
+            JudgeTestRequestDto dto,
+            CancellationToken ct = default
+        )
+        {
+            (var resultDto, _) = await GetTestResultAsync(
+                new JudgeRequestDto
+                {
+                    Code = dto.Code,
+                    ConnectId = dto.ConnectId,
+                    Language = dto.Language,
+                    Id = dto.Id,
+                },
+                dto.TestCodes,
+                ct
+            );
+            var results = resultDto.Stdout?.Split(JuageHelper.SplitSpecialSymbols);
+            if (results == null)
+            {
+                var testResultDtoForNull = await GetTestResultDto(dto.Id, dto.Language, ct);
+                testResultDtoForNull.ErrorMessage = resultDto.Stderr;
+                return testResultDtoForNull;
+            }
+
+            return await CombinTestResult(dto, resultDto, ct);
+        }
+        /// <summary>
+        /// 取得對應的問題測試結果並且組裝成共用的Response後回傳
+        /// </summary>
+        /// <param name="dto">測試resquest</param>
+        /// <param name="resultDto">結果dto</param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        private async Task<SubmissionResponse> CombinTestResult(
+            JudgeRequestDto dto,
+            JudgeResult resultDto,
+            CancellationToken ct = default
+        )
+        {
+            var testResultDto = await GetTestResultDto(dto.Id, dto.Language, ct);
+            testResultDto.ErrorMessage = resultDto.Stderr;
+            testResultDto.Results = GetJsonValueByResultCases(testResultDto.Results);
+            return testResultDto;
+        }
+        /// <summary>
+        /// 整合輸入的資料並且放進使用者Code裡面，並且回傳對應的測試結果
+        /// </summary>
+        /// <param name="dto">測試requestDto</param>
+        /// <param name="testCodes">測試案例</param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        /// <exception cref="KeyNotFoundException">找不到對應ID和語言的程式問題</exception>
+        private async Task<(JudgeResult, Dictionary<int, string>)> GetTestResultAsync(
+            JudgeRequestDto dto,
+            List<TestCode>? testCodes = null,
             CancellationToken ct = default
         )
         {
@@ -248,9 +388,10 @@ namespace blog.Services
                 ?? throw new KeyNotFoundException();
 
             var functionName = entity.ProblemSignatures.First().FunctionName;
-            var testList = entity
-                .Functions.Select(x => new TestCode { Id = x.Id, Input = x.Input })
-                .ToList();
+            var testList =
+                testCodes
+                ?? [.. entity.Functions.Select(x => new TestCode { Id = x.Id, Input = x.Input })];
+
             foreach (var code in testList)
             {
                 var jsonObjcets = Newtonsoft.Json.JsonConvert.DeserializeObject<
@@ -282,19 +423,19 @@ namespace blog.Services
             var expectedResult = entity.Functions.ToDictionary(x => x.Id, x => x.Expected);
             var splicingCode = helper.SplicingTestAndCode(dto.Language, dto.Code, testCode);
             var resultDto = await RunAsync(dto.Language, splicingCode, ct);
-            var results = resultDto.Stdout?.Split(JuageHelper.SplitSpecialSymbols);
-            if (results == null)
-            {
-                SubmissionStatus status =
-                    resultDto.Stderr == JudgeErrorMsg.Time_Limit_Exceeded.ToString()
-                        ? SubmissionStatus.TLE
-                        : SubmissionStatus.RE;
-                context.Submissions.Add(CombinationSubmission(dto, status, null));
-                await context.SaveChangesAsync(ct);
-                var testResultDtoForNull = await GetTestResultDto(dto.Id, dto.Language, ct);
-                testResultDtoForNull.ErrorMessage = resultDto.Stderr;
-                return testResultDtoForNull;
-            }
+            return (resultDto, expectedResult);
+        }
+        /// <summary>
+        /// 處理測試結果並且通過切割字串取出對應的測試結果
+        /// </summary>
+        /// <param name="results"></param>
+        /// <param name="expectedResult"></param>
+        /// <returns></returns>
+        private static List<JudgeResultReponse> CovertTestResult(
+            string[] results,
+            Dictionary<int, string> expectedResult
+        )
+        {
             List<JudgeResultReponse> testResultCase = [];
             string pattern = @"===(.+?)_(.+?)===(.+)";
             foreach (var result in results)
@@ -320,20 +461,13 @@ namespace blog.Services
                     );
                 }
             }
-
-            SubmissionStatus nobuildErrorStatus = testResultCase.Any(x => !x.IsPassed)
-                ? SubmissionStatus.WA
-                : SubmissionStatus.AC;
-
-            var addEntity = CombinationSubmission(dto, nobuildErrorStatus, testResultCase);
-            context.Submissions.Add(addEntity);
-            await context.SaveChangesAsync(ct);
-            var testResultDto = await GetTestResultDto(dto.Id, dto.Language, ct);
-            testResultDto.ErrorMessage = resultDto.Stderr;
-            testResultDto.Results = GetJsonValueByResultCases(testResultDto.Results);
-            return testResultDto;
+            return testResultCase;
         }
-
+        /// <summary>
+        ///  把對應的輸入值轉成string
+        /// </summary>
+        /// <param name="cases"></param>
+        /// <returns></returns>
         private static List<SubmissionResultDto>? GetJsonValueByResultCases(
             List<SubmissionResultDto>? cases
         )
@@ -356,7 +490,13 @@ namespace blog.Services
 
             return cases;
         }
-
+        /// <summary>
+        /// 取得對應ID和程式語言的題目Dto 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="judgeLanguage"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
         private async Task<SubmissionResponse> GetTestResultDto(
             int id,
             JudgeLanguageEnum judgeLanguage,
@@ -368,7 +508,14 @@ namespace blog.Services
                 .FirstOrDefaultAsync(x => x.Id == id, ct);
             return mapper.Map<SubmissionResponse>(testResponseEntity);
         }
-
+        /// <summary>
+        /// 判斷結果是否符合答案
+        /// </summary>
+        /// <param name="expectedResult"></param>
+        /// <param name="id"></param>
+        /// <param name="testValue"></param>
+        /// <param name="testSymbol"></param>
+        /// <returns></returns>
         private static bool ComparisonResult(
             Dictionary<int, string> expectedResult,
             int id,
@@ -386,7 +533,14 @@ namespace blog.Services
                 return false;
             return true;
         }
-
+        /// <summary>
+        /// 轉化成對應的ˊDto
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <param name="status"></param>
+        /// <param name="result"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         private static Submission CombinationSubmission(
             JudgeRequestDto dto,
             SubmissionStatus status,

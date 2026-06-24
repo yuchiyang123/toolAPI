@@ -68,7 +68,7 @@ namespace blog.Common.Helper
             [JudgeLanguageEnum.csharp] = ("static ", " \n{", "\n}"),
         };
 
-        public List<CombinStartCode> CombinStratCode(List<ParameterTypeDto> parameters)
+        public List<CombinStartCode> CombinStartCode(List<ParameterTypeDto> parameters)
         {
             var startCodeList = new List<CombinStartCode>();
             foreach (var items in parameters)

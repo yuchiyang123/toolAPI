@@ -8,5 +8,6 @@
     public enum SignalRTopicEnums
     {
         Judge,
+        JudgeTest,
     }
 }
