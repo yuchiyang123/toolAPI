@@ -98,6 +98,8 @@ namespace blog.Common.Profiles
             CreateMap<SubmissionResult, SubmissionResultDto>()
                 .ForMember(dest => dest.Input, opt => opt.Ignore())
                 .ForMember(dest => dest.Expected, opt => opt.Ignore());
+
+            CreateMap<TestCasesWithKey, TestCode>();
         }
     }
 }

@@ -43,22 +43,6 @@ namespace blog.Controllers
         }
 
         [HttpPost("id")]
-        public async Task<ActionResult<SubmissionResponse>> GetRunById(
-            [FromBody] JudgeRequestDto judge
-        )
-        {
-            await cacheService.InvalidateProblemsDetailAsync(judge.Id);
-            //var dto = await publisher.SendAsync<JudgeRequestDto, SubmissionResponse>(
-            //    judge,
-            //    TimeSpan.FromSeconds(60),
-            //    MQNameKey.JudgeQueue,
-            //    MQNameKey.JudgeReply
-            //);
-            var dto = await service.GetJudgeResultById(judge);
-            return Ok(dto);
-        }
-
-        [HttpPost("id/test")]
         public async Task<IActionResult> GetRun([FromBody] JudgeRequestDto judge)
         {
             await cacheService.InvalidateProblemsDetailAsync(judge.Id);
@@ -66,6 +50,7 @@ namespace blog.Controllers
             return StatusCode(202);
         }
 
+        [HttpPost("id/test")]
         public async Task<IActionResult> GetRunTest([FromBody] JudgeTestRequestDto dto)
         {
             await publisher.PublishAsync(dto, MQNameKey.JudgeTestQueue);

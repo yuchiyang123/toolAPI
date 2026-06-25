@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
@@ -176,6 +175,7 @@ namespace blog.Services
                 Directory.Delete(tempDir, true);
             }
         }
+
         /// <summary>
         /// 查詢並列出所有問題列表
         /// </summary>
@@ -200,6 +200,7 @@ namespace blog.Services
                     ct: ct
                 );
         }
+
         /// <summary>
         /// 查詢對應ID的問題詳細資料
         /// </summary>
@@ -227,6 +228,7 @@ namespace blog.Services
             dto.TestCases = jsonValueInput;
             return dto;
         }
+
         /// <summary>
         /// 將所有的測試案例輸入轉成string
         /// </summary>
@@ -248,8 +250,9 @@ namespace blog.Services
             }
             return cases;
         }
+
         /// <summary>
-        /// 把對應的輸入值轉成string 
+        /// 把對應的輸入值轉成string
         /// </summary>
         /// <param name="jsonObjectDic"></param>
         /// <returns></returns>
@@ -277,6 +280,7 @@ namespace blog.Services
             }
             return inputStr;
         }
+
         /// <summary>
         /// 發送測試並且取回該問題的結果和儲存結果
         /// </summary>
@@ -288,9 +292,13 @@ namespace blog.Services
             CancellationToken ct = default
         )
         {
-            (var resultDto, var expectedResult) = await GetTestResultAsync(dto, ct: ct);
+            var resultDto = await GetTestResultAsync(dto, ct: ct);
             var results = resultDto.Stdout?.Split(JuageHelper.SplitSpecialSymbols);
-
+            var entity = await repository
+                .GetProblemsFeature(dto.Language)
+                .Where(x => x.Id == dto.Id)
+                .FirstAsync(ct);
+            var expectedResult = entity.Functions.ToDictionary(x => x.Id, x => x.Expected);
             if (results == null)
             {
                 SubmissionStatus status =
@@ -316,18 +324,25 @@ namespace blog.Services
 
             return await CombinTestResult(dto, resultDto, ct);
         }
+
         /// <summary>
         /// 使用測試案例並且測回傳測試結果
         /// </summary>
         /// <param name="dto"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        public async Task<SubmissionResponse> GetJudgeTestResultById(
+        public async Task<SubmissionResponse?> GetJudgeTestResultById(
             JudgeTestRequestDto dto,
             CancellationToken ct = default
         )
         {
-            (var resultDto, _) = await GetTestResultAsync(
+            var testInput = mapper.Map<List<TestCode>>(dto.TestCases);
+            Dictionary<int, string> testOutPut = dto.TestCases.ToDictionary(
+                x => x.Id,
+                x => x.Output
+            );
+
+            var resultDto = await GetTestResultAsync(
                 new JudgeRequestDto
                 {
                     Code = dto.Code,
@@ -335,7 +350,7 @@ namespace blog.Services
                     Language = dto.Language,
                     Id = dto.Id,
                 },
-                dto.TestCodes,
+                testInput,
                 ct
             );
             var results = resultDto.Stdout?.Split(JuageHelper.SplitSpecialSymbols);
@@ -343,11 +358,20 @@ namespace blog.Services
             {
                 var testResultDtoForNull = await GetTestResultDto(dto.Id, dto.Language, ct);
                 testResultDtoForNull.ErrorMessage = resultDto.Stderr;
+                SubmissionStatus status =
+                    resultDto.Stderr == JudgeErrorMsg.Time_Limit_Exceeded.ToString()
+                        ? SubmissionStatus.TLE
+                        : SubmissionStatus.RE;
                 return testResultDtoForNull;
             }
 
-            return await CombinTestResult(dto, resultDto, ct);
+            var testResultCase = CovertTestResult(results, testOutPut);
+            SubmissionStatus nobuildErrorStatus = testResultCase.Any(x => !x.IsPassed)
+                ? SubmissionStatus.WA
+                : SubmissionStatus.AC;
+            return CombinTestResult(dto, nobuildErrorStatus, resultDto, testResultCase);
         }
+
         /// <summary>
         /// 取得對應的問題測試結果並且組裝成共用的Response後回傳
         /// </summary>
@@ -366,6 +390,58 @@ namespace blog.Services
             testResultDto.Results = GetJsonValueByResultCases(testResultDto.Results);
             return testResultDto;
         }
+
+        /// <summary>
+        /// 取得對應的問題測試結果並且組裝成共用的Response後回傳
+        /// </summary>
+        /// <param name="requestDto"></param>
+        /// <param name="status"></param>
+        /// <param name="resultDto"></param>
+        /// <param name="resultReponses"></param>
+        /// <returns></returns>
+        private static SubmissionResponse? CombinTestResult(
+            JudgeTestRequestDto requestDto,
+            SubmissionStatus status,
+            JudgeResult resultDto,
+            List<JudgeResultReponse>? resultReponses
+        )
+        {
+            var passCount = resultReponses?.Where(x => x.IsPassed).Count() ?? 0;
+            var totalCount = resultReponses?.Count ?? 0;
+            List<SubmissionResultDto> results = [];
+            var resultCaseDic = requestDto.TestCases.ToDictionary(x => x.Id);
+            if (resultReponses == null)
+                return null;
+            foreach (var item in resultReponses)
+            {
+                if (!resultCaseDic.TryGetValue(item.Id, out var originalTest))
+                    continue;
+                results.Add(
+                    new SubmissionResultDto
+                    {
+                        Id = item.Id,
+                        FunctionId = 0,
+                        Input = originalTest.Input,
+                        Expected = originalTest.Output,
+                        ActualOutput = item.Output,
+                        IsPassed = item.IsPassed,
+                    }
+                );
+            }
+            var testResultDto = new SubmissionResponse
+            {
+                Id = requestDto.Id,
+                Language = requestDto.Language,
+                ErrorMessage = resultDto.Stderr,
+                Status = status,
+                PassedCount = passCount,
+                TotalCount = totalCount,
+                Results = results,
+            };
+            testResultDto.Results = GetJsonValueByResultCases(testResultDto.Results);
+            return testResultDto;
+        }
+
         /// <summary>
         /// 整合輸入的資料並且放進使用者Code裡面，並且回傳對應的測試結果
         /// </summary>
@@ -374,7 +450,7 @@ namespace blog.Services
         /// <param name="ct"></param>
         /// <returns></returns>
         /// <exception cref="KeyNotFoundException">找不到對應ID和語言的程式問題</exception>
-        private async Task<(JudgeResult, Dictionary<int, string>)> GetTestResultAsync(
+        private async Task<JudgeResult> GetTestResultAsync(
             JudgeRequestDto dto,
             List<TestCode>? testCodes = null,
             CancellationToken ct = default
@@ -420,11 +496,12 @@ namespace blog.Services
                 code.Input = functionName + "(" + testStr + ")";
             }
             var testCode = testList.ToDictionary(x => x.Id, x => x.Input);
-            var expectedResult = entity.Functions.ToDictionary(x => x.Id, x => x.Expected);
+
             var splicingCode = helper.SplicingTestAndCode(dto.Language, dto.Code, testCode);
             var resultDto = await RunAsync(dto.Language, splicingCode, ct);
-            return (resultDto, expectedResult);
+            return resultDto;
         }
+
         /// <summary>
         /// 處理測試結果並且通過切割字串取出對應的測試結果
         /// </summary>
@@ -463,6 +540,7 @@ namespace blog.Services
             }
             return testResultCase;
         }
+
         /// <summary>
         ///  把對應的輸入值轉成string
         /// </summary>
@@ -490,8 +568,9 @@ namespace blog.Services
 
             return cases;
         }
+
         /// <summary>
-        /// 取得對應ID和程式語言的題目Dto 
+        /// 取得對應ID和程式語言的題目Dto
         /// </summary>
         /// <param name="id"></param>
         /// <param name="judgeLanguage"></param>
@@ -508,6 +587,7 @@ namespace blog.Services
                 .FirstOrDefaultAsync(x => x.Id == id, ct);
             return mapper.Map<SubmissionResponse>(testResponseEntity);
         }
+
         /// <summary>
         /// 判斷結果是否符合答案
         /// </summary>
@@ -533,8 +613,9 @@ namespace blog.Services
                 return false;
             return true;
         }
+
         /// <summary>
-        /// 轉化成對應的ˊDto
+        /// 轉化成對應的Dto
         /// </summary>
         /// <param name="dto"></param>
         /// <param name="status"></param>

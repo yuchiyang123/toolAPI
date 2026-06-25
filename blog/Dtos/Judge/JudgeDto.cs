@@ -77,6 +77,7 @@ namespace blog.Dtos.Judge
 
     public class TestCases
     {
+        public int Id { get; set; }
         public required string Input { get; set; }
         public required string Output { get; set; }
     }
@@ -134,8 +135,13 @@ namespace blog.Dtos.Judge
         public bool IsPassed { get; set; }
     }
 
+    public class TestCasesWithKey : TestCases
+    {
+        public int Id { get; set; }
+    }
+
     public class JudgeTestRequestDto : JudgeRequestDto
     {
-        public required List<TestCode> TestCodes { get; set; }
+        public required List<TestCasesWithKey> TestCases { get; set; }
     }
 }
