@@ -331,7 +331,7 @@ namespace blog.Services
         /// <param name="dto"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        public async Task<SubmissionResponse?> GetJudgeTestResultById(
+        public async Task<SubmissionResponse> GetJudgeTestResultById(
             JudgeTestRequestDto dto,
             CancellationToken ct = default
         )
@@ -399,7 +399,7 @@ namespace blog.Services
         /// <param name="resultDto"></param>
         /// <param name="resultReponses"></param>
         /// <returns></returns>
-        private static SubmissionResponse? CombinTestResult(
+        private static SubmissionResponse CombinTestResult(
             JudgeTestRequestDto requestDto,
             SubmissionStatus status,
             JudgeResult resultDto,
@@ -410,8 +410,7 @@ namespace blog.Services
             var totalCount = resultReponses?.Count ?? 0;
             List<SubmissionResultDto> results = [];
             var resultCaseDic = requestDto.TestCases.ToDictionary(x => x.Id);
-            if (resultReponses == null)
-                return null;
+            if (resultReponses == null) throw new InvalidOperationException();
             foreach (var item in resultReponses)
             {
                 if (!resultCaseDic.TryGetValue(item.Id, out var originalTest))
