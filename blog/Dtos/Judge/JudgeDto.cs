@@ -46,6 +46,7 @@ namespace blog.Dtos.Judge
         public DateTime CreateDate { get; set; }
         public List<SubmissionDto> Submissions { get; set; }
         public List<TestCases>? TestCases { get; set; }
+        public List<TestCases>? OriginalTestCases { get; set; }
         public required List<LanguageInfo> LanguageInfo { get; set; }
         public required List<CombinStartCode> StartCodes { get; set; }
     }
@@ -135,10 +136,7 @@ namespace blog.Dtos.Judge
         public bool IsPassed { get; set; }
     }
 
-    public class TestCasesWithKey : TestCases
-    {
-        public int Id { get; set; }
-    }
+    public class TestCasesWithKey : TestCases { }
 
     public class JudgeTestRequestDto : JudgeRequestDto
     {
