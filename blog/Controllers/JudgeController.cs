@@ -50,11 +50,25 @@ namespace blog.Controllers
             return StatusCode(202);
         }
 
+        [HttpPost("id/debug")]
+        public async Task<ActionResult<SubmissionResponse>> GetRunForDebug([FromBody] JudgeRequestDto judge)
+        {
+            var dto = await service.GetJudgeResultById(judge);
+            return Ok(dto);
+        }
+
         [HttpPost("id/test")]
         public async Task<IActionResult> GetRunTest([FromBody] JudgeTestRequestDto dto)
         {
             await publisher.PublishAsync(dto, MQNameKey.JudgeTestQueue);
             return StatusCode(202);
+        }
+
+        [HttpPost("id/test/dubug")]
+        public async Task<ActionResult<SubmissionResponse>> GetRunDebugAsync([FromBody] JudgeTestRequestDto judge)
+        {
+            var dto = await service.GetJudgeTestResultById(judge);
+            return Ok(dto);
         }
     }
 }
