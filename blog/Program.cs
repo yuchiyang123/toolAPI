@@ -70,6 +70,9 @@ builder.Services.AddDbContext<BlogContext>(options =>
 
 builder.Services.Configure<JudgeOptions>(builder.Configuration.GetSection("JudgeOptions"));
 
+builder.Logging.AddFilter("Microsoft.AspNetCore.SignalR", LogLevel.Debug);
+builder.Logging.AddFilter("Microsoft.AspNetCore.Http.Connections", LogLevel.Debug);
+
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<PostService>();
 builder.Services.AddScoped<ToolService>();
@@ -105,7 +108,7 @@ builder
             .CamelCase;
     });
 
-#region RabbitMQ
+#region RabbitMQ¡BSignalR
 builder.Services.AddSingleton<PendingReplyStore>();
 builder.Services.AddSingleton<Publisher>();
 builder.Services.AddHostedService<JudgeConsumer>();
@@ -149,7 +152,11 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(
 builder.Host.UseSerilog(
     (ctx, config) =>
     {
-        config.WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day);
+        config
+            .MinimumLevel.Debug()
+            .MinimumLevel.Override("Microsoft.AspNetCore", Serilog.Events.LogEventLevel.Warning)
+            .WriteTo.Console()
+            .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day);
     }
 );
 

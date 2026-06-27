@@ -51,7 +51,9 @@ namespace blog.Controllers
         }
 
         [HttpPost("id/debug")]
-        public async Task<ActionResult<SubmissionResponse>> GetRunForDebug([FromBody] JudgeRequestDto judge)
+        public async Task<ActionResult<SubmissionResponse>> GetRunForDebug(
+            [FromBody] JudgeRequestDto judge
+        )
         {
             var dto = await service.GetJudgeResultById(judge);
             return Ok(dto);
@@ -65,7 +67,9 @@ namespace blog.Controllers
         }
 
         [HttpPost("id/test/dubug")]
-        public async Task<ActionResult<SubmissionResponse>> GetRunDebugAsync([FromBody] JudgeTestRequestDto judge)
+        public async Task<ActionResult<SubmissionResponse>> GetRunDebugAsync(
+            [FromBody] JudgeTestRequestDto judge
+        )
         {
             var dto = await service.GetJudgeTestResultById(judge);
             return Ok(dto);

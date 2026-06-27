@@ -102,11 +102,9 @@ namespace blog.Services
                         {
                             Binds = [$"{tempDir}:/code"],
                             NetworkMode = "none",
-                            Memory = options.Value.MemoryLimitBytes,
+                            Memory = 128 * 1024 * 1024,
                             PidsLimit = pidsLimit,
                             AutoRemove = false,
-                            ReadonlyRootfs = true,
-                            Tmpfs = new Dictionary<string, string> { ["/tmp"] = "rw,size=64m" },
                         },
                     },
                     ct
@@ -410,7 +408,8 @@ namespace blog.Services
             var totalCount = resultReponses?.Count ?? 0;
             List<SubmissionResultDto> results = [];
             var resultCaseDic = requestDto.TestCases.ToDictionary(x => x.Id);
-            if (resultReponses == null) throw new InvalidOperationException();
+            if (resultReponses == null)
+                throw new InvalidOperationException();
             foreach (var item in resultReponses)
             {
                 if (!resultCaseDic.TryGetValue(item.Id, out var originalTest))

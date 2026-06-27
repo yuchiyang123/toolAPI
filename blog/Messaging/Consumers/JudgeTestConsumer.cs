@@ -21,9 +21,9 @@ namespace blog.Messaging.Consumers
             logger
         )
     {
-        protected override string QueueName => MQNameKey.JudgeQueue;
+        protected override string QueueName => MQNameKey.JudgeTestQueue;
         protected override string DeadExchange => MQNameKey.JudgeDeadExchange;
-        protected override string DeadRouterKey => MQNameKey.JudgeDeadRouterKey;
+        protected override string DeadRouterKey => MQNameKey.JudgeTestDeadRouterKey;
         protected override string SignalRRouterKey => SignalREnums.MqMessage.ToString();
         protected override string SignalRTopic => SignalRTopicEnums.JudgeTest.ToString();
 

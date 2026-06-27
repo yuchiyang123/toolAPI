@@ -29,7 +29,10 @@ namespace blog.Common.Profiles
                 .IncludeBase<Problem, BaseProblem>()
                 .ForMember(dest => dest.Submissions, opt => opt.MapFrom(src => src.Submissions))
                 .ForMember(dest => dest.TestCases, opt => opt.MapFrom(src => src.Functions.Take(2)))
-                .ForMember(dest => dest.OriginalTestCases, opt => opt.MapFrom(src => src.Functions.Take(2)))
+                .ForMember(
+                    dest => dest.OriginalTestCases,
+                    opt => opt.MapFrom(src => src.Functions.Take(2))
+                )
                 .ForMember(
                     dest => dest.LanguageInfo,
                     opt => opt.MapFrom(src => src.ProblemSignatures)

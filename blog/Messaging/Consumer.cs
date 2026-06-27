@@ -26,6 +26,11 @@ public abstract class RabbitMQConsumerBase<TRequest, TReply>(
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken = default)
     {
+        logger.LogWarning(
+            "[{Consumer}] ExecuteAsync START, queue={Queue}",
+            GetType().Name,
+            QueueName
+        );
         using var channel = await connection.CreateChannelAsync(cancellationToken: stoppingToken);
 
         var args = new Dictionary<string, object?>
@@ -74,6 +79,13 @@ public abstract class RabbitMQConsumerBase<TRequest, TReply>(
 
         consumer.ReceivedAsync += async (_, ea) =>
         {
+            var rawBody = System.Text.Encoding.UTF8.GetString(ea.Body.ToArray());
+            logger.LogWarning(
+                "Consumer={Consumer} Queue={Queue} received: {Body}",
+                GetType().Name,
+                QueueName,
+                rawBody
+            );
             var correlationId = ea.BasicProperties.CorrelationId;
             var replyTo = ea.BasicProperties.ReplyTo;
 
