@@ -256,3 +256,6 @@ if (app.Environment.IsDevelopment() || args.Contains("--seed"))
 //app.UseMiddleware<InternalSecretMiddleware>();
 
 await app.RunAsync();
+
+// 讓 WebApplicationFactory<Program> 能參考到 top-level statements 產生的 Program 類別
+public partial class Program { }
