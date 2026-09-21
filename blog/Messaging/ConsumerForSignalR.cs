@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using blog.Common.Helper.Key;
+using System.Text.Json;
 using blog.Messaging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -68,28 +67,56 @@ public abstract class RabbitMQConsumerBaseForSignalR<TRequest, TReply>(
             var correlationId = ea.BasicProperties.CorrelationId;
             var replyTo = ea.BasicProperties.ReplyTo;
 
-            TReply reply;
+            if (string.IsNullOrEmpty(correlationId) || string.IsNullOrEmpty(replyTo))
+            {
+                logger.LogError(
+                    "[{Consumer}] Missing CorrelationId/ReplyTo, sending to DLQ. Queue={Queue}",
+                    GetType().Name,
+                    QueueName
+                );
+                await channel.BasicNackAsync(
+                    ea.DeliveryTag,
+                    multiple: false,
+                    requeue: false,
+                    stoppingToken
+                );
+                return;
+            }
 
+            TReply reply;
             try
             {
-                var request = JsonSerializer.Deserialize<TRequest>(ea.Body.ToArray())!;
+                var request =
+                    JsonSerializer.Deserialize<TRequest>(ea.Body.Span)
+                    ?? throw new JsonException("Message body deserialized to null");
 
                 await using var scope = scopeFactory.CreateAsyncScope();
-                var result = await HandleAsync(scope.ServiceProvider, request, stoppingToken);
-                reply = result;
+                reply = await HandleAsync(scope.ServiceProvider, request, stoppingToken);
 
-                await channel.BasicAckAsync(ea.DeliveryTag, multiple: false);
+                await channel.BasicAckAsync(ea.DeliveryTag, multiple: false, stoppingToken);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Consumer error. CorrelationId={CorrelationId}", correlationId);
-                await channel.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: false);
+                logger.LogError(
+                    ex,
+                    "[{Consumer}] Consumer error. CorrelationId={CorrelationId}",
+                    GetType().Name,
+                    correlationId
+                );
+                await channel.BasicNackAsync(
+                    ea.DeliveryTag,
+                    multiple: false,
+                    requeue: false,
+                    stoppingToken
+                );
                 store.CompleteWithError<TReply>(correlationId, ex);
                 return;
             }
 
             // 回寫 reply queue
-            using var replyChannel = await connection.CreateChannelAsync();
+            using var replyChannel = await connection.CreateChannelAsync(
+                cancellationToken: stoppingToken
+            );
             var replyProps = new BasicProperties { CorrelationId = correlationId };
 
             await replyChannel.BasicPublishAsync(
@@ -97,13 +124,14 @@ public abstract class RabbitMQConsumerBaseForSignalR<TRequest, TReply>(
                 routingKey: replyTo,
                 mandatory: false,
                 basicProperties: replyProps,
-                body: JsonSerializer.SerializeToUtf8Bytes(reply)
+                body: JsonSerializer.SerializeToUtf8Bytes(reply),
+                cancellationToken: stoppingToken
             );
 
             store.Complete(correlationId, reply);
         };
 
-        await channel.BasicConsumeAsync(QueueName, autoAck: false, consumer);
+        await channel.BasicConsumeAsync(QueueName, autoAck: false, consumer, stoppingToken);
         await Task.Delay(Timeout.Infinite, stoppingToken);
     }
 

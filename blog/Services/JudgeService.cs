@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
@@ -26,16 +26,11 @@ namespace blog.Services
         JudgeRepository repository,
         JuageHelper helper,
         BlogContext context,
-        IOptions<JudgeOptions> options
+        IOptions<JudgeOptions> options,
+        IDockerClient _docker,
+        ILogger<JudgeService> logger
     )
     {
-        /// <summary>
-        /// 初始化 docker 沙盒容器
-        /// </summary>
-        private readonly DockerClient _docker = new DockerClientConfiguration(
-            new Uri("npipe://./pipe/docker_engine")
-        ).CreateClient();
-
         /// <summary>
         /// 執行測試並且回報結果
         /// </summary>
@@ -62,13 +57,16 @@ namespace blog.Services
         /// <returns></returns>
         public async Task<JudgeResult> RunAsync(JudgeDto dto, CancellationToken ct = default)
         {
-            var (image, fileName, cmd) = JudgeConfig.Config[dto.Language];
+            var (image, fileName, buildCmd) = JudgeConfig.Config[dto.Language];
+            var judgeOptions = options.Value;
+            var timeoutSeconds = judgeOptions.TimeoutSeconds;
 
             var jobId = Guid.NewGuid().ToString();
-            var tempDir = Path.Combine(@"C:\PushAPI\judgeTemp", jobId);
+            var tempDir = Path.Combine(judgeOptions.SandBoxPath, jobId);
             Directory.CreateDirectory(tempDir);
             await File.WriteAllTextAsync(Path.Combine(tempDir, fileName), dto.Code, ct);
 
+            string? containerId = null;
             try
             {
                 var localImages = JudgeConfig.LocalImages;
@@ -97,67 +95,50 @@ namespace blog.Services
                     {
                         Image = image,
                         User = "1000:1000",
-                        Cmd = ["sh", "-c", cmd],
+                        Cmd = ["sh", "-c", buildCmd(timeoutSeconds)],
                         HostConfig = new HostConfig
                         {
                             Binds = [$"{tempDir}:/code"],
                             NetworkMode = "none",
-                            Memory = 128 * 1024 * 1024,
+                            Memory = judgeOptions.MemoryLimitBytes,
                             PidsLimit = pidsLimit,
                             AutoRemove = false,
                         },
                     },
                     ct
                 );
+                containerId = container.ID;
 
-                await _docker.Containers.StartContainerAsync(container.ID, null, ct);
+                await _docker.Containers.StartContainerAsync(containerId, null, ct);
 
-                var waitTimeout = dto.Language switch
-                {
-                    JudgeLanguageEnum.csharp => TimeSpan.FromSeconds(options.Value.TimeoutMs),
-                    JudgeLanguageEnum.python => TimeSpan.FromSeconds(options.Value.TimeoutMs),
-                    _ => TimeSpan.FromSeconds(options.Value.TimeoutMs),
-                };
+                // 比容器內的 timeout 多留幾秒緩衝，讓 timeout 指令有機會先結束程式
+                var waitTimeout = TimeSpan.FromSeconds(timeoutSeconds + 5);
 
                 ContainerWaitResponse? waitResult = null;
+                bool timedOut = false;
                 try
                 {
-                    using var cts = new CancellationTokenSource(waitTimeout);
+                    using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+                    cts.CancelAfter(waitTimeout);
                     waitResult = await _docker.Containers.WaitContainerAsync(
-                        container.ID,
+                        containerId,
                         cts.Token
                     );
                 }
-                catch (OperationCanceledException)
+                catch (OperationCanceledException) when (!ct.IsCancellationRequested)
                 {
-                    await _docker.Containers.RemoveContainerAsync(
-                        container.ID,
-                        new ContainerRemoveParameters { Force = true },
-                        ct
-                    );
-                    return new JudgeResult
-                    {
-                        Stdout = string.Empty,
-                        Stderr = JudgeErrorMsg.Time_Limit_Exceeded.ToString(),
-                    };
+                    timedOut = true;
                 }
 
                 var logs = await _docker.Containers.GetContainerLogsAsync(
-                    container.ID,
+                    containerId,
                     false,
                     new ContainerLogsParameters { ShowStdout = true, ShowStderr = true },
                     ct
                 );
+                var (stdout, stderr) = await logs.ReadOutputToEndAsync(ct);
 
-                var (stdout, stderr) = await logs.ReadOutputToEndAsync(default);
-
-                await _docker.Containers.RemoveContainerAsync(
-                    container.ID,
-                    new ContainerRemoveParameters { Force = true },
-                    ct
-                );
-
-                if (waitResult.StatusCode == (int)JudgeStatusCodeEnum.Timeout)
+                if (timedOut || waitResult?.StatusCode == (int)JudgeStatusCodeEnum.Timeout)
                 {
                     return new JudgeResult
                     {
@@ -170,7 +151,39 @@ namespace blog.Services
             }
             finally
             {
-                Directory.Delete(tempDir, true);
+                // 先移除容器（解除 bind mount），再刪暫存目錄
+                if (containerId is not null)
+                {
+                    try
+                    {
+                        await _docker.Containers.RemoveContainerAsync(
+                            containerId,
+                            new ContainerRemoveParameters { Force = true },
+                            CancellationToken.None
+                        );
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogWarning(
+                            ex,
+                            "Failed to remove judge container {ContainerId}",
+                            containerId
+                        );
+                    }
+                }
+
+                try
+                {
+                    Directory.Delete(tempDir, true);
+                }
+                catch (IOException ex)
+                {
+                    logger.LogWarning(ex, "Failed to delete judge temp dir {TempDir}", tempDir);
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    logger.LogWarning(ex, "Failed to delete judge temp dir {TempDir}", tempDir);
+                }
             }
         }
 

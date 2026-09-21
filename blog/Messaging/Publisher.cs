@@ -15,7 +15,7 @@ namespace blog.Messaging
         PendingReplyStore _store
     )
     {
-        public async Task SandForSignalRAsync<RequireDto, ReponseDto>(
+        public async Task SendForSignalRAsync<RequireDto, ReponseDto>(
             RequireDto request,
             TimeSpan timeout,
             string routerKey,

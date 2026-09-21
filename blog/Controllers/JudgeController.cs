@@ -1,10 +1,9 @@
-﻿using blog.Common.Enum;
+using blog.Common.Enum;
 using blog.Common.Helper.Key;
 using blog.Dtos.Judge;
 using blog.Dtos.Page;
 using blog.Messaging;
 using blog.Messaging.Consumers;
-using blog.Migrations;
 using blog.Services;
 using blog.Services.Redis;
 using Microsoft.AspNetCore.Mvc;
@@ -45,8 +44,9 @@ namespace blog.Controllers
         [HttpPost("id")]
         public async Task<IActionResult> GetRun([FromBody] JudgeRequestDto judge)
         {
-            await cacheService.InvalidateProblemsDetailAsync(judge.Id);
             await publisher.PublishAsync(judge, MQNameKey.JudgeQueue);
+            // 提交後才讓題目詳情快取失效，避免在結果寫入前就被重新填入舊資料
+            await cacheService.InvalidateProblemsDetailAsync(judge.Id);
             return StatusCode(202);
         }
 
