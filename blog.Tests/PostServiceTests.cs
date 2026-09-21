@@ -62,7 +62,13 @@ public class PostServiceTests
     public async Task ValidUpdatePostUser_UserIdIsNull_ReturnsFalse()
     {
         using var context = CreateInMemoryContext();
-        var post = new Posts { Id = 1, Title = "t", Content = "c", CreateUserId = 1 };
+        var post = new Posts
+        {
+            Id = 1,
+            Title = "t",
+            Content = "c",
+            CreateUserId = 1,
+        };
         context.Posts.Add(post);
         await context.SaveChangesAsync();
 
@@ -76,7 +82,13 @@ public class PostServiceTests
     public async Task ValidUpdatePostUser_WrongUser_ReturnsFalse()
     {
         using var context = CreateInMemoryContext();
-        var post = new Posts { Id = 1, Title = "t", Content = "c", CreateUserId = 1 };
+        var post = new Posts
+        {
+            Id = 1,
+            Title = "t",
+            Content = "c",
+            CreateUserId = 1,
+        };
         context.Posts.Add(post);
         await context.SaveChangesAsync();
 
@@ -90,7 +102,13 @@ public class PostServiceTests
     public async Task ValidUpdatePostUser_CorrectUser_ReturnsTrue()
     {
         using var context = CreateInMemoryContext();
-        var post = new Posts { Id = 1, Title = "t", Content = "c", CreateUserId = 1 };
+        var post = new Posts
+        {
+            Id = 1,
+            Title = "t",
+            Content = "c",
+            CreateUserId = 1,
+        };
         context.Posts.Add(post);
         await context.SaveChangesAsync();
 

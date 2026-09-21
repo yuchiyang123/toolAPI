@@ -55,7 +55,16 @@ public class RecipeServiceTests
     public async Task DeleteRecipe_Found_RemovesEntity()
     {
         using var context = CreateInMemoryContext();
-        context.Recipe.Add(new Recipe { Id = 1, RecipeName = "test", Amount = 1, CookingTime = 10, Complexity = 1 });
+        context.Recipe.Add(
+            new Recipe
+            {
+                Id = 1,
+                RecipeName = "test",
+                Amount = 1,
+                CookingTime = 10,
+                Complexity = 1,
+            }
+        );
         await context.SaveChangesAsync();
 
         var service = CreateService(context);

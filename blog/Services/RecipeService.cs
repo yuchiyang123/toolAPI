@@ -137,80 +137,26 @@ namespace blog.Services
             {
                 var exist =
                     await repository.GetRecipes().FirstOrDefaultAsync(x => x.Id == id)
-                    ?? throw new Exception("找不到對應的食譜");
+                    ?? throw new KeyNotFoundException("找不到對應的食譜");
 
-                exist.RecipeTagMappings.Clear();
-                if (requestDto.Tags != null && requestDto.Tags.Count != 0)
-                {
-                    foreach (var tag in requestDto.Tags)
-                    {
-                        exist.RecipeTagMappings.Add(
-                            new RecipeTagMapping { RecipeTag = new RecipeTag { Tag = tag.Tag } }
-                        );
-                    }
-                }
-
-                exist.RecipeStepMappings.Clear();
-                if (requestDto.Steps != null && requestDto.Steps.Count != 0)
-                {
-                    foreach (var step in requestDto.Steps)
-                    {
-                        exist.RecipeStepMappings.Add(
-                            new RecipeStepMapping
-                            {
-                                RecipeStep = new RecipeStep
-                                {
-                                    Step = step.Step,
-                                    Description = step.Description,
-                                },
-                            }
-                        );
-                    }
-                }
+                // 子集合改用 diff：既有 row 原地更新、缺的新增、多的刪除。
+                // 原本 Clear() 後整批重建，每次更新都換掉所有子表 id，
+                // 而且舊的 RecipeTag / RecipeStep / RecipeIngredients 會變成孤兒留在 DB。
+                SyncTags(exist, requestDto.Tags ?? []);
+                SyncSteps(exist, requestDto.Steps ?? []);
+                SyncIngredients(exist, requestDto.Ingredients ?? []);
 
                 if (requestDto.Content != null)
                     exist.RecipeDetailMappings.RecipeDetail.Content = requestDto.Content;
 
-                exist.RecipeIngredientsMappings.Clear();
-                if (requestDto.Ingredients != null && requestDto.Ingredients.Count != 0)
-                {
-                    foreach (var ingredients in requestDto.Ingredients)
-                    {
-                        exist.RecipeIngredientsMappings.Add(
-                            new RecipeIngredientsMapping
-                            {
-                                RecipeIngredients = new RecipeIngredients
-                                {
-                                    IngredientsGroupName = ingredients.IngredientsGroupName,
-                                    RecipeIngredientsDetailMappings =
-                                    [
-                                        .. ingredients.IngredientsDetails.Select(
-                                            x => new RecipeIngredientsDetailMapping
-                                            {
-                                                RecipeIngredientsDetail =
-                                                    new RecipeIngredientsDetail
-                                                    {
-                                                        IngredientsName = x.IngredientsName,
-                                                        Amount = x.Amount,
-                                                    },
-                                            }
-                                        ),
-                                    ],
-                                },
-                            }
-                        );
-                    }
-                }
-
                 int? deleteFileid = null;
-                if (exist.RecipeFileMappings != null)
-                {
-                    context.RecipeFileMappings.Remove(exist.RecipeFileMappings);
-                    deleteFileid = exist.RecipeFileMappings.FileId;
-                }
-
                 if (requestDto.MailImage != null)
                 {
+                    if (exist.RecipeFileMappings != null)
+                    {
+                        deleteFileid = exist.RecipeFileMappings.FileId;
+                        context.RecipeFileMappings.Remove(exist.RecipeFileMappings);
+                    }
                     int fileId = await fileHelper.SaveFileAsync(requestDto.MailImage);
                     exist.RecipeFileMappings = new RecipeFileMapping { FileId = fileId };
                 }
@@ -232,6 +178,151 @@ namespace blog.Services
             {
                 await transaction.RollbackAsync();
                 throw;
+            }
+        }
+
+        /// <summary>
+        /// 標籤依名稱 diff：同名保留、缺的新增、多的連同 RecipeTag 一起刪除。
+        /// </summary>
+        private void SyncTags(Recipe exist, List<Tags> incoming)
+        {
+            var wanted = incoming
+                .Select(x => x.Tag.Trim())
+                .Where(x => x.Length > 0)
+                .ToHashSet(StringComparer.Ordinal);
+
+            foreach (var mapping in exist.RecipeTagMappings.ToList())
+            {
+                if (wanted.Remove(mapping.RecipeTag.Tag))
+                    continue;
+                exist.RecipeTagMappings.Remove(mapping);
+                context.RecipeTags.Remove(mapping.RecipeTag);
+            }
+
+            foreach (var tag in wanted)
+            {
+                exist.RecipeTagMappings.Add(
+                    new RecipeTagMapping { RecipeTag = new RecipeTag { Tag = tag } }
+                );
+            }
+        }
+
+        /// <summary>
+        /// 步驟依順序 index 對齊：既有 row 原地更新、多的新增、少的刪除。
+        /// </summary>
+        private void SyncSteps(Recipe exist, List<Steps> incoming)
+        {
+            var current = exist.RecipeStepMappings.OrderBy(x => x.RecipeStep.Step).ToList();
+
+            for (int i = 0; i < incoming.Count; i++)
+            {
+                if (i < current.Count)
+                {
+                    current[i].RecipeStep.Step = incoming[i].Step;
+                    current[i].RecipeStep.Description = incoming[i].Description;
+                    continue;
+                }
+                exist.RecipeStepMappings.Add(
+                    new RecipeStepMapping
+                    {
+                        RecipeStep = new RecipeStep
+                        {
+                            Step = incoming[i].Step,
+                            Description = incoming[i].Description,
+                        },
+                    }
+                );
+            }
+
+            foreach (var extra in current.Skip(incoming.Count))
+            {
+                exist.RecipeStepMappings.Remove(extra);
+                context.RecipeSteps.Remove(extra.RecipeStep);
+            }
+        }
+
+        /// <summary>
+        /// 食材群組依順序 index 對齊，群組內的明細同樣依 index 對齊。
+        /// </summary>
+        private void SyncIngredients(Recipe exist, List<Ingredients> incoming)
+        {
+            var current = exist.RecipeIngredientsMappings.ToList();
+
+            for (int i = 0; i < incoming.Count; i++)
+            {
+                if (i < current.Count)
+                {
+                    var group = current[i].RecipeIngredients;
+                    group.IngredientsGroupName = incoming[i].IngredientsGroupName;
+                    SyncIngredientDetails(group, incoming[i].IngredientsDetails ?? []);
+                    continue;
+                }
+                exist.RecipeIngredientsMappings.Add(
+                    new RecipeIngredientsMapping
+                    {
+                        RecipeIngredients = new RecipeIngredients
+                        {
+                            IngredientsGroupName = incoming[i].IngredientsGroupName,
+                            RecipeIngredientsDetailMappings =
+                            [
+                                .. (incoming[i].IngredientsDetails ?? []).Select(
+                                    x => new RecipeIngredientsDetailMapping
+                                    {
+                                        RecipeIngredientsDetail = new RecipeIngredientsDetail
+                                        {
+                                            IngredientsName = x.IngredientsName,
+                                            Amount = x.Amount,
+                                        },
+                                    }
+                                ),
+                            ],
+                        },
+                    }
+                );
+            }
+
+            foreach (var extra in current.Skip(incoming.Count))
+            {
+                foreach (var detail in extra.RecipeIngredients.RecipeIngredientsDetailMappings)
+                    context.RecipeIngredientsDetails.Remove(detail.RecipeIngredientsDetail);
+                exist.RecipeIngredientsMappings.Remove(extra);
+                context.RecipeIngredients.Remove(extra.RecipeIngredients);
+            }
+        }
+
+        private void SyncIngredientDetails(
+            RecipeIngredients group,
+            List<IngredientsDetail> incoming
+        )
+        {
+            var current = group.RecipeIngredientsDetailMappings.ToList();
+
+            for (int i = 0; i < incoming.Count; i++)
+            {
+                if (i < current.Count)
+                {
+                    current[i].RecipeIngredientsDetail.IngredientsName = incoming[
+                        i
+                    ].IngredientsName;
+                    current[i].RecipeIngredientsDetail.Amount = incoming[i].Amount;
+                    continue;
+                }
+                group.RecipeIngredientsDetailMappings.Add(
+                    new RecipeIngredientsDetailMapping
+                    {
+                        RecipeIngredientsDetail = new RecipeIngredientsDetail
+                        {
+                            IngredientsName = incoming[i].IngredientsName,
+                            Amount = incoming[i].Amount,
+                        },
+                    }
+                );
+            }
+
+            foreach (var extra in current.Skip(incoming.Count))
+            {
+                group.RecipeIngredientsDetailMappings.Remove(extra);
+                context.RecipeIngredientsDetails.Remove(extra.RecipeIngredientsDetail);
             }
         }
 
