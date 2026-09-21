@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using blog.Dtos;
@@ -156,5 +156,12 @@ public class RecipeTests : IntegrationTestBase
     {
         var res = await AuthClient.PutAsync("/api/Recipe/999999", Form("x"));
         Assert.Equal(HttpStatusCode.NotFound, res.StatusCode);
+    }
+
+    [Fact]
+    public async Task Detail_Missing_Returns404()
+    {
+        var res = await Client.GetAsync("/api/Recipe/999999");
+        Assert.Equal(System.Net.HttpStatusCode.NotFound, res.StatusCode);
     }
 }

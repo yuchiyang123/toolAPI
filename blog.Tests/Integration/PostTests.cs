@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using System.Net.Http.Json;
 using blog.Dtos;
 using blog.Dtos.Page;
@@ -47,15 +47,10 @@ public class PostTests : IntegrationTestBase
     }
 
     [Fact]
-    public async Task Detail_Missing_ReturnsEmptyBody()
+    public async Task Detail_Missing_Returns404()
     {
-        // 快取層對不存在的文章回 null → 204/空 body，而不是 500
         var res = await Client.GetAsync("/api/Post/999999");
-        Assert.True(
-            res.StatusCode is HttpStatusCode.NoContent or HttpStatusCode.OK,
-            res.StatusCode.ToString()
-        );
-        Assert.True((await res.Content.ReadAsStringAsync()).Length <= 4);
+        Assert.Equal(HttpStatusCode.NotFound, res.StatusCode);
     }
 
     [Fact]

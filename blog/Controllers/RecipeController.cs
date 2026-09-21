@@ -30,9 +30,10 @@ namespace blog.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<RecipeDetailResponse?> GetRecipeDetail(int id)
+        public async Task<ActionResult<RecipeDetailResponse>> GetRecipeDetail(int id)
         {
-            return await cacheService.GetRecipeDetailAsync(id);
+            var dto = await cacheService.GetRecipeDetailAsync(id);
+            return dto is null ? NotFound() : Ok(dto);
         }
 
         /// <summary>

@@ -1,4 +1,4 @@
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using blog.Dtos;
 using blog.Dtos.Page;
 using blog.Services;
@@ -19,9 +19,10 @@ namespace blog.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<PostDto?> GetPostDetailAsync(int id)
+        public async Task<ActionResult<PostDetailDto>> GetPostDetailAsync(int id)
         {
-            return await cacheService.GetPostDetailAsync(id);
+            var dto = await cacheService.GetPostDetailAsync(id);
+            return dto is null ? NotFound() : Ok(dto);
         }
 
         [HttpPost()]
