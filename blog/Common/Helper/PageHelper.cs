@@ -6,6 +6,7 @@ using blog.Common.Helper.Key;
 using blog.Dtos.Page;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using StackExchange.Redis;
 
 namespace blog.Common.Helper
 {
@@ -17,7 +18,7 @@ namespace blog.Common.Helper
             int pageSize
         )
         {
-            var total = query.Count();
+            var total = await query.CountAsync();
             var item = await query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
 
             return GetPageResponseDto(item, pageIndex, pageSize, total);
@@ -60,6 +61,34 @@ namespace blog.Common.Helper
             };
         }
 
+        /// <summary>
+        /// 讀取列表快取版本號（不存在視為 0）。
+        /// 列表失效 = <see cref="BumpListVersionAsync"/>，舊版本 key 由 TTL 自然過期，不再 SCAN keyspace。
+        /// </summary>
+        public static async Task<long> GetListVersionAsync(
+            this IDistributedCache cache,
+            PageEnums service,
+            CancellationToken ct = default
+        )
+        {
+            var raw = await cache.GetStringAsync(CacheKeys.ListVersion(service), ct);
+            return long.TryParse(raw, out var v) ? v : 0;
+        }
+
+        /// <summary>
+        /// 列表快取失效：版本號 +1（原子 INCR）。
+        /// </summary>
+        public static async Task BumpListVersionAsync(
+            this IConnectionMultiplexer multiplexer,
+            PageEnums service,
+            string instanceName = "Blog"
+        )
+        {
+            // IDistributedCache 會在 key 前面加 InstanceName，這裡直接用 IDatabase 操作同一把 key
+            var db = multiplexer.GetDatabase();
+            await db.StringIncrementAsync(instanceName + CacheKeys.ListVersion(service));
+        }
+
         public static async Task<PageResponseDto<T>> ToPageResponseDtoWithCache<T>(
             this IQueryable<T> query,
             int pageIndex,
@@ -71,10 +100,15 @@ namespace blog.Common.Helper
             CancellationToken ct = default
         )
         {
-            var fullKey = CacheKeys.PageList(service, pageIndex, pageSize, filterSHA);
+            var version = await cache.GetListVersionAsync(service, ct);
+            var fullKey = CacheKeys.PageList(service, version, pageIndex, pageSize, filterSHA);
             var cached = await cache.GetStringAsync(fullKey, ct);
             if (cached is not null)
-                return JsonSerializer.Deserialize<PageResponseDto<T>>(cached!)!;
+            {
+                var hit = JsonSerializer.Deserialize<PageResponseDto<T>>(cached);
+                if (hit is not null)
+                    return hit;
+            }
 
             var total = await query.CountAsync(ct);
             var items = await query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync(ct);

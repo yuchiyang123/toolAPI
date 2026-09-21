@@ -56,6 +56,6 @@ namespace blog.Common.Helper
             );
         }
 
-        public static bool IsCachedNull(this string cached) => cached == null;
+        public static bool IsCachedNull(this string? cached) => cached == "null";
     }
 }

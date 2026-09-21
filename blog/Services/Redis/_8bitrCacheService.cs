@@ -15,14 +15,12 @@ namespace blog.Services.Redis
         _8BitService service
     )
     {
-        private readonly IDatabase _database = connectionMultiplexer.GetDatabase();
-
         public async Task<SequencerResponseDto?> Get8BitDetail(
             int id,
             CancellationToken ct = default
         )
         {
-            var key = CacheKeys.FlowDetail(id);
+            var key = CacheKeys.Sequencer(id);
             var cached = await cache.GetStringAsync(key, ct);
             if (cached is not null)
             {
@@ -40,17 +38,12 @@ namespace blog.Services.Redis
 
         public async Task Invalidate8BitDetailAsync(int id)
         {
-            await cache.RemoveAsync(CacheKeys.FlowDetail(id));
+            await cache.RemoveAsync(CacheKeys.Sequencer(id));
         }
 
         public async Task Invalidate8BitListAsync()
         {
-            var service = connectionMultiplexer.GetServer(
-                connectionMultiplexer.GetEndPoints().First()
-            );
-            var keys = service.KeysAsync(pattern: $"Blog{PageEnums._8BitList}:*");
-            await foreach (var key in keys)
-                await _database.KeyDeleteAsync(key);
+            await connectionMultiplexer.BumpListVersionAsync(PageEnums._8BitList);
         }
     }
 }

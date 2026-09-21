@@ -1,15 +1,19 @@
-﻿namespace blog.Dtos.Page
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace blog.Dtos.Page
 {
     public class PageDto
     {
         /// <summary>
-        /// 每頁顯示數量
+        /// 每頁顯示數量（1–100，預設 10）
         /// </summary>
-        public int PageSize { get; set; }
+        [Range(1, 100)]
+        public int PageSize { get; set; } = 10;
 
         /// <summary>
-        /// 當前頁碼
+        /// 當前頁碼（從 1 開始）
         /// </summary>
+        [Range(1, int.MaxValue)]
         public required int PageIndex { get; set; }
 
         /// <summary>
@@ -31,13 +35,15 @@
     public class PageQueryDto
     {
         /// <summary>
-        /// 每頁顯示數量
+        /// 每頁顯示數量（1–100，預設 10）
         /// </summary>
+        [Range(1, 100)]
         public int PageSize { get; set; } = 10;
 
         /// <summary>
-        /// 當前頁碼
+        /// 當前頁碼（從 1 開始）
         /// </summary>
+        [Range(1, int.MaxValue)]
         public required int PageIndex { get; set; }
     }
 

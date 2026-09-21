@@ -29,7 +29,6 @@ namespace blog.Services
             var filterKey = PageHelper.ComputeFilterHash(queryDto);
             return await repository
                 .GetSequencerNoInclude()
-                .Page(queryDto.PageIndex, queryDto.PageSize)
                 .ProjectTo<SequencerListRequestDto>(mapper.ConfigurationProvider)
                 .ToPageResponseDtoWithCache(
                     queryDto.PageIndex,

@@ -15,8 +15,6 @@ namespace blog.Services.Redis
         FlowService flowService
     )
     {
-        private readonly IDatabase _database = connectionMultiplexer.GetDatabase();
-
         public async Task<FlowDetailResponseDto?> GetFlowDetail(
             int id,
             CancellationToken ct = default
@@ -45,12 +43,7 @@ namespace blog.Services.Redis
 
         public async Task InvalidateFlowListAsync()
         {
-            var service = connectionMultiplexer.GetServer(
-                connectionMultiplexer.GetEndPoints().First()
-            );
-            var keys = service.KeysAsync(pattern: $"Blog{PageEnums.FlowList}:*");
-            await foreach (var key in keys)
-                await _database.KeyDeleteAsync(key);
+            await connectionMultiplexer.BumpListVersionAsync(PageEnums.FlowList);
         }
     }
 }

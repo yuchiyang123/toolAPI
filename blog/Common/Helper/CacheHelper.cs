@@ -16,6 +16,11 @@ namespace blog.Common.Helper
         IMapper mapper
     )
     {
+        /// <summary>搶 lock 最多重試次數（50ms × 20 = 1 秒），超過就直接查資料來源、不寫快取</summary>
+        private const int MaxLockAttempts = 20;
+        private static readonly TimeSpan LockRetryDelay = TimeSpan.FromMilliseconds(50);
+        private static readonly TimeSpan LockExpiry = TimeSpan.FromMinutes(10);
+
         public async Task<bool> AcquireLock(string lockKey, TimeSpan expiry)
         {
             var db = multiplexer.GetDatabase();
@@ -32,12 +37,19 @@ namespace blog.Common.Helper
             string key,
             Func<IQueryable> saveData,
             Expression<Func<T, bool>> predicate,
-            CancellationToken ct
+            CancellationToken ct,
+            int attempt = 0
         )
             where T : class
         {
             var lockKey = CacheKeys.LockKey(key);
-            if (await AcquireLock(lockKey, TimeSpan.FromMinutes(10)))
+            if (attempt >= MaxLockAttempts)
+            {
+                return await saveData()
+                    .ProjectTo<T>(mapper.ConfigurationProvider)
+                    .FirstOrDefaultAsync(predicate, ct);
+            }
+            if (await AcquireLock(lockKey, LockExpiry))
             {
                 try
                 {
@@ -61,20 +73,23 @@ namespace blog.Common.Helper
             }
             else
             {
-                await Task.Delay(50, ct);
-                return await SaveCacheAsync(key, saveData, predicate, ct);
+                await Task.Delay(LockRetryDelay, ct);
+                return await SaveCacheAsync(key, saveData, predicate, ct, attempt + 1);
             }
         }
 
         public async Task<T?> SaveCacheAsync<T>(
             string key,
             Func<Task<T?>> factory,
-            CancellationToken ct
+            CancellationToken ct,
+            int attempt = 0
         )
             where T : class
         {
             var lockKey = CacheKeys.LockKey(key);
-            if (await AcquireLock(lockKey, TimeSpan.FromMinutes(10)))
+            if (attempt >= MaxLockAttempts)
+                return await factory();
+            if (await AcquireLock(lockKey, LockExpiry))
             {
                 try
                 {
@@ -96,19 +111,22 @@ namespace blog.Common.Helper
             }
             else
             {
-                await Task.Delay(50, ct);
-                return await SaveCacheAsync(key, factory, ct);
+                await Task.Delay(LockRetryDelay, ct);
+                return await SaveCacheAsync(key, factory, ct, attempt + 1);
             }
         }
 
         public async Task<string?> SaveCacheAsync(
             string key,
             Func<Task<string?>> factory,
-            CancellationToken ct
+            CancellationToken ct,
+            int attempt = 0
         )
         {
             var lockKey = CacheKeys.LockKey(key);
-            if (await AcquireLock(lockKey, TimeSpan.FromMinutes(10)))
+            if (attempt >= MaxLockAttempts)
+                return await factory();
+            if (await AcquireLock(lockKey, LockExpiry))
             {
                 try
                 {
@@ -130,8 +148,8 @@ namespace blog.Common.Helper
             }
             else
             {
-                await Task.Delay(50, ct);
-                return await SaveCacheAsync(key, factory, ct);
+                await Task.Delay(LockRetryDelay, ct);
+                return await SaveCacheAsync(key, factory, ct, attempt + 1);
             }
         }
     }

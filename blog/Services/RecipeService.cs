@@ -34,7 +34,7 @@ namespace blog.Services
                 .ToPageResponseDtoWithCache(
                     queryDto.PageIndex,
                     queryDto.PageSize,
-                    PageEnums.ProblemsList,
+                    PageEnums.RecipeList,
                     filterSHA,
                     cache,
                     ct: ct

@@ -15,8 +15,6 @@ namespace blog.Services.Redis
         JudgeService judgeService
     )
     {
-        private readonly IDatabase _database = connectionMultiplexer.GetDatabase();
-
         public async Task<ProblemDetail?> GetProblemsDetail(int id, CancellationToken ct = default)
         {
             var key = CacheKeys.Problems(id);
@@ -42,12 +40,7 @@ namespace blog.Services.Redis
 
         public async Task InvalidateProblemsListAsync()
         {
-            var service = connectionMultiplexer.GetServer(
-                connectionMultiplexer.GetEndPoints().First()
-            );
-            var keys = service.KeysAsync(pattern: $"Blog{PageEnums.ProblemsList}:*");
-            await foreach (var key in keys)
-                await _database.KeyDeleteAsync(key);
+            await connectionMultiplexer.BumpListVersionAsync(PageEnums.ProblemsList);
         }
     }
 }

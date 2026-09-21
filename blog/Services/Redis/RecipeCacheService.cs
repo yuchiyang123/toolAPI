@@ -16,8 +16,6 @@ namespace blog.Services.Redis
         CacheHelper cacheHelper
     )
     {
-        private readonly IDatabase _database = connectionMultiplexer.GetDatabase();
-
         public async Task<RecipeDetailResponse?> GetRecipeDetailAsync(
             int id,
             CancellationToken ct = default
@@ -47,12 +45,7 @@ namespace blog.Services.Redis
 
         public async Task InvalidateRecipeListAsync()
         {
-            var service = connectionMultiplexer.GetServer(
-                connectionMultiplexer.GetEndPoints().First()
-            );
-            var keys = service.KeysAsync(pattern: $"Blog{PageEnums.RecipeList}:*");
-            await foreach (var key in keys)
-                await _database.KeyDeleteAsync(key);
+            await connectionMultiplexer.BumpListVersionAsync(PageEnums.RecipeList);
         }
     }
 }

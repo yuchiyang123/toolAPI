@@ -16,7 +16,21 @@ namespace blog.Common.Helper.Key
 
         public static string Problems(int id) => $"Problems:{id}";
 
-        public static string PageList(PageEnums service, int index, int size, string filterSHA) =>
-            $"{service}:{filterSHA}:pi{index}:ps{size}";
+        public static string Sequencer(int id) => $"Sequencer:{id}";
+
+        /// <summary>
+        /// 列表快取的版本號 key；invalidate 列表 = 版本 +1，舊 key 自然過期（不再 SCAN keyspace）
+        /// </summary>
+        public static string ListVersion(PageEnums service) => $"ver:{service}";
+
+        public static string PageList(
+            PageEnums service,
+            long version,
+            int index,
+            int size,
+            string filterSHA
+        ) => $"{service}:v{version}:{filterSHA}:pi{index}:ps{size}";
+
+        public static string PostViews(int id) => $"views:{id}";
     }
 }
