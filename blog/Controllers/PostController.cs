@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using blog.Dtos;
 using blog.Dtos.Page;
 using blog.Services;
@@ -28,16 +28,9 @@ namespace blog.Controllers
         [Authorize]
         public async Task<ActionResult> CreatePostAsync([FromBody] CreatePostDto dto)
         {
-            try
-            {
-                await service.CreatePostAsync(dto);
-                await cacheService.InvalidatePostListAsync();
-                return Ok();
-            }
-            catch
-            {
-                return BadRequest();
-            }
+            await service.CreatePostAsync(dto);
+            await cacheService.InvalidatePostListAsync();
+            return Ok();
         }
 
         [HttpPut()]
@@ -47,18 +40,11 @@ namespace blog.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!await service.ValidUpdatePostUser(dto.Id, userId))
                 return Forbid();
-            try
-            {
-                await service.UpdatePostAsync(dto);
-                await cacheService.InvalidatePostAsync(dto.Id);
-                await cacheService.InvalidataPostSummaryAsync(dto.Id);
-                await cacheService.InvalidatePostListAsync();
-                return Ok();
-            }
-            catch
-            {
-                return BadRequest();
-            }
+            await service.UpdatePostAsync(dto);
+            await cacheService.InvalidatePostAsync(dto.Id);
+            await cacheService.InvalidataPostSummaryAsync(dto.Id);
+            await cacheService.InvalidatePostListAsync();
+            return Ok();
         }
 
         [HttpDelete("{id}")]
@@ -79,7 +65,7 @@ namespace blog.Controllers
         [HttpPatch("view/{id}")]
         public async Task<ActionResult> UpdatePostsViewAsync(int id)
         {
-            await service.UpdatePostsViewAsync(id);
+            await cacheService.IncrementViewAsync(id);
             return Ok();
         }
 

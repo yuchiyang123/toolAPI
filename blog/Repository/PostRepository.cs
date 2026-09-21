@@ -17,7 +17,7 @@ namespace blog.Repository
                 .AsQueryable();
             if (requestDto.TagIds.Count != 0)
                 query = query.Where(x =>
-                    x.PostsTagsMapping.Any(y => requestDto.TagIds.Contains(y.Id))
+                    x.PostsTagsMapping.Any(y => requestDto.TagIds.Contains(y.FK_TagId))
                 );
             if (!string.IsNullOrEmpty(requestDto.Title))
                 query = query.Where(x => x.Title.Contains(requestDto.Title));

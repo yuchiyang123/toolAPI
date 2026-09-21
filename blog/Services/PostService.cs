@@ -1,5 +1,3 @@
-﻿using System.Linq.Dynamic.Core;
-using System.Net.Http;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using blog.Common.Enum;
@@ -20,7 +18,8 @@ namespace blog.Services
         BlogContext context,
         PostRepository repository,
         OllamaHelper ollamaHelper,
-        IDistributedCache cache
+        IDistributedCache cache,
+        ILogger<PostService> logger
     )
     {
         public async Task<PageResponseDto<PostDto>> GetPostAsync(
@@ -52,11 +51,7 @@ namespace blog.Services
                 await context.SaveChangesAsync();
                 if (postDto.Tags != null && postDto.Tags.Count > 0)
                 {
-                    var tag = ConvertPostsTags(postDto.Tags);
-                    context.PostsTags.AddRange(tag);
-                    await context.SaveChangesAsync();
-
-                    var tagsIds = tag.Select(x => x.Id).ToList();
+                    var tagsIds = await UpsertPostsTagsAsync(postDto.Tags);
                     var tagsMapping = ConvertPostTagMapping(entity.Id, tagsIds);
                     context.PostsTagsMapping.AddRange(tagsMapping);
                     await context.SaveChangesAsync();
@@ -72,56 +67,70 @@ namespace blog.Services
 
         public async Task UpdatePostAsync(UpdatePostDto updatePostDto)
         {
-            using var transaction = await context.Database.BeginTransactionAsync();
+            var entity = await repository.GetPostTag().FirstAsync(x => x.Id == updatePostDto.Id);
+
+            // 先保留舊值，AI 變更紀錄在 transaction 之外產生，避免 LLM 慢/掛掉阻塞更新
+            var oldTitle = entity.Title;
+            var oldContent = entity.Content;
+            var oldTags = string.Join(
+                ",",
+                entity.PostsTagsMapping?.Select(x => x.PostsTag.Tag) ?? []
+            );
+            var newTags = string.Join(",", updatePostDto.Tags ?? []);
+
+            using (var transaction = await context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    if (entity.PostsTagsMapping != null)
+                    {
+                        // 只移除 mapping，PostsTag 本身保留給其他文章共用
+                        context.PostsTagsMapping.RemoveRange(entity.PostsTagsMapping);
+
+                        if (updatePostDto.Tags != null && updatePostDto.Tags.Count > 0)
+                        {
+                            var tagsIds = await UpsertPostsTagsAsync(updatePostDto.Tags);
+                            var tagsMapping = ConvertPostTagMapping(updatePostDto.Id, tagsIds);
+                            context.PostsTagsMapping.AddRange(tagsMapping);
+                        }
+                    }
+
+                    mapper.Map(updatePostDto, entity);
+                    await context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                }
+                catch
+                {
+                    await transaction.RollbackAsync();
+                    throw;
+                }
+            }
+
+            // 變更紀錄：失敗只記 log，不影響已完成的更新
             try
             {
-                var entity = await repository
-                    .GetPostTag()
-                    .FirstAsync(x => x.Id == updatePostDto.Id);
                 var changeRecord = await GetChangeRecords(
-                    entity.Title,
+                    oldTitle,
                     updatePostDto.Title,
-                    entity.Content,
+                    oldContent,
                     updatePostDto.Content,
-                    string.Join(",", entity.PostsTagsMapping.Select(x => x.PostsTag.Tag) ?? []),
-                    string.Join(",", updatePostDto.Tags ?? [])
+                    oldTags,
+                    newTags
                 );
-                var changeRecordEntity = new PostsChangeRecord
-                {
-                    ChangeRecord = changeRecord,
-                    FK_PostsId = entity.Id,
-                    CreateDate = DateOnly.FromDateTime(DateTime.Now),
-                    CreateUserId = updatePostDto.CreateUserId,
-                };
-                context.PostsChangeRecords.Add(changeRecordEntity);
-
-                if (entity.PostsTagsMapping != null)
-                {
-                    context.PostsTags.RemoveRange(entity.PostsTagsMapping.Select(x => x.PostsTag));
-                    context.PostsTagsMapping.RemoveRange(entity.PostsTagsMapping);
-
-                    if (updatePostDto.Tags != null && updatePostDto.Tags.Count > 0)
+                context.PostsChangeRecords.Add(
+                    new PostsChangeRecord
                     {
-                        var tags = ConvertPostsTags(updatePostDto.Tags);
-                        context.PostsTags.AddRange(tags);
-                        await context.SaveChangesAsync();
-
-                        var tagsIds = tags.Select(x => x.Id).ToList();
-                        var tagsMapping = ConvertPostTagMapping(updatePostDto.Id, tagsIds);
-
-                        context.PostsTagsMapping.AddRange(tagsMapping);
-                        await context.SaveChangesAsync();
+                        ChangeRecord = changeRecord,
+                        FK_PostsId = entity.Id,
+                        CreateDate = DateOnly.FromDateTime(DateTime.Now),
+                        CreateUserId = updatePostDto.CreateUserId,
                     }
-                }
-
-                mapper.Map(updatePostDto, entity);
+                );
                 await context.SaveChangesAsync();
-                await transaction.CommitAsync();
             }
-            catch
+            catch (Exception ex)
             {
-                await transaction.RollbackAsync();
-                throw;
+                logger.LogWarning(ex, "寫入文章變更紀錄失敗 PostId={PostId}", entity.Id);
             }
         }
 
@@ -156,7 +165,8 @@ namespace blog.Services
                 Prompt = $"用繁體中文輸出詳細的摘要，只輸出摘要：\n{content}",
             };
 
-            return await ollamaHelper.GetOllamaResponse(dto);
+            return await ollamaHelper.GetOllamaResponse(dto)
+                ?? throw new Exception("AI 摘要產生失敗");
         }
 
         public async Task<List<string>> GetTags()
@@ -174,14 +184,34 @@ namespace blog.Services
             return true;
         }
 
-        private static List<PostsTag> ConvertPostsTags(List<string> tags)
+        /// <summary>
+        /// 依標籤名稱取得既有 PostsTag，不存在的才新增，回傳全部 Id
+        /// </summary>
+        private async Task<List<int>> UpsertPostsTagsAsync(List<string> tags)
         {
-            var tagsEntity = new List<PostsTag>();
-            foreach (var tag in tags)
+            var names = tags.Select(t => t.Trim())
+                .Where(t => t.Length > 0)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+            if (names.Count == 0)
+                return [];
+
+            var existing = await context.PostsTags.Where(t => names.Contains(t.Tag)).ToListAsync();
+            var existingNames = existing
+                .Select(t => t.Tag)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            var toAdd = names
+                .Where(n => !existingNames.Contains(n))
+                .Select(n => new PostsTag { Tag = n, CreateDate = DateTime.Now })
+                .ToList();
+            if (toAdd.Count > 0)
             {
-                tagsEntity.Add(new PostsTag { Tag = tag });
+                context.PostsTags.AddRange(toAdd);
+                await context.SaveChangesAsync();
             }
-            return tagsEntity;
+
+            return [.. existing.Select(t => t.Id), .. toAdd.Select(t => t.Id)];
         }
 
         private static List<PostsTagMapping> ConvertPostTagMapping(int postId, List<int> tagsIds)
@@ -209,7 +239,7 @@ namespace blog.Services
                     $"這是舊文章標題：{oldTitle}，這是修改過後的文章標題：{newTitle}，這是舊文章內容：{oldContent}，這是修改過後的文章內容：{newContent}，這是舊文章標籤：{oldTags}，這是修改過後的文章標籤：{newTags}，請比較後回傳文章的異動說明，請勿添加任何的表情符號，明確表示修改了什麼以及新增異動了什麼",
             };
 
-            return await ollamaHelper.GetOllamaResponse(dto);
+            return await ollamaHelper.GetOllamaResponse(dto) ?? "（AI 變更紀錄產生失敗）";
         }
     }
 }

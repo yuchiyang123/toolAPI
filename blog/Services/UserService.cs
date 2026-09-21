@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using blog.Common.Helper;
 using blog.Dtos;
 using blog.Entities;
@@ -45,8 +45,10 @@ namespace blog.Services
 
         public async Task<List<DropDownListDto>> GetUserDropDownAsync()
         {
-            var userInfo = await context.Users.ToListAsync();
-            return mapper.Map<List<DropDownListDto>>(userInfo);
+            // 只投影需要的欄位，不把 PasswordHash 撈進記憶體
+            return await context
+                .Users.Select(x => new DropDownListDto { Id = x.Id.ToString(), Label = x.UserName })
+                .ToListAsync();
         }
 
         public async Task<bool> ValidUserToken()
