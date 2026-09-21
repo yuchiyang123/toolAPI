@@ -7,6 +7,6 @@
         public int SubmissionId { get; set; }
         public required string ActualOutput { get; set; }
         public bool IsPassed { get; set; }
-        public Submission Submission { get; set; }
+        public Submission Submission { get; set; } = null!;
     }
 }

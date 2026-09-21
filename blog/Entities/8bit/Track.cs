@@ -6,7 +6,7 @@
         public int SequencerId { get; set; }
         public int StepId { get; set; }
         public int TrackSeq { get; set; }
-        public Sequencer Sequencer { get; set; }
-        public List<Step> Step { get; set; }
+        public Sequencer Sequencer { get; set; } = null!;
+        public List<Step> Step { get; set; } = [];
     }
 }

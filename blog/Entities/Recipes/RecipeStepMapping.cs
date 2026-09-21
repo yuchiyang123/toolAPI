@@ -8,7 +8,7 @@ namespace blog.Entities.Recipes
         public int Id { get; set; }
         public int RecipeId { get; set; }
         public int RecipeStepId { get; set; }
-        public RecipeStep RecipeStep { get; set; }
-        public Recipe Recipe { get; set; }
+        public RecipeStep RecipeStep { get; set; } = null!;
+        public Recipe Recipe { get; set; } = null!;
     }
 }

@@ -11,8 +11,8 @@ namespace blog.Entities._8bit
         public required int UpdateUser { get; set; }
         public required DateTime CreateDate { get; set; }
         public required int CreateUser { get; set; }
-        public Users UpdateUsers { get; set; }
-        public Users CreateUsers { get; set; }
-        public ICollection<Track> Tracks { get; set; }
+        public Users UpdateUsers { get; set; } = null!;
+        public Users CreateUsers { get; set; } = null!;
+        public ICollection<Track> Tracks { get; set; } = [];
     }
 }

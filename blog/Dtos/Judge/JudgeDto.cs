@@ -44,7 +44,7 @@ namespace blog.Dtos.Judge
         public required string Description { get; set; }
         public DateTime UpdateDate { get; set; }
         public DateTime CreateDate { get; set; }
-        public List<SubmissionDto> Submissions { get; set; }
+        public List<SubmissionDto> Submissions { get; set; } = [];
         public List<TestCases>? TestCases { get; set; }
         public List<TestCases>? OriginalTestCases { get; set; }
         public required List<LanguageInfo> LanguageInfo { get; set; }
@@ -63,8 +63,8 @@ namespace blog.Dtos.Judge
         public required string Code { get; set; }
         public SubmissionStatus Status { get; set; }
         public DateTime? SubmittedAt { get; set; }
-        public UserDto User { get; set; }
-        public List<Result> Results { get; set; }
+        public UserDto User { get; set; } = null!;
+        public List<Result> Results { get; set; } = [];
     }
 
     public class Result

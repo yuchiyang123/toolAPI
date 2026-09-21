@@ -7,6 +7,6 @@ namespace blog.Entities.Recipes
     {
         public int Id { get; set; }
         public required string Tag { get; set; }
-        public ICollection<RecipeTagMapping> RecipeTagMappings { get; set; }
+        public ICollection<RecipeTagMapping> RecipeTagMappings { get; set; } = [];
     }
 }

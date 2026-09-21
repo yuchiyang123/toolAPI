@@ -6,6 +6,6 @@
         public int SignatureId { get; set; }
         public required string ParameterName { get; set; }
         public required string Type { get; set; }
-        public ProblemSignature ProblemSignature { get; set; }
+        public ProblemSignature ProblemSignature { get; set; } = null!;
     }
 }

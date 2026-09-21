@@ -8,6 +8,6 @@ namespace blog.Entities.Blog
         public int Id { get; set; }
         public required string Tag { get; set; }
         public DateTime CreateDate { get; set; }
-        public ICollection<PostsTagMapping> PostsTagMapping { get; set; }
+        public ICollection<PostsTagMapping> PostsTagMapping { get; set; } = [];
     }
 }

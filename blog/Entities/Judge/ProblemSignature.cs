@@ -8,8 +8,8 @@ namespace blog.Entities.Judge
         public int ProblemId { get; set; }
         public JudgeLanguageEnum Language { get; set; }
         public required string FunctionName { get; set; }
-        public Problem Problem { get; set; }
-        public ICollection<ProblemParameters> ProblemParameters { get; set; }
-        public ICollection<ProblemReturnType> ProblemReturnTypes { get; set; }
+        public Problem Problem { get; set; } = null!;
+        public ICollection<ProblemParameters> ProblemParameters { get; set; } = [];
+        public ICollection<ProblemReturnType> ProblemReturnTypes { get; set; } = [];
     }
 }

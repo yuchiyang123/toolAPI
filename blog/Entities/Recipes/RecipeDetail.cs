@@ -11,6 +11,6 @@ namespace blog.Entities.Recipes
         /// 心得
         /// </summary>
         public required string Content { get; set; }
-        public ICollection<RecipeDetail> RecipeDetails { get; set; }
+        public ICollection<RecipeDetail> RecipeDetails { get; set; } = [];
     }
 }

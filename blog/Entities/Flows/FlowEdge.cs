@@ -13,10 +13,10 @@ namespace blog.Entities.Flows
         public required int UpdateUser { get; set; }
         public required DateTime CreateDate { get; set; }
         public required int CreateUser { get; set; }
-        public FlowVersion FlowVersion { get; set; }
-        public FlowNode FlowSourceNode { get; set; }
-        public FlowNode FlowTargetNode { get; set; }
-        public Users UpdateUsers { get; set; }
-        public Users CreateUsers { get; set; }
+        public FlowVersion FlowVersion { get; set; } = null!;
+        public FlowNode FlowSourceNode { get; set; } = null!;
+        public FlowNode FlowTargetNode { get; set; } = null!;
+        public Users UpdateUsers { get; set; } = null!;
+        public Users CreateUsers { get; set; } = null!;
     }
 }

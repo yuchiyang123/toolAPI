@@ -12,8 +12,8 @@ namespace blog.Entities.Blog
         public int View { get; set; }
         public DateTime CreateDate { get; set; }
         public required int CreateUserId { get; set; }
-        public Users User { get; set; }
-        public ICollection<PostsChangeRecord> PostsChangeRecords { get; set; }
-        public ICollection<PostsTagMapping> PostsTagsMapping { get; set; }
+        public Users User { get; set; } = null!;
+        public ICollection<PostsChangeRecord> PostsChangeRecords { get; set; } = [];
+        public ICollection<PostsTagMapping> PostsTagsMapping { get; set; } = [];
     }
 }

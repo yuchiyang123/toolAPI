@@ -9,6 +9,6 @@ namespace blog.Entities.Recipes
         public int Step { get; set; }
         public required string Description { get; set; }
         public string? Image { get; set; }
-        public ICollection<RecipeStepMapping> RecipeStepMappings { get; set; }
+        public ICollection<RecipeStepMapping> RecipeStepMappings { get; set; } = [];
     }
 }

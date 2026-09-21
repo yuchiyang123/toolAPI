@@ -9,6 +9,6 @@ namespace blog.Entities.Judge
         public JudgeLanguageEnum Language { get; set; }
         public required string Input { get; set; }
         public required string Expected { get; set; }
-        public Problem Problem { get; set; }
+        public Problem Problem { get; set; } = null!;
     }
 }

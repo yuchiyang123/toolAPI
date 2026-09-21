@@ -12,6 +12,7 @@ namespace blog.Entities.Recipes
         /// 需要多少量
         /// </summary>
         public required string Amount { get; set; }
-        public ICollection<RecipeIngredientsDetailMapping> RecipeIngredientsDetailMappings { get; set; }
+        public ICollection<RecipeIngredientsDetailMapping> RecipeIngredientsDetailMappings { get; set; } =
+        [];
     }
 }

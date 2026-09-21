@@ -11,7 +11,7 @@ namespace blog.Entities.Blog
         public required string ChangeRecord { get; set; }
         public DateOnly CreateDate { get; set; }
         public int CreateUserId { get; set; }
-        public Users Users { get; set; }
-        public Posts Posts { get; set; }
+        public Users Users { get; set; } = null!;
+        public Posts Posts { get; set; } = null!;
     }
 }

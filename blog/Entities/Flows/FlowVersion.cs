@@ -12,10 +12,10 @@ namespace blog.Entities.Flows
         public required int UpdateUser { get; set; }
         public required DateTime CreateDate { get; set; }
         public required int CreateUser { get; set; }
-        public Flow Flows { get; set; }
-        public ICollection<FlowNode> FlowNodes { get; set; }
-        public ICollection<FlowEdge> FlowEdges { get; set; }
-        public Users UpdateUsers { get; set; }
-        public Users CreateUsers { get; set; }
+        public Flow Flows { get; set; } = null!;
+        public ICollection<FlowNode> FlowNodes { get; set; } = [];
+        public ICollection<FlowEdge> FlowEdges { get; set; } = [];
+        public Users UpdateUsers { get; set; } = null!;
+        public Users CreateUsers { get; set; } = null!;
     }
 }

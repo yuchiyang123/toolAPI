@@ -33,10 +33,10 @@ namespace blog.Entities.Recipes
         public string? Description { get; set; }
         public DateTime UpdateDate { get; set; }
         public DateTime CreateDate { get; set; }
-        public ICollection<RecipeTagMapping> RecipeTagMappings { get; set; }
-        public ICollection<RecipeStepMapping> RecipeStepMappings { get; set; }
-        public RecipeDetailMapping RecipeDetailMappings { get; set; }
-        public ICollection<RecipeIngredientsMapping> RecipeIngredientsMappings { get; set; }
-        public RecipeFileMapping RecipeFileMappings { get; set; }
+        public ICollection<RecipeTagMapping> RecipeTagMappings { get; set; } = [];
+        public ICollection<RecipeStepMapping> RecipeStepMappings { get; set; } = [];
+        public RecipeDetailMapping RecipeDetailMappings { get; set; } = null!;
+        public ICollection<RecipeIngredientsMapping> RecipeIngredientsMappings { get; set; } = [];
+        public RecipeFileMapping RecipeFileMappings { get; set; } = null!;
     }
 }

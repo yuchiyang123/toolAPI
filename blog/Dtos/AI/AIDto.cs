@@ -12,7 +12,7 @@ namespace blog.Dtos.AI
     public class OllamaResponse
     {
         [JsonPropertyName("response")]
-        public string Response { get; set; }
+        public string? Response { get; set; }
     }
 
     public class AiDtoRequest

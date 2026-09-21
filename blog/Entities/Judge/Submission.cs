@@ -14,8 +14,8 @@ namespace blog.Entities.Judge
         public int TotalCount { get; set; }
         public DateTime SubmittedAt { get; set; }
         public int UserId { get; set; }
-        public Users Users { get; set; }
-        public Problem Problem { get; set; }
-        public ICollection<SubmissionResult> SubmissionResults { get; set; }
+        public Users Users { get; set; } = null!;
+        public Problem Problem { get; set; } = null!;
+        public ICollection<SubmissionResult> SubmissionResults { get; set; } = [];
     }
 }
