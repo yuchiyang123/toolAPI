@@ -1,0 +1,28 @@
+# 判題沙盒（JudgeService）在正式站 compose 需要額外加的設定。
+# 把下面的 environment / volumes 合併進 api service 即可。
+# 注意：/tmp/judgeTemp 在 host 與 API container 內路徑必須一致，
+#       因為 API 會把這個路徑 bind mount 給它建立的沙盒容器（docker 是用 host 路徑解析）。
+services:
+  api:
+    build:
+      context: .
+      dockerfile: blog/Dockerfile
+    ports:
+      - "8082:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - File__BasePath=/app/files
+      - ConnectionStrings__Redis=host.docker.internal:6379
+      - Ollama__Url=http://host.docker.internal:11434/api/generate
+      # --- 判題沙盒 ---
+      - JudgeOptions__DockerEndpoint=unix:///var/run/docker.sock
+      - JudgeOptions__SandBoxPath=/tmp/judgeTemp
+      - JudgeOptions__TimeoutSeconds=15
+      - JudgeOptions__MemoryLimitBytes=134217728
+    volumes:
+      - ./files:/app/files
+      # --- 判題沙盒 ---
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp/judgeTemp:/tmp/judgeTemp
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
