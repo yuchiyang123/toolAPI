@@ -15,7 +15,7 @@ namespace blog.Controllers
             if (await service.LoginAsync(dto.UserName, dto.Password))
             {
                 int userId = await service.GetIdByUserName(dto.UserName);
-                string token = jwtService.GenerateeToken(userId.ToString());
+                string token = jwtService.GenerateToken(userId.ToString());
                 return Ok(token);
             }
             return BadRequest();

@@ -42,7 +42,7 @@ namespace blog.Controllers
                 return Forbid();
             await service.UpdatePostAsync(dto);
             await cacheService.InvalidatePostAsync(dto.Id);
-            await cacheService.InvalidataPostSummaryAsync(dto.Id);
+            await cacheService.InvalidatePostSummaryAsync(dto.Id);
             await cacheService.InvalidatePostListAsync();
             return Ok();
         }
@@ -57,7 +57,7 @@ namespace blog.Controllers
 
             await service.DeletePostAsync(id);
             await cacheService.InvalidatePostAsync(id);
-            await cacheService.InvalidataPostSummaryAsync(id);
+            await cacheService.InvalidatePostSummaryAsync(id);
             await cacheService.InvalidatePostListAsync();
             return Ok();
         }

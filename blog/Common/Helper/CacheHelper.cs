@@ -62,7 +62,7 @@ namespace blog.Common.Helper
                         return null;
                     }
 
-                    await cache.SaveReditForObjectAsync<T>(key, data, ct);
+                    await cache.SaveRedisForObjectAsync<T>(key, data, ct);
 
                     return data;
                 }
@@ -100,7 +100,7 @@ namespace blog.Common.Helper
                         return null;
                     }
 
-                    await cache.SaveReditForObjectAsync<T>(key, saveData, ct);
+                    await cache.SaveRedisForObjectAsync<T>(key, saveData, ct);
 
                     return saveData;
                 }
@@ -137,7 +137,7 @@ namespace blog.Common.Helper
                         return null;
                     }
 
-                    await cache.SaveReditForStringAsync(key, stringData, ct);
+                    await cache.SaveRedisForStringAsync(key, stringData, ct);
 
                     return stringData;
                 }

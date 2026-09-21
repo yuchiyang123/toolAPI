@@ -56,13 +56,13 @@ namespace blog.Controllers
             return Ok();
         }
 
-        [HttpDelete("detail/{verionsId}")]
+        [HttpDelete("detail/{versionId}")]
         [Authorize]
-        public async Task<IActionResult> DeleteFlowVerions(int verionsId)
+        public async Task<IActionResult> DeleteFlowVerions(int versionId)
         {
-            await flowService.DeleteFlowVerions(verionsId);
+            await flowService.DeleteFlowVerions(versionId);
             await cacheService.InvalidateFlowListAsync();
-            await cacheService.InvalidateFlowDetailAsync(verionsId);
+            await cacheService.InvalidateFlowDetailAsync(versionId);
             return Ok();
         }
 

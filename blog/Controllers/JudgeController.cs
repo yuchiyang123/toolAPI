@@ -14,7 +14,7 @@ namespace blog.Controllers
     [ApiController]
     public class JudgeController(
         JudgeService service,
-        JudgaCacheService cacheService,
+        JudgeCacheService cacheService,
         Publisher publisher
     ) : ControllerBase
     {
@@ -66,7 +66,7 @@ namespace blog.Controllers
             return StatusCode(202);
         }
 
-        [HttpPost("id/test/dubug")]
+        [HttpPost("id/test/debug")]
         public async Task<ActionResult<SubmissionResponse>> GetRunDebugAsync(
             [FromBody] JudgeTestRequestDto judge
         )

@@ -24,7 +24,7 @@ namespace blog.Services
         IMapper mapper,
         IDistributedCache cache,
         JudgeRepository repository,
-        JuageHelper helper,
+        JudgeHelper helper,
         BlogContext context,
         IOptions<JudgeOptions> options,
         IDockerClient _docker,
@@ -225,7 +225,7 @@ namespace blog.Services
                 .Where(x => x.ProblemId == id)
                 .ProjectTo<ParameterTypeDto>(mapper.ConfigurationProvider)
                 .ToListAsync();
-            var combinStartCodes = helper.CombinStartCode(needCombleData);
+            var combinStartCodes = helper.CombineStartCode(needCombleData);
             var dto =
                 await repository
                     .GetProblemDetail()
@@ -304,7 +304,7 @@ namespace blog.Services
         )
         {
             var resultDto = await GetTestResultAsync(dto, ct: ct);
-            var results = resultDto.Stdout?.Split(JuageHelper.SplitSpecialSymbols);
+            var results = resultDto.Stdout?.Split(JudgeHelper.SplitSpecialSymbols);
             var entity = await repository
                 .GetProblemsFeature(dto.Language)
                 .Where(x => x.Id == dto.Id)
@@ -323,7 +323,7 @@ namespace blog.Services
                 return testResultDtoForNull;
             }
 
-            var testResultCase = CovertTestResult(results, expectedResult);
+            var testResultCase = ConvertTestResult(results, expectedResult);
 
             SubmissionStatus nobuildErrorStatus = testResultCase.Any(x => !x.IsPassed)
                 ? SubmissionStatus.WA
@@ -364,7 +364,7 @@ namespace blog.Services
                 testInput,
                 ct
             );
-            var results = resultDto.Stdout?.Split(JuageHelper.SplitSpecialSymbols);
+            var results = resultDto.Stdout?.Split(JudgeHelper.SplitSpecialSymbols);
             if (results == null)
             {
                 var testResultDtoForNull = await GetTestResultDto(dto.Id, dto.Language, ct);
@@ -376,7 +376,7 @@ namespace blog.Services
                 return testResultDtoForNull;
             }
 
-            var testResultCase = CovertTestResult(results, testOutPut);
+            var testResultCase = ConvertTestResult(results, testOutPut);
             SubmissionStatus nobuildErrorStatus = testResultCase.Any(x => !x.IsPassed)
                 ? SubmissionStatus.WA
                 : SubmissionStatus.AC;
@@ -519,7 +519,7 @@ namespace blog.Services
         /// <param name="results"></param>
         /// <param name="expectedResult"></param>
         /// <returns></returns>
-        private static List<JudgeResultReponse> CovertTestResult(
+        private static List<JudgeResultReponse> ConvertTestResult(
             string[] results,
             Dictionary<int, string> expectedResult
         )

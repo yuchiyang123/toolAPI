@@ -5,7 +5,7 @@ using blog.Entities;
 
 namespace blog.Common.Helper
 {
-    public class JuageHelper
+    public class JudgeHelper
     {
         public static readonly string SplitSpecialSymbols = "===SPLIT===";
 
@@ -68,9 +68,9 @@ namespace blog.Common.Helper
             [JudgeLanguageEnum.csharp] = ("static ", " \n{", "\n}"),
         };
 
-        public List<CombinStartCode> CombinStartCode(List<ParameterTypeDto> parameters)
+        public List<CombineStartCode> CombineStartCode(List<ParameterTypeDto> parameters)
         {
-            var startCodeList = new List<CombinStartCode>();
+            var startCodeList = new List<CombineStartCode>();
             foreach (var items in parameters)
             {
                 (string before, string beforeSy, string afterSy) = PrintFunction[items.Language];
@@ -79,7 +79,7 @@ namespace blog.Common.Helper
                 string startCode =
                     before + returnStr + items.FunctionName + parameterStr + beforeSy + afterSy;
                 startCodeList.Add(
-                    new CombinStartCode { Language = items.Language, StartCode = startCode }
+                    new CombineStartCode { Language = items.Language, StartCode = startCode }
                 );
             }
 

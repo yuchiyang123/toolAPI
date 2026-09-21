@@ -9,7 +9,7 @@ namespace blog.Services
     {
         public readonly IConfiguration _configuration = configuration;
 
-        public string GenerateeToken(string userId)
+        public string GenerateToken(string userId)
         {
             var jwtConfig = _configuration.GetSection("Jwt");
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig["Key"]!));

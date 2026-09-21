@@ -23,7 +23,7 @@ namespace blog.Common.Helper
             );
         }
 
-        public static async Task SaveReditForObjectAsync<T>(
+        public static async Task SaveRedisForObjectAsync<T>(
             this IDistributedCache cache,
             string key,
             T saveData,
@@ -33,10 +33,10 @@ namespace blog.Common.Helper
         {
             var saveDataString = JsonSerializer.Serialize<T>(saveData);
 
-            await cache.SaveReditForStringAsync(key, saveDataString, ct);
+            await cache.SaveRedisForStringAsync(key, saveDataString, ct);
         }
 
-        public static async Task SaveReditForStringAsync(
+        public static async Task SaveRedisForStringAsync(
             this IDistributedCache cache,
             string key,
             string saveData,

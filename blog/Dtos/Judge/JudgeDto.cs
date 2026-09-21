@@ -48,7 +48,7 @@ namespace blog.Dtos.Judge
         public List<TestCases>? TestCases { get; set; }
         public List<TestCases>? OriginalTestCases { get; set; }
         public required List<LanguageInfo> LanguageInfo { get; set; }
-        public required List<CombinStartCode> StartCodes { get; set; }
+        public required List<CombineStartCode> StartCodes { get; set; }
     }
 
     public class LanguageInfo
@@ -109,7 +109,7 @@ namespace blog.Dtos.Judge
         public required string ReturnType { get; set; }
     }
 
-    public class CombinStartCode
+    public class CombineStartCode
     {
         public required JudgeLanguageEnum Language { get; set; }
         public required string StartCode { get; set; }

@@ -9,8 +9,7 @@ namespace blog.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BitController(_8BitService service, _8bitrCacheService cacheService)
-        : ControllerBase
+    public class BitController(BitService service, BitCacheService cacheService) : ControllerBase
     {
         [HttpGet("list")]
         public async Task<ActionResult<PageResponseDto<SequencerListRequestDto>>> Get8BitListAsync(

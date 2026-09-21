@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace blog.Repository
 {
-    public class _8BitRepository(BlogContext context)
+    public class BitRepository(BlogContext context)
     {
         public IQueryable<Sequencer> GetSequencer()
         {

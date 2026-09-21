@@ -126,13 +126,13 @@ builder.Services.AddScoped<FlowService>();
 builder.Services.AddScoped<FlowRepository>();
 builder.Services.AddScoped<JwtInfoHelper>();
 builder.Services.AddScoped<FlowCacheService>();
-builder.Services.AddScoped<_8BitRepository>();
-builder.Services.AddScoped<_8BitService>();
+builder.Services.AddScoped<BitRepository>();
+builder.Services.AddScoped<BitService>();
 builder.Services.AddScoped<JudgeService>();
-builder.Services.AddScoped<JudgaCacheService>();
+builder.Services.AddScoped<JudgeCacheService>();
 builder.Services.AddScoped<JudgeRepository>();
-builder.Services.AddScoped<JuageHelper>();
-builder.Services.AddScoped<_8bitrCacheService>();
+builder.Services.AddScoped<JudgeHelper>();
+builder.Services.AddScoped<BitCacheService>();
 
 builder
     .Services.AddSignalR()

@@ -8,7 +8,7 @@ using StackExchange.Redis;
 
 namespace blog.Services.Redis
 {
-    public class JudgaCacheService(
+    public class JudgeCacheService(
         IDistributedCache cache,
         CacheHelper cacheHelper,
         IConnectionMultiplexer connectionMultiplexer,

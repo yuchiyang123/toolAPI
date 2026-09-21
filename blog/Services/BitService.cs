@@ -13,11 +13,11 @@ using Microsoft.Extensions.Caching.Distributed;
 
 namespace blog.Services
 {
-    public class _8BitService(
+    public class BitService(
         IMapper mapper,
         IDistributedCache cache,
         BlogContext context,
-        _8BitRepository repository,
+        BitRepository repository,
         JwtInfoHelper jwtInfoHelper
     )
     {

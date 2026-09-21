@@ -8,11 +8,11 @@ using StackExchange.Redis;
 
 namespace blog.Services.Redis
 {
-    public class _8bitrCacheService(
+    public class BitCacheService(
         IDistributedCache cache,
         IConnectionMultiplexer connectionMultiplexer,
         CacheHelper cacheHelper,
-        _8BitService service
+        BitService service
     )
     {
         public async Task<SequencerResponseDto?> Get8BitDetail(

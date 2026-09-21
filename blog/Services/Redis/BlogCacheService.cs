@@ -106,7 +106,7 @@ namespace blog.Services.Redis
 
                     if (aiResponse is not null)
                     {
-                        await cache.SaveReditForStringAsync(key, aiResponse, ct);
+                        await cache.SaveRedisForStringAsync(key, aiResponse, ct);
                     }
                     else
                     {
@@ -141,7 +141,7 @@ namespace blog.Services.Redis
             return await ollamaHelper.GetOllamaResponse(ollamaHelper.GetAiDtoRequest(content));
         }
 
-        public async Task InvalidataPostSummaryAsync(int id)
+        public async Task InvalidatePostSummaryAsync(int id)
         {
             await cache.RemoveAsync(CacheKeys.PostSummary(id));
         }
