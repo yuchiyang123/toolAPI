@@ -4,6 +4,8 @@ using blog.Entities.Recipes;
 using blog.Repository;
 using blog.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -27,9 +29,13 @@ public class RecipeServiceTests
         var mockLogger = new Mock<ILogger<RecipeService>>();
         var mockFileHelper = new Mock<FileHelper>(context, mockConfig.Object);
         var repository = new RecipeRepository(context);
+        IDistributedCache cache = new MemoryDistributedCache(
+            Microsoft.Extensions.Options.Options.Create(new MemoryDistributedCacheOptions())
+        );
         return new RecipeService(
             context,
             mockMapper.Object,
+            cache,
             mockFileHelper.Object,
             mockLogger.Object,
             repository

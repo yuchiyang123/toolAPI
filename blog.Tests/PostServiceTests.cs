@@ -5,7 +5,10 @@ using blog.Entities.User;
 using blog.Repository;
 using blog.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace blog.Tests;
@@ -25,9 +28,23 @@ public class PostServiceTests
         var mockMapper = new Mock<AutoMapper.IMapper>();
         var mockConfig = new Mock<IConfiguration>();
         var mockHttp = new Mock<HttpClient>();
-        var ollamaHelper = new OllamaHelper(mockConfig.Object, mockHttp.Object);
+        var ollamaHelper = new OllamaHelper(
+            mockConfig.Object,
+            mockHttp.Object,
+            Mock.Of<ILogger<OllamaHelper>>()
+        );
         var repository = new PostRepository(context);
-        return new PostService(mockMapper.Object, context, repository, ollamaHelper);
+        IDistributedCache cache = new MemoryDistributedCache(
+            Microsoft.Extensions.Options.Options.Create(new MemoryDistributedCacheOptions())
+        );
+        return new PostService(
+            mockMapper.Object,
+            context,
+            repository,
+            ollamaHelper,
+            cache,
+            Mock.Of<ILogger<PostService>>()
+        );
     }
 
     [Fact]

@@ -9,9 +9,6 @@ on:
 jobs:
   build-and-check:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./blog
 
     steps:
       - uses: actions/checkout@v4
@@ -22,16 +19,21 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Restore tools
+        working-directory: ./blog
         run: dotnet tool restore
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore blog.sln
 
       - name: Check format
+        working-directory: ./blog
         run: dotnet csharpier check .
 
       - name: Build
-        run: dotnet build --no-restore --configuration Release
+        run: dotnet build blog.sln --no-restore --configuration Release
 
       - name: Run tests
-        run: dotnet test ../blog.Tests/blog.Tests.csproj --configuration Release --logger "console;verbosity=detailed"
+        run: dotnet test blog.Tests/blog.Tests.csproj --no-build --configuration Release --logger "console;verbosity=normal"
+
+      - name: Docker build
+        run: docker build -f blog/Dockerfile -t toolapi:ci .
