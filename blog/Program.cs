@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using AutoMapper;
 using blog.Common.Helper;
 using blog.Entities;
@@ -210,6 +210,14 @@ builder.Host.UseSerilog(
 var app = builder.Build();
 
 // ----- Pipeline -----
+// 正式站掛在反向代理的子路徑下（https://api.matthewyu.uk/toolAPI/...）。
+// 由環境變數 PathBase=/toolAPI 指定；本機開發留空即為根路徑。
+var pathBase = app.Configuration["PathBase"];
+if (!string.IsNullOrWhiteSpace(pathBase))
+{
+    app.UsePathBase(pathBase);
+}
+
 app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
