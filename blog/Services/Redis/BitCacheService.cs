@@ -4,13 +4,11 @@ using blog.Common.Helper;
 using blog.Common.Helper.Key;
 using blog.Dtos._8bit;
 using Microsoft.Extensions.Caching.Distributed;
-using StackExchange.Redis;
 
 namespace blog.Services.Redis
 {
     public class BitCacheService(
         IDistributedCache cache,
-        IConnectionMultiplexer connectionMultiplexer,
         CacheHelper cacheHelper,
         BitService service
     )
@@ -43,7 +41,7 @@ namespace blog.Services.Redis
 
         public async Task Invalidate8BitListAsync()
         {
-            await connectionMultiplexer.BumpListVersionAsync(PageEnums._8BitList);
+            await cache.BumpListVersionAsync(PageEnums._8BitList);
         }
     }
 }

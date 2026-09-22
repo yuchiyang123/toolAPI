@@ -57,7 +57,7 @@ namespace blog.Services.Redis
         #region PostList
         public async Task InvalidatePostListAsync()
         {
-            await connectionMultiplexer.BumpListVersionAsync(PageEnums.PostList);
+            await cache.BumpListVersionAsync(PageEnums.PostList);
         }
         #endregion
 

@@ -4,14 +4,12 @@ using blog.Common.Helper;
 using blog.Common.Helper.Key;
 using blog.Dtos.Judge;
 using Microsoft.Extensions.Caching.Distributed;
-using StackExchange.Redis;
 
 namespace blog.Services.Redis
 {
     public class JudgeCacheService(
         IDistributedCache cache,
         CacheHelper cacheHelper,
-        IConnectionMultiplexer connectionMultiplexer,
         JudgeService judgeService
     )
     {
@@ -40,7 +38,7 @@ namespace blog.Services.Redis
 
         public async Task InvalidateProblemsListAsync()
         {
-            await connectionMultiplexer.BumpListVersionAsync(PageEnums.ProblemsList);
+            await cache.BumpListVersionAsync(PageEnums.ProblemsList);
         }
     }
 }

@@ -4,13 +4,11 @@ using blog.Common.Helper;
 using blog.Common.Helper.Key;
 using blog.Dtos.Flow;
 using Microsoft.Extensions.Caching.Distributed;
-using StackExchange.Redis;
 
 namespace blog.Services.Redis
 {
     public class FlowCacheService(
         IDistributedCache cache,
-        IConnectionMultiplexer connectionMultiplexer,
         CacheHelper cacheHelper,
         FlowService flowService
     )
@@ -43,7 +41,7 @@ namespace blog.Services.Redis
 
         public async Task InvalidateFlowListAsync()
         {
-            await connectionMultiplexer.BumpListVersionAsync(PageEnums.FlowList);
+            await cache.BumpListVersionAsync(PageEnums.FlowList);
         }
     }
 }

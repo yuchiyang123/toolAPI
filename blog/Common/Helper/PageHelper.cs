@@ -65,28 +65,49 @@ namespace blog.Common.Helper
         /// 讀取列表快取版本號（不存在視為 0）。
         /// 列表失效 = <see cref="BumpListVersionAsync"/>，舊版本 key 由 TTL 自然過期，不再 SCAN keyspace。
         /// </summary>
+        /// <remarks>
+        /// 一定要跟 <see cref="BumpListVersionAsync"/> 走同一條路（IDistributedCache）。
+        /// StackExchangeRedis 的 IDistributedCache 實作把值存成 Redis Hash（HSET），
+        /// 如果 Bump 端改用 IConnectionMultiplexer 直接 INCR，會在同一把 key 建立
+        /// Redis String 型別，下次這裡讀取時 HGETALL 就會丟 WRONGTYPE（曾在 prod 發生過，
+        /// 導致所有分頁列表 500）。遇到殘留的舊型別 key 就直接刪掉重算，等同一次快取失效。
+        /// </remarks>
         public static async Task<long> GetListVersionAsync(
             this IDistributedCache cache,
             PageEnums service,
             CancellationToken ct = default
         )
         {
-            var raw = await cache.GetStringAsync(CacheKeys.ListVersion(service), ct);
-            return long.TryParse(raw, out var v) ? v : 0;
+            var key = CacheKeys.ListVersion(service);
+            try
+            {
+                var raw = await cache.GetStringAsync(key, ct);
+                return long.TryParse(raw, out var v) ? v : 0;
+            }
+            catch (RedisServerException)
+            {
+                await cache.RemoveAsync(key, ct);
+                return 0;
+            }
         }
 
         /// <summary>
-        /// 列表快取失效：版本號 +1（原子 INCR）。
+        /// 列表快取失效：版本號 +1。非原子操作（讀取後寫回），但失效只在寫入時觸發，
+        /// 併發碰撞頂多讓某次失效少算一次版本，不會造成錯誤，換來型別與讀取端一致。
         /// </summary>
         public static async Task BumpListVersionAsync(
-            this IConnectionMultiplexer multiplexer,
+            this IDistributedCache cache,
             PageEnums service,
-            string instanceName = "Blog"
+            CancellationToken ct = default
         )
         {
-            // IDistributedCache 會在 key 前面加 InstanceName，這裡直接用 IDatabase 操作同一把 key
-            var db = multiplexer.GetDatabase();
-            await db.StringIncrementAsync(instanceName + CacheKeys.ListVersion(service));
+            var next = await cache.GetListVersionAsync(service, ct) + 1;
+            await cache.SetStringAsync(
+                CacheKeys.ListVersion(service),
+                next.ToString(),
+                new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromDays(30) },
+                ct
+            );
         }
 
         public static async Task<PageResponseDto<T>> ToPageResponseDtoWithCache<T>(

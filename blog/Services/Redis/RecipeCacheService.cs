@@ -5,13 +5,11 @@ using blog.Common.Helper.Key;
 using blog.Dtos;
 using blog.Repository;
 using Microsoft.Extensions.Caching.Distributed;
-using StackExchange.Redis;
 
 namespace blog.Services.Redis
 {
     public class RecipeCacheService(
         IDistributedCache cache,
-        IConnectionMultiplexer connectionMultiplexer,
         RecipeRepository recipeRepository,
         CacheHelper cacheHelper
     )
@@ -45,7 +43,7 @@ namespace blog.Services.Redis
 
         public async Task InvalidateRecipeListAsync()
         {
-            await connectionMultiplexer.BumpListVersionAsync(PageEnums.RecipeList);
+            await cache.BumpListVersionAsync(PageEnums.RecipeList);
         }
     }
 }
