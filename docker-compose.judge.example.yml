@@ -1,28 +1,58 @@
-# 判題沙盒（JudgeService）在正式站 compose 需要額外加的設定。
-# 把下面的 environment / volumes 合併進 api service 即可。
-# 注意：/tmp/judgeTemp 在 host 與 API container 內路徑必須一致，
-#       因為 API 會把這個路徑 bind mount 給它建立的沙盒容器（docker 是用 host 路徑解析）。
+# 判題沙盒（JudgeService）在正式站 compose 需要的完整設定。
+#
+# 設計：api 完全不碰 host 真正的 Docker daemon（/var/run/docker.sock），
+# 而是連到一個獨立的 Docker-in-Docker（judge-dind）。這台機器上還跑著其他專案
+# 的 container（Mini-SSO、J-learning、Eating-map…），如果讓 api 直接掛 host
+# 的 docker.sock，api 一旦被攻破（例如某個尚未補上的授權漏洞），拿到的就不是
+# 「這個專案的權限」，而是整台機器所有專案的 root 權限。judge-dind 是一顆完全
+# 獨立、空的 daemon，裡面只有 judge 自己拉的 image（python:3.12-alpine、
+# judge-csharp:latest）跟自己建的沙盒容器，api 被攻破頂多也只拿到這顆空
+# daemon 的控制權，碰不到其他專案的東西。
+#
+# 已知陷阱：judge-dind 內部啟動它自己的 dockerd 時會處理過 /tmp，導致從外面
+# bind 進 /tmp 底下的任何路徑在 judge-dind 容器內部會被蓋掉（host 跟 api 都看得到
+# 檔案，只有 judge-dind 看不到）。判題程式碼的共用暫存目錄一定要用 /tmp 以外的
+# 路徑（這裡用具名 volume，不用 host bind，兩邊都乾淨）。
 services:
+  judge-dind:
+    image: docker:27-dind
+    privileged: true
+    restart: unless-stopped
+    environment:
+      DOCKER_TLS_CERTDIR: ""
+    volumes:
+      - judge-dind-storage:/var/lib/docker
+      - judge-temp-host:/judge-temp
+    healthcheck:
+      test: ["CMD", "docker", "info"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
   api:
     build:
       context: .
       dockerfile: blog/Dockerfile
-    ports:
-      - "8082:8080"
+    depends_on:
+      judge-dind:
+        condition: service_healthy
+      # ...其餘 depends_on（db、rabbitmq）沿用現有設定
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - File__BasePath=/app/files
-      - ConnectionStrings__Redis=host.docker.internal:6379
-      - Ollama__Url=http://host.docker.internal:11434/api/generate
-      # --- 判題沙盒 ---
-      - JudgeOptions__DockerEndpoint=unix:///var/run/docker.sock
-      - JudgeOptions__SandBoxPath=/tmp/judgeTemp
-      - JudgeOptions__TimeoutSeconds=15
-      - JudgeOptions__MemoryLimitBytes=134217728
+      # ...其餘 environment 沿用現有設定
+      JudgeOptions__DockerEndpoint: "tcp://judge-dind:2375"
+      JudgeOptions__SandBoxPath: "/judge-temp"
+      JudgeOptions__TimeoutSeconds: "15"
+      JudgeOptions__MemoryLimitBytes: "134217728"
     volumes:
-      - ./files:/app/files
-      # --- 判題沙盒 ---
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /tmp/judgeTemp:/tmp/judgeTemp
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      # ...其餘 volumes 沿用現有設定
+      - judge-temp-host:/judge-temp
+    # 不要掛 /var/run/docker.sock，api 只透過上面的 tcp://judge-dind:2375 說話
+
+volumes:
+  judge-dind-storage:
+  judge-temp-host:
+
+# 建置 judge-csharp:latest 的方式見 judge-sandbox/csharp/README.md，
+# 建好後用「docker save | docker exec -i <judge-dind container> docker load」
+# 匯進這顆隔離 daemon（不需要對外開 port，也不需要碰 host 的主 daemon）。

@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.RegularExpressions;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
@@ -64,6 +64,26 @@ namespace blog.Services
             var jobId = Guid.NewGuid().ToString();
             var tempDir = Path.Combine(judgeOptions.SandBoxPath, jobId);
             Directory.CreateDirectory(tempDir);
+            if (!OperatingSystem.IsWindows())
+            {
+                // 沙盒容器用非 root（1000:1000）跑；C# 題目在容器內還要往這個目錄
+                // 寫檔（複製 template.csproj、把 main.cs 改名成 Program.cs），
+                // 但 CreateDirectory 預設權限只有擁有者（這裡是 api 這個 root 行程）
+                // 可寫，容器內的 1000:1000 使用者寫不進去。這是單一 job 專用、
+                // 執行完就整個刪掉的暫存目錄，放寬成任何人都能讀寫可以接受。
+                File.SetUnixFileMode(
+                    tempDir,
+                    UnixFileMode.UserRead
+                        | UnixFileMode.UserWrite
+                        | UnixFileMode.UserExecute
+                        | UnixFileMode.GroupRead
+                        | UnixFileMode.GroupWrite
+                        | UnixFileMode.GroupExecute
+                        | UnixFileMode.OtherRead
+                        | UnixFileMode.OtherWrite
+                        | UnixFileMode.OtherExecute
+                );
+            }
             await File.WriteAllTextAsync(Path.Combine(tempDir, fileName), dto.Code, ct);
 
             string? containerId = null;
