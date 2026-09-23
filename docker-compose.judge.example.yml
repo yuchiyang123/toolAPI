@@ -9,6 +9,13 @@
 # judge-csharp:latest）跟自己建的沙盒容器，api 被攻破頂多也只拿到這顆空
 # daemon 的控制權，碰不到其他專案的東西。
 #
+# TimeoutSeconds=30（不是原本的 15）：C# 判題每次是全新容器裡從零做一次
+# dotnet restore + dotnet run，沒有任何跨請求的編譯快取，實測冷啟動落在
+# 6~12 秒，這台機器上還有其他專案的 container 在搶 CPU/IO，餘裕不夠時很
+# 容易撞到舊的 15 秒上限被判 Time_Limit_Exceeded（正式站真的發生過）。
+# Python 用不到這麼多，但沒必要為它另外分開設定，多等一點對已經被
+# NetworkMode=none / 記憶體上限 / pids-limit 關住的沙盒不構成風險。
+#
 # 已知陷阱：judge-dind 內部啟動它自己的 dockerd 時會處理過 /tmp，導致從外面
 # bind 進 /tmp 底下的任何路徑在 judge-dind 容器內部會被蓋掉（host 跟 api 都看得到
 # 檔案，只有 judge-dind 看不到）。判題程式碼的共用暫存目錄一定要用 /tmp 以外的
@@ -42,8 +49,8 @@ services:
       # ...其餘 environment 沿用現有設定
       JudgeOptions__DockerEndpoint: "tcp://judge-dind:2375"
       JudgeOptions__SandBoxPath: "/judge-temp"
-      JudgeOptions__TimeoutSeconds: "15"
-      JudgeOptions__MemoryLimitBytes: "134217728"
+      JudgeOptions__TimeoutSeconds: "30"
+      JudgeOptions__MemoryLimitBytes: "268435456"
     volumes:
       # ...其餘 volumes 沿用現有設定
       - judge-temp-host:/judge-temp
