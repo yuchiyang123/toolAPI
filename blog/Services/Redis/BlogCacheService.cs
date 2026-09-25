@@ -186,6 +186,54 @@ namespace blog.Services.Redis
                 .Select(x => x.View)
                 .FirstOrDefaultAsync();
         }
+
+        /// <summary>
+        /// 批次讀取多篇文章目前的瀏覽數（一次 Redis MGET，不是逐篇查）。
+        /// 給文章列表用：列表本身整頁快取（見 PageHelper.ToPageResponseDtoWithCache），
+        /// 瀏覽數是唯一「看一次就變」的欄位，不能跟著整頁一起快取到 TTL 到期才更新，
+        /// 所以列表快取命中後還是要在這裡把每篇的 View 蓋成即時值 ——
+        /// 跟 GetPostDetailAsync 對單篇做的事一樣，只是這裡一次做完一整頁。
+        /// </summary>
+        public async Task<Dictionary<int, long>> GetViewCountsAsync(IEnumerable<int> ids)
+        {
+            var idList = ids.Distinct().ToList();
+            if (idList.Count == 0)
+                return [];
+
+            var keys = idList.Select(id => (RedisKey)CacheKeys.PostViews(id)).ToArray();
+            var values = await _database.StringGetAsync(keys);
+
+            var result = new Dictionary<int, long>();
+            var missingIds = new List<int>();
+            for (var i = 0; i < idList.Count; i++)
+            {
+                if (values[i].HasValue && values[i].TryParse(out long v))
+                    result[idList[i]] = v;
+                else
+                    missingIds.Add(idList[i]);
+            }
+
+            if (missingIds.Count > 0)
+            {
+                var dbViews = await repository
+                    .GetPostNoIncludeAny()
+                    .Where(x => missingIds.Contains(x.Id))
+                    .Select(x => new { x.Id, x.View })
+                    .ToListAsync();
+                foreach (var item in dbViews)
+                {
+                    result[item.Id] = item.View;
+                    // NX：跟單篇的 GetViewCountAsync 一致，避免蓋掉同時間別的請求剛寫入的值
+                    await _database.StringSetAsync(
+                        CacheKeys.PostViews(item.Id),
+                        item.View,
+                        when: When.NotExists
+                    );
+                }
+            }
+
+            return result;
+        }
         #endregion
     }
 }

@@ -54,6 +54,34 @@ public class PostTests : IntegrationTestBase
     }
 
     [Fact]
+    public async Task ViewIncrement_ReflectsInBothDetailAndList()
+    {
+        // 迴歸測試：文章列表整頁快取，瀏覽數不能跟著卡在快取寫入當下的舊值，
+        // 一定要在快取命中之後用 Redis 即時蓋寫（見 BlogCacheService.GetViewCountsAsync）。
+        var before = await ReadJson<PostDetailDto>(
+            await Client.GetAsync($"/api/Post/{SeedPostId}")
+        );
+        var startView = int.Parse(before.View);
+
+        // 先讓列表快取存在（快取命中的那條分支才是這個 bug 真正發生的地方）
+        await Client.GetAsync("/api/Post?pageIndex=1&pageSize=10");
+
+        var view = await Client.PatchAsync($"/api/Post/view/{SeedPostId}", null);
+        Assert.Equal(HttpStatusCode.OK, view.StatusCode);
+
+        var afterDetail = await ReadJson<PostDetailDto>(
+            await Client.GetAsync($"/api/Post/{SeedPostId}")
+        );
+        Assert.Equal(startView + 1, int.Parse(afterDetail.View));
+
+        var afterList = await ReadJson<PageResponseDto<PostDto>>(
+            await Client.GetAsync("/api/Post?pageIndex=1&pageSize=10")
+        );
+        var listItem = Assert.Single(afterList.Items, x => x.Id == SeedPostId);
+        Assert.Equal(startView + 1, int.Parse(listItem.View));
+    }
+
+    [Fact]
     public async Task Create_WithoutToken_Returns401()
     {
         var res = await Client.PostAsJsonAsync(

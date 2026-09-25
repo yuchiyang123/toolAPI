@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using blog.Common.Enum;
 using blog.Common.Helper;
@@ -19,7 +19,8 @@ namespace blog.Services
         PostRepository repository,
         OllamaHelper ollamaHelper,
         IDistributedCache cache,
-        ILogger<PostService> logger
+        ILogger<PostService> logger,
+        Redis.BlogCacheService blogCacheService
     )
     {
         public async Task<PageResponseDto<PostDto>> GetPostAsync(
@@ -28,7 +29,7 @@ namespace blog.Services
         )
         {
             var filterSHA = PageHelper.ComputeFilterHash(requestDto);
-            return await repository
+            var page = await repository
                 .GetPost(requestDto)
                 .ProjectTo<PostDto>(mapper.ConfigurationProvider)
                 .ToPageResponseDtoWithCache(
@@ -39,6 +40,20 @@ namespace blog.Services
                     cache,
                     ct: ct
                 );
+
+            if (page.Items.Count > 0)
+            {
+                var viewCounts = await blogCacheService.GetViewCountsAsync(
+                    page.Items.Select(x => x.Id)
+                );
+                foreach (var item in page.Items)
+                {
+                    if (viewCounts.TryGetValue(item.Id, out var v))
+                        item.View = v.ToString();
+                }
+            }
+
+            return page;
         }
 
         public async Task CreatePostAsync(CreatePostDto postDto)

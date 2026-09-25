@@ -4,12 +4,14 @@ using blog.Entities.Blog;
 using blog.Entities.User;
 using blog.Repository;
 using blog.Services;
+using blog.Services.Redis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
+using StackExchange.Redis;
 
 namespace blog.Tests;
 
@@ -37,13 +39,28 @@ public class PostServiceTests
         IDistributedCache cache = new MemoryDistributedCache(
             Microsoft.Extensions.Options.Options.Create(new MemoryDistributedCacheOptions())
         );
+        // 這個檔案的測試不會碰到文章列表（用不到 BlogCacheService 的即時瀏覽數蓋寫），
+        // 建一個不會真的連 Redis 的最小可用實例，只是為了讓建構子能組起來。
+        var mockMultiplexer = new Mock<IConnectionMultiplexer>();
+        mockMultiplexer
+            .Setup(x => x.GetDatabase(It.IsAny<int>(), It.IsAny<object>()))
+            .Returns(Mock.Of<IDatabase>());
+        var cacheHelper = new CacheHelper(mockMultiplexer.Object, cache, mockMapper.Object);
+        var blogCacheService = new BlogCacheService(
+            cache,
+            mockMultiplexer.Object,
+            cacheHelper,
+            repository,
+            ollamaHelper
+        );
         return new PostService(
             mockMapper.Object,
             context,
             repository,
             ollamaHelper,
             cache,
-            Mock.Of<ILogger<PostService>>()
+            Mock.Of<ILogger<PostService>>(),
+            blogCacheService
         );
     }
 
