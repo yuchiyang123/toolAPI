@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using System.Net.Http.Json;
 using blog.Common.Helper;
 using blog.Entities;
@@ -94,6 +94,22 @@ public class ApiFactory : WebApplicationFactory<Program>
             // ----- Redis -----
             var db = new Mock<IDatabase>();
             var counters = new Dictionary<string, long>();
+            // StackExchange.Redis 的 StringSetAsync 有兩個「4 個位置參數」看起來很像但其實不同
+            // 的多載：一個沒有 CommandFlags（CacheHelper.AcquireLock 用的是這個），一個有。
+            // C# 選多載時優先選「參數個數剛好對上、不用補預設值」的那個，所以呼叫端沒帶
+            // CommandFlags 時，實際打中的是沒有 CommandFlags 的那個多載——兩個都要 mock，
+            // 只 mock 五參數那個的話，AcquireLock 永遠打不中 setup，Moq 用寬鬆模式回傳
+            // default(bool)=false，鎖永遠搶不到，SaveCacheAsync 永遠重試到底、從來沒真的
+            // 寫進快取過（這裡曾經真的踩過：偵錯了老半天才發現是這個多載沒接到）。
+            db.Setup(d =>
+                    d.StringSetAsync(
+                        It.IsAny<RedisKey>(),
+                        It.IsAny<RedisValue>(),
+                        It.IsAny<TimeSpan?>(),
+                        It.IsAny<When>()
+                    )
+                )
+                .ReturnsAsync(true);
             db.Setup(d =>
                     d.StringSetAsync(
                         It.IsAny<RedisKey>(),
@@ -132,8 +148,29 @@ public class ApiFactory : WebApplicationFactory<Program>
                         return counters[key];
                     }
                 );
+            // 跟 StringIncrementAsync 共用同一個 counters 字典 ——
+            // 只有 INCR 過的 key（瀏覽數）才會反映在這裡；其餘 key（頁面快取內容、
+            // Post 快取本身等）本來就是走 IDistributedCache 的 AddDistributedMemoryCache，
+            // 不經過這個 IDatabase mock，所以維持回 Null 沒問題。
             db.Setup(d => d.StringGetAsync(It.IsAny<RedisKey>(), It.IsAny<CommandFlags>()))
-                .ReturnsAsync(RedisValue.Null);
+                .ReturnsAsync(
+                    (RedisKey k, CommandFlags _) =>
+                        counters.TryGetValue(k.ToString(), out var v)
+                            ? (RedisValue)v
+                            : RedisValue.Null
+                );
+            // 批次版本（BlogCacheService.GetViewCountsAsync 用來一次讀多篇文章的瀏覽數）：
+            // 跟上面單筆版本共用同一個 counters 字典，語意要一致。
+            db.Setup(d => d.StringGetAsync(It.IsAny<RedisKey[]>(), It.IsAny<CommandFlags>()))
+                .ReturnsAsync(
+                    (RedisKey[] keys, CommandFlags _) =>
+                        keys.Select(k =>
+                                counters.TryGetValue(k.ToString(), out var v)
+                                    ? (RedisValue)v
+                                    : RedisValue.Null
+                            )
+                            .ToArray()
+                );
             db.Setup(d => d.KeyExistsAsync(It.IsAny<RedisKey>(), It.IsAny<CommandFlags>()))
                 .ReturnsAsync(false);
             db.Setup(d =>
